@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+**/node_modules/
+package/
+local/
+*.user
+*.log
+*.zip

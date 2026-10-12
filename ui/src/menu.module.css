@@ -1,0 +1,66 @@
+.panel{position:absolute;top:140rem;right:28rem;width:294rem;padding:16rem;background-color:rgba(22,24,26,.9);border:1rem solid rgba(255,255,255,.15);border-radius:9rem;color:#ededed;pointer-events:auto;z-index:100;font-family:"Noto Sans KR";box-shadow:0 8rem 24rem rgba(0,0,0,.25)}
+.header{display:flex;align-items:center;justify-content:space-between;font-size:11rem;letter-spacing:1rem;color:#b8babc;margin-bottom:12rem}.close{width:26rem;height:26rem;color:#ddd;background-color:transparent;font-size:22rem;border-width:0}.enable{width:100%;padding:8rem;margin-bottom:10rem;border-radius:5rem;background-color:rgba(255,255,255,.08);color:#ddd;font-size:13rem}.tools{display:flex;flex-wrap:wrap;justify-content:space-between}.tool{display:flex;align-items:center;width:48%;height:48rem;padding:10rem;margin-bottom:8rem;border:1rem solid rgba(255,255,255,.09);border-radius:5rem;background-color:rgba(255,255,255,.04);color:#ddd;font-size:13rem}.tool img{width:22rem;height:22rem;margin-right:8rem}.tool:hover{background-color:rgba(255,255,255,.15)}.tool:disabled{opacity:.35}.selected{background-color:rgba(255,255,255,.2);border-color:rgba(255,255,255,.5)}.hint{font-size:11rem;line-height:1.5;color:#a2a4a6;margin-top:8rem}.status{font-size:10rem;line-height:1.4;color:#a2a4a6;margin-top:12rem;max-height:60rem;overflow:hidden}
+
+.close{width:26rem;height:26rem;padding:6rem;margin-left:12rem;border:1rem solid rgba(226,135,141,.3);border-radius:6rem;background-color:rgba(156,65,73,.2);color:#eda5aa;flex-shrink:0;align-self:center}.close:hover{background-color:rgba(156,65,73,.4)}.close img{width:14rem;height:14rem}
+.guidePanel{border-top:1rem solid rgba(255,255,255,.14);margin-top:5rem;padding-top:12rem;font-size:11rem}.guideSteps{display:flex;align-items:center;justify-content:space-between;color:#93999d}.guideSteps span{display:flex;align-items:center}.currentStep{color:#fff}.startPoint,.endPoint{width:9rem;height:9rem;border:2rem solid #263238;border-radius:50%;margin-right:5rem;background:#20d9ff}.endPoint{background:#ffb826}.guidePanel p{margin:9rem 0;color:#d8dde0;line-height:1.5}.guideMouse{display:flex;align-items:center;color:#b7bec2;font-size:10rem;white-space:nowrap}.guideMouse img{width:17rem;height:20rem;object-fit:contain;margin-right:4rem}.guideMouse img:nth-of-type(2){margin-left:10rem}.guideAction{display:flex;align-items:center;justify-content:center;width:100%;padding:10rem 5rem;margin-top:12rem;border:1rem solid rgba(103,203,221,.4);border-radius:5rem;background:rgba(74,135,148,.18);color:#e1f7fa;font-size:12rem}.guideAction img{width:18rem;height:18rem;margin-right:6rem}.guideAction:hover{background:rgba(74,135,148,.35)}.guideClear{width:100%;padding:7rem;margin-top:5rem;background:transparent;border:0;color:#b9bec1;font-size:11rem}.guideAction:disabled,.guideClear:disabled{opacity:.35}.guideScope{display:block;text-align:center;color:#93999d;font-size:9rem;margin-top:5rem}
+.panel .tool{background-color:rgba(255,255,255,.04)!important;color:#ddd!important;border-color:rgba(255,255,255,.09)!important;font-size:12rem}.panel .tool:not(.selected){opacity:1}.panel .tool.selected{opacity:1;background-color:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.4)!important}.panel .tool:disabled,.panel button[aria-disabled="true"]{opacity:.3!important;background-color:rgba(255,255,255,.04)!important;color:#ddd!important;filter:none!important}.panel .tool:not(:disabled):hover{opacity:1;background-color:rgba(255,255,255,.1)!important}.guideMouse+.guideMouse{margin-top:6rem}
+.panel .tool{word-break:keep-all}.panel .tool img{flex-shrink:0}
+.group{border-top:1rem solid rgba(255,255,255,.14);padding-top:10rem;margin-top:2rem}
+.panel .tool span{min-width:0;max-width:100%;white-space:normal;overflow-wrap:break-word;line-height:1.25}
+.panel{max-height:80vh;overflow-y:auto}
+.panel .tool{min-height:52rem;height:auto}
+
+
+/* Include borders and padding in the identical two-column button widths. */
+.panel{box-sizing:border-box;width:328rem;padding:16rem}
+.tools{width:100%;box-sizing:border-box}
+.panel .tool{box-sizing:border-box;flex-grow:0;flex-shrink:0;flex-basis:auto;width:48%;min-width:0;max-width:48%;height:50.4rem;min-height:50.4rem;margin:0 0 8rem;padding:8rem;justify-content:flex-start;text-align:left}
+.panel .close{display:flex;align-items:center;justify-content:center;box-sizing:border-box;width:26rem;height:26rem;min-width:26rem;padding:5rem;margin:0 0 0 12rem;border:0;background-color:transparent;box-shadow:none;line-height:0}
+.panel .close:hover{background-color:rgba(255,255,255,.1)}
+.panel .close img{display:block;width:16rem;height:16rem;margin:0;padding:0}
+
+.tools{flex-direction:column;flex-wrap:nowrap}
+.toolRow{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:space-between;width:100%;box-sizing:border-box}
+
+.signPanel{border-top:1rem solid rgba(255,255,255,.14);margin-top:8rem;padding-top:12rem}.signTitle{font-size:13rem;margin-bottom:8rem}.signSizes{display:flex;justify-content:space-between;margin-bottom:8rem}.signSizes button{font-size:11rem;padding:7rem;background:rgba(255,255,255,.06);border:1rem solid transparent;color:#ddd;border-radius:4rem}.signSearch{box-sizing:border-box;width:100%;height:32rem;padding:6rem 8rem;background:rgba(0,0,0,.3);border:1rem solid #69747b;border-radius:4rem;color:#fff;font-size:12rem;margin-bottom:8rem}.signResults{display:flex;flex-wrap:wrap;justify-content:space-between;max-height:180rem;overflow-y:auto}.signChoice{width:48%;padding:8rem 4rem;margin-bottom:5rem;font-size:12rem;background:rgba(255,255,255,.05);border:1rem solid transparent;border-radius:4rem;color:#ddd}.signPanel .signSelected{background:rgba(0,140,255,.22);border-color:rgba(80,185,255,.65);color:#fff}.signChoice:hover{background:rgba(255,255,255,.16)}
+
+.signPanel{position:fixed;top:140rem;right:372rem;width:286rem;max-height:70vh;overflow-y:auto;box-sizing:border-box;padding:14rem;background:rgba(22,24,26,.95);border:1rem solid rgba(255,255,255,.15);border-radius:9rem;box-shadow:0 8rem 24rem rgba(0,0,0,.25)}
+
+/* Keep the catalog outside the tool list clipping/scroll container. */
+.menuShell{position:absolute;top:140rem;right:28rem;width:328rem;overflow:visible;z-index:100;pointer-events:none;font-family:"Noto Sans KR";color:#ededed}
+.menuShell .panel{position:relative;top:auto;right:auto;max-height:80vh;pointer-events:auto}
+.menuShell .signPanel{position:absolute;top:0;right:344rem;margin-top:0;pointer-events:auto}
+
+/* Road sign catalog: equal thirds and reserved thumbnail slots. */
+.signTitle{padding-bottom:10rem;margin-bottom:12rem;border-bottom:1rem solid rgba(255,255,255,.12);font-weight:600}
+.signSizes{display:flex;flex-wrap:nowrap;width:100%;margin-bottom:12rem;border-radius:5rem;overflow:visible}
+.signSizes button{box-sizing:border-box;flex:1 1 0;width:0;min-width:0;margin:0;padding:7rem 3rem;min-height:38rem;border-radius:5rem;display:flex;align-items:center;justify-content:center}
+.signSizes button span{white-space:normal;line-height:1.2;text-align:center}
+.signAutoIcon{width:16rem;height:16rem;margin-right:4rem;flex-shrink:0}
+.signSearchWrap{position:relative;width:100%;margin-bottom:12rem}
+.signSearchWrap .signSearch{height:36rem;margin:0;padding:7rem 34rem 7rem 10rem;border-color:rgba(255,255,255,.23);border-radius:5rem}
+.signSearch:focus{border-color:#70cbff}
+.signSearchIcon{position:absolute;right:10rem;top:50%;transform:translateY(-50%);width:16rem;height:16rem;pointer-events:none}
+.signResults{max-height:300rem}
+.signChoice{box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;text-align:left;min-height:60rem;padding:7rem;margin-bottom:7rem;border-color:rgba(255,255,255,.09)}
+.signThumb{display:flex;align-items:center;justify-content:center;width:36rem;height:42rem;flex-shrink:0;margin-right:7rem;background:rgba(0,0,0,.2);border-radius:4rem}
+.signThumb img{width:25rem;height:25rem;object-fit:contain}
+.signChoiceLabel{min-width:0;font-size:11rem;line-height:1.3;white-space:normal;word-break:keep-all}
+
+.signSizes button + button{margin-left:6rem}
+
+/* Keep the selection and instructions visible while the tool list scrolls. */
+.menuShell .panel{display:flex;flex-direction:column;overflow:hidden;max-height:80vh}
+.header{flex-shrink:0}
+.toolList{overflow-y:auto;min-height:0;flex:1 1 auto;padding-right:3rem}
+.groupTitle{font-size:11rem;font-weight:600;color:#a7d3e7;margin:4rem 0 9rem;letter-spacing:.3rem}
+.intro{font-size:12rem;line-height:1.6;color:#d9e6ee;padding:10rem;margin-bottom:12rem;background:rgba(61,151,198,.12);border-radius:5rem;flex-shrink:0}
+.panel .tool.selected{background-color:rgba(28,149,208,.28)!important;border-color:#71ceff!important;color:#fff!important}
+.menuSearch{flex-shrink:0;margin-bottom:12rem}.menuSearch input{box-sizing:border-box;width:100%;height:36rem;padding:7rem 10rem;border:1rem solid #667e8c;border-radius:5rem;background:rgba(0,0,0,.35);color:#fff;font-size:13rem}.menuSearch input:focus{border-color:#71ceff}
+/* Four layouts share the same draggable header and tool groups. */
+.header{cursor:move;user-select:none;letter-spacing:0}.title{flex:1;min-width:0;font-size:10rem}.headerActions{display:flex;align-items:center;flex-shrink:0}.layoutButton{width:27rem;height:27rem;padding:3rem;border:0;border-radius:4rem;background:rgba(255,255,255,.08);color:white;font-size:18rem;margin-left:4rem;cursor:pointer}.panel .close{margin-left:4rem}
+.toolGrid{display:flex;flex-wrap:wrap;justify-content:space-between;width:100%}.tools.group:first-child{border-top:0;margin-top:0;padding-top:0}
+.horizontal{width:950rem;max-width:96vw}.horizontal .panel{width:100%}.horizontal .toolList{display:flex;flex-direction:row;align-items:flex-start;overflow-x:auto;overflow-y:auto}.horizontal .tools{flex:0 0 174rem;width:174rem;margin:0 12rem 0 0;padding:0 12rem 0 0;border-top:0;border-right:1rem solid rgba(255,255,255,.14)}.horizontal .toolGrid{flex-direction:column}.horizontal .panel .tool{width:100%;max-width:100%;min-height:42rem;height:42rem}.horizontal .tools:last-child{border-right:0;margin-right:0}.horizontal .groupTitle{min-height:28rem}
+.iconsOnly{width:250rem}.iconsOnly .title{font-size:9rem}.iconsOnly .panel{width:100%;padding:12rem}.iconsOnly .panel .tool{width:44rem;max-width:44rem;min-height:42rem;height:42rem;padding:9rem;justify-content:center}.iconsOnly .tool img{margin:0;width:24rem;height:24rem}.iconsOnly .tool span{display:none}.iconsOnly .toolGrid{justify-content:flex-start}.iconsOnly .tool{margin-right:7rem}.iconsOnly .menuSearch input{height:30rem}.iconsOnly.horizontal{width:750rem;max-width:96vw}.iconsOnly.horizontal .tools{flex-basis:128rem;width:128rem}.iconsOnly.horizontal .toolGrid{flex-direction:row}.menuShell .signPanel{right:0;top:100%;margin-top:8rem;max-width:90vw;max-height:35vh}
+/* Explicit cell widths: tooltip wrappers must not participate in column sizing. */
+.toolCell{box-sizing:border-box;width:48%;flex:0 0 auto;min-width:0;margin-bottom:8rem}.panel .toolCell .tool{width:100%;max-width:100%;margin:0}.toolCell>div{width:100%}.toolGrid{align-items:flex-start}.horizontal .tools{box-sizing:border-box;min-width:174rem;max-width:174rem;flex-grow:0;flex-shrink:0}.horizontal .toolCell{width:100%;flex-shrink:0}.horizontal .toolGrid{display:block}.iconsOnly .toolCell{width:44rem;margin-right:7rem}.iconsOnly.horizontal .tools{min-width:128rem;max-width:128rem}.iconsOnly.horizontal .toolGrid{display:flex;flex-direction:row;flex-wrap:wrap}.iconsOnly.horizontal .toolCell{width:44rem}.layoutButton img{display:block;width:19rem;height:19rem}.layoutButton{display:flex;align-items:center;justify-content:center}

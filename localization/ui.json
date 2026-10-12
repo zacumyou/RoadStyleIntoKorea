@@ -1,0 +1,966 @@
+{
+  "RSIK.UI.VerticalHorizontal": {
+    "ko": "세로 / 가로",
+    "en": "Vertical / horizontal"
+  },
+  "RSIK.UI.IconsOnlyShowLabels": {
+    "ko": "아이콘만 / 이름 표시",
+    "en": "Icons only / show labels"
+  },
+  "RSIK.UI.Close": {
+    "ko": "닫기",
+    "en": "Close"
+  },
+  "RSIK.UI.SearchTools": {
+    "ko": "메뉴 검색",
+    "en": "Search tools"
+  },
+  "RSIK.UI.NoMatchingTools": {
+    "ko": "검색 결과 없음",
+    "en": "No matching tools"
+  },
+  "RSIK.UI.Tool.RedPaving": {
+    "ko": "적색 포장",
+    "en": "Red pavement"
+  },
+  "RSIK.UI.Tool.RoadEdge": {
+    "ko": "가장자리",
+    "en": "Edge lines"
+  },
+  "RSIK.UI.Tool.Center": {
+    "ko": "중앙선",
+    "en": "Center lines"
+  },
+  "RSIK.UI.Tool.Crosswalk": {
+    "ko": "횡단보도",
+    "en": "Crosswalks"
+  },
+  "RSIK.UI.Tool.Paving": {
+    "ko": "보도블록",
+    "en": "Sidewalk paving"
+  },
+  "RSIK.UI.Tool.Curb": {
+    "ko": "경계석",
+    "en": "Curb"
+  },
+  "RSIK.UI.Tool.Gutter": {
+    "ko": "배수로",
+    "en": "Gutter"
+  },
+  "RSIK.UI.Tool.MergeDivider": {
+    "ko": "합류 구분선",
+    "en": "Merge divider"
+  },
+  "RSIK.UI.Tool.BusDivider": {
+    "ko": "버스 구분선",
+    "en": "Bus divider"
+  },
+  "RSIK.UI.Tool.UTurn": {
+    "ko": "유턴 점선",
+    "en": "U-turn zone"
+  },
+  "RSIK.UI.Tool.Approach": {
+    "ko": "데칼 자동 생성",
+    "en": "Auto decals"
+  },
+  "RSIK.UI.Tool.ManualStop": {
+    "ko": "정지선",
+    "en": "Stop line"
+  },
+  "RSIK.UI.Tool.ManualArrow": {
+    "ko": "화살표 표지",
+    "en": "Arrow marking"
+  },
+  "RSIK.UI.Tool.ManualUTurn": {
+    "ko": "유턴 표지",
+    "en": "U-turn marking"
+  },
+  "RSIK.UI.Tool.ManualDiamond": {
+    "ko": "다이아몬드 표지",
+    "en": "Diamond marking"
+  },
+  "RSIK.UI.Tool.ManualSpeed": {
+    "ko": "속도 표지",
+    "en": "Speed marking"
+  },
+  "RSIK.UI.Tool.ManualText": {
+    "ko": "글자 표지",
+    "en": "Text marking"
+  },
+  "RSIK.UI.Tool.Guide": {
+    "ko": "유도선 편집",
+    "en": "Guide editor"
+  },
+  "RSIK.UI.Tool.GuideAuto": {
+    "ko": "자동 그리기",
+    "en": "Automatic guides"
+  },
+  "RSIK.UI.Tool.AddAll": {
+    "ko": "모두 추가",
+    "en": "Add all"
+  },
+  "RSIK.UI.Tool.RemoveAll": {
+    "ko": "모두 제거",
+    "en": "Remove all"
+  },
+  "RSIK.UI.Tool.RemovePaint": {
+    "ko": "하나씩 표시 제거",
+    "en": "Remove marking"
+  },
+  "RSIK.UI.Tool.SideRoad": {
+    "ko": "샛길 만들기",
+    "en": "Side road entrance"
+  },
+  "RSIK.UI.Tool.SpeedHump": {
+    "ko": "방지턱",
+    "en": "Speed hump"
+  },
+  "RSIK.UI.Tool.Tactile": {
+    "ko": "점자블록",
+    "en": "Tactile paving"
+  },
+  "RSIK.UI.Tool.CyclePath": {
+    "ko": "보도 자전거도로",
+    "en": "Sidewalk cycle strip"
+  },
+  "RSIK.UI.Tool.CrossingDistance": {
+    "ko": "횡단보도 거리",
+    "en": "Crosswalk distance"
+  },
+  "RSIK.UI.Tool.DrawLine": {
+    "ko": "차선 그리기",
+    "en": "Draw lane lines"
+  },
+  "RSIK.UI.Tool.ColorGuide": {
+    "ko": "컬러 유도선",
+    "en": "Color guidance"
+  },
+  "RSIK.UI.Group.0": {
+    "ko": "차선",
+    "en": "Lane lines"
+  },
+  "RSIK.UI.Group.1": {
+    "ko": "횡단보도·유도선",
+    "en": "Crossings & guides"
+  },
+  "RSIK.UI.Group.2": {
+    "ko": "노면 표지",
+    "en": "Road markings"
+  },
+  "RSIK.UI.Group.3": {
+    "ko": "보도·도로 시설",
+    "en": "Sidewalk & roadside"
+  },
+  "RSIK.UI.Group.4": {
+    "ko": "관리",
+    "en": "Manage"
+  },
+  "RSIK.UI.SingleRow": {
+    "ko": "한 줄",
+    "en": "Single row"
+  },
+  "RSIK.UI.DoubleRow": {
+    "ko": "두 줄",
+    "en": "Double row"
+  },
+  "RSIK.UI.Original": {
+    "ko": "원래 표지",
+    "en": "Original"
+  },
+  "RSIK.UI.NoMarkings": {
+    "ko": "표시 없음",
+    "en": "No markings"
+  },
+  "RSIK.UI.WhiteSolid": {
+    "ko": "흰색 실선",
+    "en": "White solid"
+  },
+  "RSIK.UI.YellowSolid": {
+    "ko": "황색 실선",
+    "en": "Yellow solid"
+  },
+  "RSIK.UI.DoubleYellow": {
+    "ko": "황색 이중선",
+    "en": "Double yellow"
+  },
+  "RSIK.UI.YellowZigzag": {
+    "ko": "황색 지그재그",
+    "en": "Yellow zigzag"
+  },
+  "RSIK.UI.StopLine": {
+    "ko": "정지선",
+    "en": "Stop line"
+  },
+  "RSIK.UI.UTurnMarking": {
+    "ko": "유턴 표지",
+    "en": "U-turn marking"
+  },
+  "RSIK.UI.DiamondMarking": {
+    "ko": "다이아몬드 표지",
+    "en": "Diamond marking"
+  },
+  "RSIK.UI.WhiteDotted": {
+    "ko": "흰색 점선",
+    "en": "White dotted"
+  },
+  "RSIK.UI.YellowDotted": {
+    "ko": "황색 점선",
+    "en": "Yellow dotted"
+  },
+  "RSIK.UI.DoubleYellowDotted": {
+    "ko": "황색 이중 점선",
+    "en": "Double yellow dotted"
+  },
+  "RSIK.UI.CenterYellow": {
+    "ko": "중앙 황색 실선",
+    "en": "Center yellow"
+  },
+  "RSIK.UI.CenterDoubleYellow": {
+    "ko": "중앙 황색 이중선",
+    "en": "Center double yellow"
+  },
+  "RSIK.UI.WhiteRL": {
+    "ko": "흰색 우→좌",
+    "en": "White R→L"
+  },
+  "RSIK.UI.WhiteLR": {
+    "ko": "흰색 좌→우",
+    "en": "White L→R"
+  },
+  "RSIK.UI.BusBlueSolid": {
+    "ko": "버스 파란 실선",
+    "en": "Bus blue solid"
+  },
+  "RSIK.UI.BusBlueDashed": {
+    "ko": "버스 파란 점선",
+    "en": "Bus blue dashed"
+  },
+  "RSIK.UI.BusBlueRL": {
+    "ko": "버스 파란 우→좌",
+    "en": "Bus blue R→L"
+  },
+  "RSIK.UI.BusBlueLR": {
+    "ko": "버스 파란 좌→우",
+    "en": "Bus blue L→R"
+  },
+  "RSIK.UI.UTurnDotted": {
+    "ko": "유턴 점선",
+    "en": "U-turn dotted"
+  },
+  "RSIK.UI.PinkChevron": {
+    "ko": "분홍 · 갈매기형",
+    "en": "Pink · Chevron"
+  },
+  "RSIK.UI.LightGreenChevron": {
+    "ko": "연두 · 갈매기형",
+    "en": "Light green · Chevron"
+  },
+  "RSIK.UI.GreenChevron": {
+    "ko": "녹색 · 갈매기형",
+    "en": "Green · Chevron"
+  },
+  "RSIK.UI.PinkJunction": {
+    "ko": "분홍 · 교차로형",
+    "en": "Pink · Junction"
+  },
+  "RSIK.UI.LightGreenJunction": {
+    "ko": "연두 · 교차로형",
+    "en": "Light green · Junction"
+  },
+  "RSIK.UI.GreenJunction": {
+    "ko": "녹색 · 교차로형",
+    "en": "Green · Junction"
+  },
+  "RSIK.UI.BlueChevron": {
+    "ko": "청색 · 갈매기형",
+    "en": "Blue · Chevron"
+  },
+  "RSIK.UI.BlueJunction": {
+    "ko": "청색 · 교차로형",
+    "en": "Blue · Junction"
+  },
+  "RSIK.UI.Continuous": {
+    "ko": "연속 포장",
+    "en": "Continuous"
+  },
+  "RSIK.UI.Stripes3mGap6m": {
+    "ko": "반복 띠 · 3m / 공백 6m",
+    "en": "Stripes · 3m / gap 6m"
+  },
+  "RSIK.UI.CrosswalkTargetDistance": {
+    "ko": "횡단보도 목표 거리",
+    "en": "Crosswalk target distance"
+  },
+  "RSIK.UI.TactilePaving030M": {
+    "ko": "점자블록 · 0.30 m",
+    "en": "Tactile paving · 0.30 m"
+  },
+  "RSIK.UI.SidewalkCycleStrip180M": {
+    "ko": "보도 자전거도로 · 1.80 m",
+    "en": "Sidewalk cycle strip · 1.80 m"
+  },
+  "RSIK.UI.SpeedHumpClean": {
+    "ko": "방지턱 · 깔끔한 도색",
+    "en": "Speed hump · Clean"
+  },
+  "RSIK.UI.SpeedHumpWorn": {
+    "ko": "방지턱 · 헤진 도색",
+    "en": "Speed hump · Worn"
+  },
+  "RSIK.UI.Automatic": {
+    "ko": "자동",
+    "en": "Automatic"
+  },
+  "RSIK.UI.BlueSolid": {
+    "ko": "파란 실선",
+    "en": "Blue solid"
+  },
+  "RSIK.UI.BlueDashed": {
+    "ko": "파란 점선",
+    "en": "Blue dashed"
+  },
+  "RSIK.UI.BlueRL": {
+    "ko": "파란 우→좌",
+    "en": "Blue R→L"
+  },
+  "RSIK.UI.BlueLR": {
+    "ko": "파란 좌→우",
+    "en": "Blue L→R"
+  },
+  "RSIK.UI.SideRoadEntrance": {
+    "ko": "샛길 만들기",
+    "en": "Side road entrance"
+  },
+  "RSIK.UI.RemoveMarking": {
+    "ko": "하나씩 표시 제거",
+    "en": "Remove marking"
+  },
+  "RSIK.UI.GutterAGrating": {
+    "ko": "배수로 A · 격자형",
+    "en": "Gutter A · Grating"
+  },
+  "RSIK.UI.GutterBSlots": {
+    "ko": "배수로 B · 장공형",
+    "en": "Gutter B · Slots"
+  },
+  "RSIK.UI.Curb": {
+    "ko": "경계석",
+    "en": "Curb"
+  },
+  "RSIK.UI.Straight": {
+    "ko": "직진",
+    "en": "Straight"
+  },
+  "RSIK.UI.Left": {
+    "ko": "좌회전",
+    "en": "Left"
+  },
+  "RSIK.UI.Right": {
+    "ko": "우회전",
+    "en": "Right"
+  },
+  "RSIK.UI.StraightLeft": {
+    "ko": "직좌",
+    "en": "Straight / left"
+  },
+  "RSIK.UI.StraightRight": {
+    "ko": "직우",
+    "en": "Straight / right"
+  },
+  "RSIK.UI.LeftRight": {
+    "ko": "좌우",
+    "en": "Left / right"
+  },
+  "RSIK.UI.StraightLeftRight": {
+    "ko": "직좌우",
+    "en": "Straight / left / right"
+  },
+  "RSIK.UI.DiagonalLeft": {
+    "ko": "좌측 대각선",
+    "en": "Diagonal left"
+  },
+  "RSIK.UI.DiagonalRight": {
+    "ko": "우측 대각선",
+    "en": "Diagonal right"
+  },
+  "RSIK.UI.LeftUTurn": {
+    "ko": "좌회전·유턴",
+    "en": "Left / U-turn"
+  },
+  "RSIK.UI.None": {
+    "ko": "표시 없음",
+    "en": "None"
+  },
+  "RSIK.UI.Paving": {
+    "ko": "보도블록",
+    "en": "Paving"
+  },
+  "RSIK.UI.UTurnZone": {
+    "ko": "유턴 점선",
+    "en": "U-turn zone"
+  },
+  "RSIK.UI.AddAll": {
+    "ko": "모두 추가",
+    "en": "Add all"
+  },
+  "RSIK.UI.RemoveAll": {
+    "ko": "모두 제거",
+    "en": "Remove all"
+  },
+  "RSIK.UI.AutoDecals": {
+    "ko": "데칼 자동 생성",
+    "en": "Auto decals"
+  },
+  "RSIK.UI.GuideEditor": {
+    "ko": "유도선 편집",
+    "en": "Guide editor"
+  },
+  "RSIK.UI.AutomaticLeftTurnGuides": {
+    "ko": "좌회전 유도선 자동",
+    "en": "Automatic left-turn guides"
+  },
+  "RSIK.UI.StartEnd": {
+    "ko": "시작점 · 끝점",
+    "en": "Start · end"
+  },
+  "RSIK.UI.ConnectDragMidpoint": {
+    "ko": "점 연결 · 중앙 드래그",
+    "en": "Connect · drag midpoint"
+  },
+  "RSIK.UI.Increase1m": {
+    "ko": "1m 늘리기",
+    "en": "Increase 1m"
+  },
+  "RSIK.UI.DragAndRelease": {
+    "ko": "드래그 후 놓기",
+    "en": "Drag and release"
+  },
+  "RSIK.UI.RemoveSelected": {
+    "ko": "선택 표시 제거",
+    "en": "Remove selected"
+  },
+  "RSIK.UI.ConnectEnd": {
+    "ko": "끝점 연결",
+    "en": "Connect end"
+  },
+  "RSIK.UI.SelectStart": {
+    "ko": "시작점 선택",
+    "en": "Select start"
+  },
+  "RSIK.UI.Generate": {
+    "ko": "자동 생성",
+    "en": "Generate"
+  },
+  "RSIK.UI.Apply": {
+    "ko": "적용",
+    "en": "Apply"
+  },
+  "RSIK.UI.DeleteGroupCancel": {
+    "ko": "묶음 삭제 · 취소",
+    "en": "Delete group · cancel"
+  },
+  "RSIK.UI.DeleteGuideCancel": {
+    "ko": "유도삭제 · 취소",
+    "en": "Delete guide · cancel"
+  },
+  "RSIK.UI.DeleteCancel": {
+    "ko": "삭제 · 취소",
+    "en": "Delete · cancel"
+  },
+  "RSIK.UI.ExitTool": {
+    "ko": "도구 종료",
+    "en": "Exit tool"
+  },
+  "RSIK.UI.RestoreRemoved": {
+    "ko": "제거한 표시 복원",
+    "en": "Restore removed"
+  },
+  "RSIK.UI.DeleteMarking": {
+    "ko": "표지 삭제",
+    "en": "Delete marking"
+  },
+  "RSIK.UI.ClearAll": {
+    "ko": "모두 삭제",
+    "en": "Clear all"
+  },
+  "RSIK.UI.CancelDelete": {
+    "ko": "취소 · 선 삭제",
+    "en": "Cancel / delete"
+  },
+  "RSIK.UI.Reset": {
+    "ko": "해제 · 복원",
+    "en": "Reset"
+  },
+  "RSIK.UI.SelectedNetLaneAssetIsUnavailable": {
+    "ko": "선택한 NetLane 에셋이 없습니다",
+    "en": "Selected NetLane asset is unavailable"
+  },
+  "RSIK.UI.PositionOnSidewalk": {
+    "ko": "보도 위에서 위치 선택",
+    "en": "Position on sidewalk"
+  },
+  "RSIK.UI.SnappedToAdjacentStrip": {
+    "ko": "인접 구간에 스냅",
+    "en": "Snapped to adjacent strip"
+  },
+  "RSIK.UI.SidewalkIsTooNarrow": {
+    "ko": "보도 폭이 부족합니다",
+    "en": "Sidewalk is too narrow"
+  },
+  "RSIK.UI.RequiredNetLaneAssetIsMissing": {
+    "ko": "필요한 NetLane 에셋이 없습니다",
+    "en": "Required NetLane asset is missing"
+  },
+  "RSIK.UI.Unavailable": {
+    "ko": "에셋 없음",
+    "en": "Unavailable"
+  },
+  "RSIK.UI.SelectedToolInstructions": {
+    "ko": "선택한 도구 사용법",
+    "en": "Selected tool instructions"
+  },
+  "RSIK.UI.Selected": {
+    "ko": "현재 선택",
+    "en": "Selected"
+  },
+  "RSIK.UI.ChangeToNext": {
+    "ko": "다음 스타일로 변경",
+    "en": "Change to next"
+  },
+  "RSIK.UI.Next": {
+    "ko": "다음 선택",
+    "en": "Next"
+  },
+  "RSIK.UI.SelectStartAndEndOnTheSameLane": {
+    "ko": "같은 차로의 시작점과 끝점을 선택하세요.",
+    "en": "Select start and end on the same lane."
+  },
+  "RSIK.UI.PositionAcrossTheSidewalkClickApplyToSegmentRightClickRemoveThisStrip": {
+    "ko": "보도 위에서 좌우 위치를 잡으세요. 클릭: 구간 전체 적용 · 우클릭: 해당 종류 제거.",
+    "en": "Position across the sidewalk. Click: apply to segment. Right-click: remove this strip."
+  },
+  "RSIK.UI.MoveThePointerNearEitherRoadEdge": {
+    "ko": "도로 왼쪽 또는 오른쪽 가장자리에 마우스를 가까이 대세요.",
+    "en": "Move the pointer near either road edge."
+  },
+  "RSIK.UI.HoverALaneToPreviewTheFullSpanInThatDirection": {
+    "ko": "차로에 마우스를 올리면 같은 방향 전체 폭을 미리 볼 수 있습니다.",
+    "en": "Hover a lane to preview the full span in that direction."
+  },
+  "RSIK.UI.DragOverRoadsToSelectTheAffectedArea": {
+    "ko": "도로 위에서 누른 채 드래그하여 범위를 선택하세요.",
+    "en": "Drag over roads to select the affected area."
+  },
+  "RSIK.UI.ClickAYellowEndpointToConnect": {
+    "ko": "노란 끝점을 클릭해 연결하세요.",
+    "en": "Click a yellow endpoint to connect."
+  },
+  "RSIK.UI.SelectTheStartingLaneEndpoint": {
+    "ko": "시작할 차로의 끝점을 선택하세요.",
+    "en": "Select the starting lane endpoint."
+  },
+  "RSIK.UI.HoverOverARoadToPreviewThenClickToApply": {
+    "ko": "도로에 마우스를 올려 미리보기를 확인한 뒤 클릭하세요.",
+    "en": "Hover over a road to preview, then click to apply."
+  },
+  "RSIK.UI.Style": {
+    "ko": "스타일",
+    "en": "Style"
+  },
+  "RSIK.UI.Click1m020m": {
+    "ko": "클릭 −1m · 0–20m",
+    "en": "Click −1m · 0–20m"
+  },
+  "RSIK.UI.ClickAllCrossings": {
+    "ko": "클릭: 교차로 전체",
+    "en": "Click: all crossings"
+  },
+  "RSIK.UI.ClickPedestrianArrows": {
+    "ko": "클릭: 보행 화살표",
+    "en": "Click: pedestrian arrows"
+  },
+  "RSIK.UI.ShiftClickBothDirections": {
+    "ko": "Shift+클릭: 양방향",
+    "en": "Shift+click: both directions"
+  },
+  "RSIK.UI.ReverseSharedLane": {
+    "ko": "공유 차로 방향 반전",
+    "en": "Reverse shared lane"
+  },
+  "RSIK.UI.SameDirectionLanes": {
+    "ko": "같은 방향 전체",
+    "en": "Same-direction lanes"
+  },
+  "RSIK.UI.AdjustLength": {
+    "ko": "길이 조절",
+    "en": "Adjust length"
+  },
+  "RSIK.UI.DecreaseBy1m": {
+    "ko": "1m 줄이기",
+    "en": "Decrease by 1m"
+  },
+  "RSIK.UI.IncreaseBy1m": {
+    "ko": "1m 늘리기",
+    "en": "Increase by 1m"
+  },
+  "RSIK.UI.DeselectTool": {
+    "ko": "도구 선택 해제",
+    "en": "Deselect tool"
+  },
+  "RSIK.UI.RoadSpeed": {
+    "ko": "도로 속도 자동",
+    "en": "Road speed"
+  },
+  "RSIK.UI.SpeedMarking": {
+    "ko": "속도 표지",
+    "en": "Speed marking"
+  },
+  "RSIK.UI.TextMarkingManualOnly": {
+    "ko": "글자 표지 · 수동 전용",
+    "en": "Text marking · Manual only"
+  },
+  "RSIK.UI.AutoWidth": {
+    "ko": "차로 폭 자동",
+    "en": "Auto width"
+  },
+  "RSIK.UI.SearchTextMarkings": {
+    "ko": "글자 표지 검색",
+    "en": "Search text markings"
+  },
+  "RSIK.UI.NoResults": {
+    "ko": "검색 결과 없음",
+    "en": "No results"
+  },
+  "RSIK.UI.Sign.0": {
+    "ko": "버스전용",
+    "en": "Bus only"
+  },
+  "RSIK.UI.Sign.1": {
+    "ko": "어린이",
+    "en": "Children"
+  },
+  "RSIK.UI.Sign.2": {
+    "ko": "도시대교",
+    "en": "City / bridge"
+  },
+  "RSIK.UI.Sign.3": {
+    "ko": "입구",
+    "en": "Entrance"
+  },
+  "RSIK.UI.Sign.4": {
+    "ko": "출구",
+    "en": "Exit"
+  },
+  "RSIK.UI.Sign.5": {
+    "ko": "고속도로",
+    "en": "Expressway"
+  },
+  "RSIK.UI.Sign.6": {
+    "ko": "진입금지",
+    "en": "No entry"
+  },
+  "RSIK.UI.Sign.7": {
+    "ko": "일방통행",
+    "en": "One way"
+  },
+  "RSIK.UI.Sign.8": {
+    "ko": "보호구역",
+    "en": "Protection zone"
+  },
+  "RSIK.UI.Sign.9": {
+    "ko": "천천히",
+    "en": "Slow"
+  },
+  "RSIK.UI.Sign.10": {
+    "ko": "비보호",
+    "en": "Unprotected turn"
+  },
+  "RSIK.Status.NoNativeCrossingGeneratedCheckPedestrianConnectionsAndRoadConfiguration": {
+    "ko": "게임이 횡단보도를 생성하지 못했습니다. 보행 연결·도로 구성을 확인하세요",
+    "en": "No native crossing generated; check pedestrian connections and road configuration"
+  },
+  "RSIK.Status.RequiresOpposingTraffic3LanesNoMedian": {
+    "ko": "유턴 점선: 왕복 3차로 이상, 중앙분리대 없는 도로",
+    "en": "Requires opposing traffic, 3+ lanes, no median"
+  },
+  "RSIK.Status.RoadTemplateDoesNotSupportAddingCrossings": {
+    "ko": "이 도로 템플릿은 횡단보도 추가를 지원하지 않습니다",
+    "en": "Road template does not support adding crossings"
+  },
+  "RSIK.Status.DividerAssetOrAutomaticTargetUnavailable": {
+    "ko": "구분선 에셋 또는 자동 대상 없음",
+    "en": "Divider asset or automatic target unavailable"
+  },
+  "RSIK.Status.NativeSidewalkMeshUnavailable": {
+    "ko": "원본 보도 메시를 읽지 못했습니다",
+    "en": "Native sidewalk mesh unavailable"
+  },
+  "RSIK.Status.EnableThisCategoryFirst": {
+    "ko": "해당 분야 사용 옵션을 먼저 켜세요",
+    "en": "Enable this category first"
+  },
+  "RSIK.Status.RestoreLocalStylesQueued": {
+    "ko": "선택 범위 모두 복원 대기",
+    "en": "Restore local styles queued"
+  },
+  "RSIK.Status.PavingMaterialUnavailable": {
+    "ko": "보도 재질 준비 실패: ",
+    "en": "Paving material unavailable: "
+  },
+  "RSIK.Status.ApplyLocalStylesQueued": {
+    "ko": "선택 범위 모두 추가 대기",
+    "en": "Apply local styles queued"
+  },
+  "RSIK.Status.CategoryReplacementQueued": {
+    "ko": "분야별 교체 대기: ",
+    "en": "Category replacement queued: "
+  },
+  "RSIK.Status.ApproachMarkingsUpdated": {
+    "ko": "정지선·데칼 적용 완료",
+    "en": "Approach markings updated"
+  },
+  "RSIK.Status.SelectedSegmentsQueued": {
+    "ko": "선택 구간 처리 대기: ",
+    "en": "Selected segments queued: "
+  },
+  "RSIK.Status.MissingUTurnZoneAsset": {
+    "ko": "유턴 점선 에셋 누락",
+    "en": "Missing U-turn zone asset"
+  },
+  "RSIK.Status.RequiredAssetsAvailable": {
+    "ko": "필요 에셋 확인 완료",
+    "en": "Required assets available"
+  },
+  "RSIK.Status.CenterLineAssetMissing": {
+    "ko": "중앙선 에셋 누락",
+    "en": "Center line asset missing"
+  },
+  "RSIK.Status.CenterLineChangeQueued": {
+    "ko": "중앙선 변경 대기",
+    "en": "Center line change queued"
+  },
+  "RSIK.Status.NoCenterLineTarget": {
+    "ko": "중앙선 대상이 없습니다",
+    "en": "No center line target"
+  },
+  "RSIK.Status.CrosswalkChangeQueued": {
+    "ko": "횡단보도 변경 대기",
+    "en": "Crosswalk change queued"
+  },
+  "RSIK.Status.CaptureAlreadyRunning": {
+    "ko": "진단 기록 중입니다",
+    "en": "Capture already running"
+  },
+  "RSIK.Status.PavingChangeQueued": {
+    "ko": "보도블록 변경 대기",
+    "en": "Paving change queued"
+  },
+  "RSIK.Status.UTurnZoneQueued": {
+    "ko": "유턴 점선 변경 대기",
+    "en": "U-turn zone queued"
+  },
+  "RSIK.Status.LoadACityFirst": {
+    "ko": "도시를 먼저 불러오세요",
+    "en": "Load a city first"
+  },
+  "RSIK.Status.OriginalsRestored": {
+    "ko": "원래 표지 복원 완료",
+    "en": "Originals restored"
+  },
+  "RSIK.Status.RoadSegments": {
+    "ko": " — 도로 구간: ",
+    "en": " — road segments: "
+  },
+  "RSIK.Status.CaptureStarted": {
+    "ko": "도로 진단 기록 시작: ",
+    "en": "Capture started: "
+  },
+  "RSIK.Status.EdgeChangeQueued": {
+    "ko": "가장자리 변경 대기",
+    "en": "Edge change queued"
+  },
+  "RSIK.Status.CaptureTruncated": {
+    "ko": "진단 용량 제한: ",
+    "en": "Capture truncated: "
+  },
+  "RSIK.Status.GuidesApplied": {
+    "ko": "유도선 적용 완료: ",
+    "en": "Guides applied: "
+  },
+  "RSIK.Status.OwnersRemaining": {
+    "ko": "진단 기록 중: ",
+    "en": "Owners remaining: "
+  },
+  "RSIK.Status.CaptureFailed": {
+    "ko": "진단 저장 실패: ",
+    "en": "Capture failed: "
+  },
+  "RSIK.Status.Missing": {
+    "ko": "보도블록 차선 에셋 누락: ",
+    "en": "Missing: "
+  },
+  "RSIK.Status.MarkingRestored": {
+    "ko": "개별 표시 복원",
+    "en": "Marking restored"
+  },
+  "RSIK.Status.MarkingRemoved": {
+    "ko": "하나씩 표시 제거",
+    "en": "Marking removed"
+  },
+  "RSIK.Status.UTurnLength": {
+    "ko": "유턴 점선 길이: ",
+    "en": "U-turn length: "
+  },
+  "RSIK.Status.CaptureSaved": {
+    "ko": "진단 저장 완료: ",
+    "en": "Capture saved: "
+  },
+  "RSIK.Status.CaptureFailed2": {
+    "ko": "진단 실패: ",
+    "en": "Capture failed: "
+  },
+  "RSIK.Status.GutterRemoved": {
+    "ko": "배수로 제거",
+    "en": "Gutter removed"
+  },
+  "RSIK.Status.GutterApplied": {
+    "ko": "배수로 적용",
+    "en": "Gutter applied"
+  },
+  "RSIK.Status.EdgeBrush": {
+    "ko": "가장자리 브러시: ",
+    "en": "Edge brush: "
+  },
+  "RSIK.Status.LoadACity": {
+    "ko": "도시를 불러오세요",
+    "en": "Load a city"
+  },
+  "RSIK.Status.InProgress": {
+    "ko": ", 처리 중: ",
+    "en": ", in progress: "
+  },
+  "RSIK.Status.Unavailable": {
+    "ko": " · 에셋 없음",
+    "en": " · Unavailable"
+  },
+  "RSIK.Status.Missing2": {
+    "ko": "중앙선 에셋 누락: ",
+    "en": "Missing: "
+  },
+  "RSIK.Status.Missing3": {
+    "ko": "배수로 에셋 누락: ",
+    "en": "Missing: "
+  },
+  "RSIK.Status.Crosswalk": {
+    "ko": "횡단보도: ",
+    "en": "Crosswalk: "
+  },
+  "RSIK.Status.Restoring": {
+    "ko": "복원 중: ",
+    "en": "Restoring: "
+  },
+  "RSIK.Status.Missing4": {
+    "ko": "에셋 누락: ",
+    "en": "Missing: "
+  },
+  "RSIK.Status.Skipped": {
+    "ko": ", 제외: ",
+    "en": ", skipped: "
+  },
+  "RSIK.Status.Replacing": {
+    "ko": "교체 중",
+    "en": "Replacing"
+  },
+  "RSIK.Status.Failed": {
+    "ko": ", 실패: ",
+    "en": ", failed: "
+  },
+  "RSIK.Status.Cancelled": {
+    "ko": "취소됨",
+    "en": "Cancelled"
+  },
+  "RSIK.Status.Missing5": {
+    "ko": "누락: ",
+    "en": "Missing: "
+  },
+  "RSIK.Status.Finished": {
+    "ko": "완료",
+    "en": "Finished"
+  },
+  "RSIK.Status.Ready": {
+    "ko": "대기",
+    "en": "Ready"
+  },
+  "RSIK.Status.SpeedHumpNetlaneUnavailable": {
+    "ko": "방지턱 NetLane 없음",
+    "en": "Speed hump NetLane unavailable"
+  },
+  "RSIK.Status.NativeRoadAsphaltUnavailable": {
+    "ko": "도로 아스팔트 재질을 찾지 못했습니다",
+    "en": "Native road asphalt unavailable"
+  },
+  "RSIK.Status.AsphaltMaterialFailed": {
+    "ko": "도로 아스팔트 준비 실패",
+    "en": "Asphalt material failed"
+  },
+  "RSIK.Status.SideRoadEntranceRemoved": {
+    "ko": "샛길 입구 제거",
+    "en": "Side road entrance removed"
+  },
+  "RSIK.Status.SideRoadEntranceApplied": {
+    "ko": "샛길 입구 적용",
+    "en": "Side road entrance applied"
+  },
+  "RSIK.Status.SidewalkTooNarrow": {
+    "ko": "보도 폭 부족",
+    "en": "Sidewalk too narrow"
+  },
+  "RSIK.Status.Missing6": {
+    "ko": "에셋 없음: ",
+    "en": "Missing: "
+  },
+  "RSIK.Status.Finished2": {
+    "ko": "교체 처리 완료: ",
+    "en": "Finished: "
+  },
+  "RSIK.Status.UnsupportedArrows": {
+    "ko": ", 미지원 화살표: ",
+    "en": ", unsupported arrows: "
+  },
+  "RSIK.Status.Applying": {
+    "ko": "교체 중: ",
+    "en": "Applying: "
+  },
+  "RSIK.Status.Remaining": {
+    "ko": ", 남음: ",
+    "en": ", remaining: "
+  },
+  "RSIK.Status.SingleRow": {
+    "ko": "한 줄 ",
+    "en": "Single row "
+  },
+  "RSIK.Status.DoubleRow": {
+    "ko": "두 줄 ",
+    "en": "Double row "
+  },
+  "RSIK.Status.YellowDouble": {
+    "ko": "황색 이중선",
+    "en": "Yellow Double"
+  },
+  "RSIK.Status.YellowZigzag": {
+    "ko": "황색 지그재그선",
+    "en": "Yellow Zigzag"
+  },
+  "RSIK.Status.YellowSolid": {
+    "ko": "황색 실선",
+    "en": "Yellow Solid"
+  },
+  "RSIK.Status.WhiteSolid": {
+    "ko": "흰색 실선",
+    "en": "White Solid"
+  },
+  "RSIK.Status.AllRoadStyles": {
+    "ko": "모든 도로 교체\n",
+    "en": "All road styles\n"
+  }
+}
