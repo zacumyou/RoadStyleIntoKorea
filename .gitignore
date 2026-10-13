@@ -6,3 +6,5 @@ local/
 *.user
 *.log
 *.zip
+
+**/Library/

@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configurations>Debug;Release</Configurations>
-    <Version>0.1.214</Version>
+    <Version>0.1.215</Version>
     <AssemblyName>RoadStyleIntoKorea</AssemblyName>
     <RootNamespace>RoadStyleIntoKorea</RootNamespace>
     <AssemblyTitle>ROAD STYLE INTO KOREA</AssemblyTitle>

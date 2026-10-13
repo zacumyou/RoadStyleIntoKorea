@@ -11,6 +11,7 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
  bool RoadSignReady(string name){var e=assets.Get(name);return e!=Entity.Null&&EntityManager.HasComponent<ObjectData>(e);}
  bool SignSpace(Entity road,Record record,Drive drive,float at,float half){
   if(at<half+.5f||at>drive.Arc.Length-half-.5f||!ArrowPolicy.SecondaryClear(at,half,drive.PrimaryPaint)||!ArrowPolicy.SecondaryClear(at,half,drive.WarningPaint))return false;
+  if(!AutomaticDriveMarking(road,drive)||!CrosswalkDecalClear(road,drive,at,half))return false;
   var pos=drive.Arc.At(at);var f=drive.Arc.Direction(at);
   var groups=new List<Record>{record};if(manualRecords.TryGetValue(road,out var placed))groups.Add(placed);
   foreach(var group in groups)foreach(var e in group.Paint){if(!Live(e)||!EntityManager.HasComponent<Game.Objects.Transform>(e))continue;var tr=EntityManager.GetComponentData<Game.Objects.Transform>(e);var delta=tr.m_Position-pos;if(math.abs(delta.y)<2&&math.abs(math.dot(delta,Geometry.Left(f)))<drive.Width*.5f&&math.abs(math.dot(delta,f))<half+DecalHalfLength(Prefab(e),2)+1)return false;}

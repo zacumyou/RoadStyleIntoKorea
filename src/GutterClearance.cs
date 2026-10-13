@@ -5,23 +5,32 @@ namespace RoadStyleIntoKorea {
  internal static class GutterClearance {
   // Evaluate only during placement/preview rebuild. A bounded inward search
   // uses the deformed raised-surface mask, never the painted edge-line position.
-  internal static List<Bezier4x3> Fit(Bezier4x3 source,SidewalkFootprint mask){
+  internal static List<Bezier4x3> Fit(Bezier4x3 source,SidewalkFootprint mask,bool followBoundary=false){
    var arc=new Geometry.Arc(source);int n=math.clamp((int)math.ceil(arc.Length/.5f),1,1024);
    var shifts=new float[n+1];bool moved=false;
    float radius=GutterPolicy.Width*.5f+GutterPolicy.PavingGap+.015f;
    for(int i=0;i<=n;i++){
     float t=arc.T(arc.Length*i/n);var p=Geometry.Position(source,t);var inward=-Geometry.Left(Geometry.Tangent(source,t));
-    if(!mask.Overlaps(p,radius))continue;
-    float hi=.05f;while(hi<=2&&mask.Overlaps(p+inward*hi,radius))hi+=.05f;
-    if(hi>2)return new List<Bezier4x3>(); // no safe nearby carriageway strip
-    float lo=math.max(0,hi-.05f);for(int j=0;j<7;j++){float mid=(lo+hi)*.5f;if(mask.Overlaps(p+inward*mid,radius))lo=mid;else hi=mid;}
+    float lo=0,hi=0;
+    if(mask.Overlaps(p,radius)){
+     hi=.05f;while(hi<=4&&mask.Overlaps(p+inward*hi,radius))hi+=.05f;
+     lo=math.max(0,hi-.05f);
+    }else{
+     if(!followBoundary)continue;
+     // Nominal piece bounds include the reserved curb band and do not follow
+     // bay tapers. Find the actual raised edge instead of staying in a cycle lane.
+     lo=-.05f;while(lo>=-4&&!mask.Overlaps(p+inward*lo,radius))lo-=.05f;
+     if(lo< -4)continue;
+     hi=lo+.05f;
+    }
+    for(int j=0;j<7;j++){float mid=(lo+hi)*.5f;if(mask.Overlaps(p+inward*mid,radius))lo=mid;else hi=mid;}
     shifts[i]=hi;moved=true;
    }
    if(!moved)return new List<Bezier4x3>{source};
    // Spread local offsets gently instead of making sharp steps at parking bays.
    float step=arc.Length/n*.25f;
-   for(int i=1;i<n;i++)shifts[i]=math.max(shifts[i],shifts[i-1]-step);
-   for(int i=n-1;i>0;i--)shifts[i]=math.max(shifts[i],shifts[i+1]-step);
+   for(int i=1;i<=n;i++)shifts[i]=math.max(shifts[i],shifts[i-1]-step);
+   for(int i=n-1;i>=0;i--)shifts[i]=math.max(shifts[i],shifts[i+1]-step);
    float3 At(float u){float x=u*n;int i=math.min((int)x,n-1);float t=arc.T(arc.Length*u);return Geometry.Position(source,t)-Geometry.Left(Geometry.Tangent(source,t))*math.lerp(shifts[i],shifts[i+1],x-i);}
    var result=new List<Bezier4x3>();
    void Split(float lo,float hi,int depth){

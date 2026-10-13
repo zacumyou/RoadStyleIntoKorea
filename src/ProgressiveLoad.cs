@@ -57,23 +57,23 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
   if(!LoadBudgetPolicy.VisibleAdmission(queue.Count+approachPending.Count+manualDirty.Count+curbDirty.Count,now-lastUserEdit))return false;
   var camera=World.GetExistingSystemManaged<Game.Rendering.CameraUpdateSystem>();if(camera?.activeCameraController==null)return false;
   // A city-sized dictionary must not be walked six times each frame as the camera moves.
-  // Rotate a bounded window; retain invisible entries for a later camera position.
+  // Rotate a bounded window. Visible roads come first, but offscreen work must also finish.
   if(loadScanFrame==UnityEngine.Time.frameCount)return false;
   loadScanFrame=UnityEngine.Time.frameCount;
   float3 focus=camera.activeCameraController.pivot;
-  var candidates=new List<(Entity Owner,float Distance)>();
+  var candidates=new List<(Entity Owner,float Distance,bool Visible)>();
   int scanned=math.min(64,loadCandidates.Count);
   for(int i=0;i<scanned;i++){
    var owner=loadCandidates.Dequeue();
    if(!deferredLoad.TryGetValue(owner,out int flags)){loadCandidateSet.Remove(owner);continue;}
    if(!Live(owner)){deferredLoad.Remove(owner);loadCandidateSet.Remove(owner);continue;}
    loadCandidates.Enqueue(owner);
-   if(!LoadEligible(owner)||pending.Contains(owner)||approachPending.Contains(owner)||approachStopsPending.Contains(owner)||manualDirty.Contains(owner)||curbDirty.Contains(owner)||(approachWork!=null&&approachOwner==owner))continue;
+   if(pending.Contains(owner)||approachPending.Contains(owner)||approachStopsPending.Contains(owner)||manualDirty.Contains(owner)||curbDirty.Contains(owner)||(approachWork!=null&&approachOwner==owner))continue;
    if(LoadBudgetPolicy.First(flags)==32&&GuideDependenciesPending(owner))continue;
-   float distance=LoadDistance(owner,focus);candidates.Add((owner,distance));
+   float distance=LoadDistance(owner,focus);candidates.Add((owner,distance,LoadEligible(owner)));
   }
   if(candidates.Count==0){if(scanned>=loadCandidates.Count&&!HasStyleLoadWork()&&!visibleLoadReported){visibleLoadReported=true;}if(scanned>=loadCandidates.Count)loadReadyAt=now+.1f;return false;}
-  candidates.Sort((a,b)=>a.Distance.CompareTo(b.Distance));
+  candidates.Sort((a,b)=>a.Visible==b.Visible?a.Distance.CompareTo(b.Distance):(a.Visible?-1:1));
   int limit=LoadBudgetPolicy.AdmissionCount(queue.Count+approachPending.Count+manualDirty.Count+curbDirty.Count,UnityEngine.Time.unscaledDeltaTime);
   bool admitted=false;
   for(int i=0;i<math.min(limit,candidates.Count);i++){

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Colossal.Serialization.Entities;
 using Game.Net;
@@ -32,7 +32,7 @@ namespace RoadStyleIntoKorea {
    CurbLimits(region,out float min,out float max);bool right=min+max>=0;
    float height=CurbHeight(region)-(region.Kind==1?NativeCurbGeometry.Rise:0);
    float band=GutterCurbBand(edge,region);
-   foreach(var s in new[]{shape.m_Start,shape.m_End})result.AddRange(GutterClearance.Fit(GutterPolicy.Curve(Between(s.m_Left,s.m_Right,.5f+min/region.RoadWidth,height),Between(s.m_Left,s.m_Right,.5f+max/region.RoadWidth,height),right,band),EdgeSidewalks(edge)));
+   foreach(var s in new[]{shape.m_Start,shape.m_End})result.AddRange(GutterClearance.Fit(GutterPolicy.Curve(Between(s.m_Left,s.m_Right,.5f+min/region.RoadWidth,height),Between(s.m_Left,s.m_Right,.5f+max/region.RoadWidth,height),right,band),EdgeSidewalks(edge),region.Kind==1));
    return result;
   }
   internal bool GutterTool(Entity edge,float3 hit,Game.Rendering.OverlayRenderSystem.Buffer draw,bool apply,bool reset){
@@ -125,7 +125,7 @@ namespace RoadStyleIntoKorea {
      var sync=new NodeSurfaceSync{Enabled=true,Source=right?data.m_SyncVertexOffsetsRight:data.m_SyncVertexOffsetsLeft,Target=right?shape.m_SyncVertexTargetsRight:shape.m_SyncVertexTargetsLeft};
      foreach(var curve in GutterPolicy.SyncedCurves(s.m_Left,s.m_Right,(min-origin)/width,(max-origin)/width,right,height,sync,GutterCurbBand(edge,region))){
       if(emitted.Exists(c=>Geometry.SameCurve(c,curve)||Geometry.SameCurve(c,Geometry.Reverse(curve))))continue;
-      emitted.Add(curve);foreach(var clear in GutterClearance.Fit(curve,EdgeSidewalks(node)))PaintGutter(node,record,style,clear);
+      emitted.Add(curve);foreach(var clear in GutterClearance.Fit(curve,EdgeSidewalks(node),region.Kind==1))PaintGutter(node,record,style,clear);
      }
     }
    }

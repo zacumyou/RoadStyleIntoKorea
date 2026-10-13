@@ -37,10 +37,10 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
   if(!S.Diamonds)return;
   var prefab=assets.Get(AssetCatalog.Diamond);float half=DecalHalfLength(prefab,2.8f);
   foreach(var drive in drives){
-   if(drive.Stop<0||HighwayRoad(owner)&&drive.Crossing==Entity.Null)continue;
+   if(!AutomaticDriveMarking(owner,drive)||drive.Stop<0||HighwayRoad(owner)&&drive.Crossing==Entity.Null)continue;
    for(int n=0;n<math.clamp(S.DiamondCount,1,3);n++){
     float at=drive.Stop-S.DiamondDistance-n*S.DiamondSpacing;
-    if(at<half||at>drive.Arc.Length-half||!ArrowPolicy.SecondaryClear(at,half,drive.PrimaryPaint))continue;
+    if(!CrosswalkDecalClear(owner,drive,at,half)||at<half||at>drive.Arc.Length-half||!ArrowPolicy.SecondaryClear(at,half,drive.PrimaryPaint))continue;
     PaintObject(owner,record,prefab,new Game.Objects.Transform(drive.Arc.At(at),quaternion.LookRotationSafe(drive.Arc.Direction(at),new float3(0,1,0))));
     drive.WarningPaint.Add(new ArrowPolicy.Occupied(at,half));
    }
