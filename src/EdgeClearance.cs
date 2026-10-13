@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Game.Net;
 using Game.Prefabs;
@@ -33,6 +33,7 @@ namespace RoadStyleIntoKorea
             }
             var limits=EdgeApproachLimits(owner,EdgePaintHalfWidth(style));
             var parts=new List<Bezier4x3>();
+            
             var approaches=new List<Bezier4x3>(EdgeApproachPolicy.Clip(curve,limits));
             if(approaches.Count==0){approaches.Add(curve);}
             foreach(var approach in approaches)

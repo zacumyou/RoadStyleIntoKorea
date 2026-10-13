@@ -1,4 +1,4 @@
-using Unity.Collections;
+﻿using Unity.Collections;
 using Unity.Entities;
 namespace RoadStyleIntoKorea {public partial class StyleSystem {
  void RemoveDrawnGroup(long group){

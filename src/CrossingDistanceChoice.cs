@@ -1,4 +1,4 @@
-using Colossal.Serialization.Entities;
+﻿using Colossal.Serialization.Entities;
 using Game.Net;
 using Unity.Entities;
 using Unity.Mathematics;

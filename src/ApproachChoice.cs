@@ -1,4 +1,4 @@
-using Colossal.Serialization.Entities;
+﻿using Colossal.Serialization.Entities;
 using Unity.Entities;
 namespace RoadStyleIntoKorea {
  public struct ApproachChoice:IComponentData,ISerializable {

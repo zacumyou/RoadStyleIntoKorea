@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Game.Common;
 using Unity.Entities;
 using Unity.Collections;
@@ -73,6 +73,3 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
  }}
  bool MissingPaint(List<Entity> paint){foreach(var e in paint)if(!EntityManager.Exists(e)||EntityManager.HasComponent<Deleted>(e))return true;return false;}
 }}
-
-
-

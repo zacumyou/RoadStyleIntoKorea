@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Colossal.Mathematics;
 using Game.Prefabs;
@@ -6,7 +6,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
-
 namespace RoadStyleIntoKorea {
  public partial class StyleSystem {
   readonly Dictionary<int,Bounds2> sideRoadMarkUV=new Dictionary<int,Bounds2>();

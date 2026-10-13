@@ -1,4 +1,4 @@
-using Game.Net;
+﻿using Game.Net;
 using Game.Prefabs;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -18,6 +18,15 @@ public partial class StyleSystem {
   if(EntityManager.HasBuffer<NetCompositionLane>(cp))foreach(var lane in EntityManager.GetBuffer<NetCompositionLane>(cp,true))
    if((lane.m_Flags&LaneFlags.Road)!=0&&(lane.m_Flags&(LaneFlags.Master|LaneFlags.Secondary|LaneFlags.Parking|LaneFlags.BicyclesOnly|LaneFlags.Virtual))==0)count++;
   return count;
+ }
+ int ApplyAllPavingStyle(Entity road){
+  float width=0;
+  if(EntityManager.HasComponent<Composition>(road)){
+   var cp=EntityManager.GetComponentData<Composition>(road).m_Edge;
+   if(EntityManager.HasBuffer<NetCompositionLane>(cp))foreach(var lane in EntityManager.GetBuffer<NetCompositionLane>(cp,true))
+    if((lane.m_Flags&LaneFlags.Road)!=0&&(lane.m_Flags&(LaneFlags.Master|LaneFlags.Secondary|LaneFlags.Parking|LaneFlags.BicyclesOnly|LaneFlags.Virtual))==0&&EntityManager.HasComponent<NetLaneData>(lane.m_Lane))width+=EntityManager.GetComponentData<NetLaneData>(lane.m_Lane).m_Width;
+  }
+  return ApplyAllPolicy.Paving(RoadLaneCount(road),width);
  }
  bool IsNarrowRoad(Entity road)=>NarrowPolicy.Narrow(RoadLaneCount(road));
  float RoadStopGap(Entity road)=>NarrowPolicy.StopGap(RoadLaneCount(road),S.StopGap);

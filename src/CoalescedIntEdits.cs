@@ -1,4 +1,4 @@
-using System;using System.Collections.Generic;
+﻿using System;using System.Collections.Generic;
 namespace RoadStyleIntoKorea {
  internal sealed class CoalescedIntEdits<T> {
   struct Edit {internal int Value,Clicks;internal float Due;}

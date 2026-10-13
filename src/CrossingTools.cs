@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Colossal.Serialization.Entities;
 using Game.Common;
@@ -7,7 +7,6 @@ using Game.Rendering;
 using Game.Tools;
 using Unity.Entities;
 using Unity.Mathematics;
-
 namespace RoadStyleIntoKorea
 {
     public partial class StyleSystem
@@ -197,7 +196,7 @@ namespace RoadStyleIntoKorea
             // expensive preview reconstruction in the same frame as road rebuilds.
             if(changed&&queue.Count==0)
             {
-                
+                var timer=System.Diagnostics.Stopwatch.StartNew();
                 previewEdge=edge;previewRevision=toolRevision;previewCrosswalk=crosswalk;previewStyle=style;
                 previewInset=S.EdgeLaneGap;previewClearance=S.PaintClearance;previewStopGap=S.StopGap;previewCrossClearance=S.CrosswalkClearance;
                 previewCrossSize=S.CrosswalkBrush;previewAuto=S.AutoCrosswalkSize;previewSync=S.SyncTraffic;
@@ -257,7 +256,7 @@ namespace RoadStyleIntoKorea
             var choice=EntityManager.HasComponent<CrosswalkChoice>(edge)?EntityManager.GetComponentData<CrosswalkChoice>(edge):default;
             if(reset){if((atStart?choice.Start:choice.End)==0)return;ToolResetHandled=true;QueueNativeCrossing(edge,atStart,true);}
             int value=reset?0:(int)S.CrosswalkBrush;
-            if(atStart)choice.ForceStartArrows=!reset&&forceArrows;else choice.ForceEndArrows=!reset&&forceArrows;
+            if(atStart)choice.ForceStartArrows=!reset;else choice.ForceEndArrows=!reset;
             // Retry the same choice after native lane regeneration or a failed replacement.
             if(atStart)choice.Start=reset?0:(int)S.CrosswalkBrush;else choice.End=reset?0:(int)S.CrosswalkBrush;
             if(!EntityManager.HasComponent<CrosswalkChoice>(edge))EntityManager.AddComponent<CrosswalkChoice>(edge);
@@ -268,10 +267,9 @@ namespace RoadStyleIntoKorea
             Status="횡단보도 변경 대기 / Crosswalk change queued";
         }
         internal void CycleCrosswalkBrush(){S.CrosswalkBrush=(CrosswalkSize)CrosswalkStylePolicy.Next((int)S.CrosswalkBrush);Status="횡단보도 / Crosswalk: "+CrosswalkStylePolicy.Label((int)S.CrosswalkBrush,true);}
-
         void PaintDivider(Entity owner,Record record,Entity prefab,Bezier4x3 curve)
         {
-            foreach(var piece in BoundaryPaint(owner,curve,.35f))PaintLane(owner,record,prefab,piece);
+            foreach(var safe in DividerBeforeStops(owner,curve))foreach(var piece in BoundaryPaint(owner,safe,.35f))PaintLane(owner,record,prefab,piece);
         }
         void ClipNativeDividers(Entity owner,Record record,List<Entity> lanes)
         {
@@ -289,7 +287,6 @@ namespace RoadStyleIntoKorea
                 Hide(lane,record);
             }
         }
-
         // Exclusion is evaluated against the full painted footprint, including grade separation.
         bool NearCrossing(float3 point,List<Geometry.Arc> curves,List<float> widths,float clearance)
         {
@@ -324,5 +321,3 @@ namespace RoadStyleIntoKorea
         }
     }
 }
-
-

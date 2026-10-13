@@ -747,10 +747,6 @@
     "ko": "횡단보도 변경 대기",
     "en": "Crosswalk change queued"
   },
-  "RSIK.Status.CaptureAlreadyRunning": {
-    "ko": "진단 기록 중입니다",
-    "en": "Capture already running"
-  },
   "RSIK.Status.PavingChangeQueued": {
     "ko": "보도블록 변경 대기",
     "en": "Paving change queued"
@@ -771,17 +767,9 @@
     "ko": " — 도로 구간: ",
     "en": " — road segments: "
   },
-  "RSIK.Status.CaptureStarted": {
-    "ko": "도로 진단 기록 시작: ",
-    "en": "Capture started: "
-  },
   "RSIK.Status.EdgeChangeQueued": {
     "ko": "가장자리 변경 대기",
     "en": "Edge change queued"
-  },
-  "RSIK.Status.CaptureTruncated": {
-    "ko": "진단 용량 제한: ",
-    "en": "Capture truncated: "
   },
   "RSIK.Status.GuidesApplied": {
     "ko": "유도선 적용 완료: ",
@@ -790,10 +778,6 @@
   "RSIK.Status.OwnersRemaining": {
     "ko": "진단 기록 중: ",
     "en": "Owners remaining: "
-  },
-  "RSIK.Status.CaptureFailed": {
-    "ko": "진단 저장 실패: ",
-    "en": "Capture failed: "
   },
   "RSIK.Status.Missing": {
     "ko": "보도블록 차선 에셋 누락: ",
@@ -810,14 +794,6 @@
   "RSIK.Status.UTurnLength": {
     "ko": "유턴 점선 길이: ",
     "en": "U-turn length: "
-  },
-  "RSIK.Status.CaptureSaved": {
-    "ko": "진단 저장 완료: ",
-    "en": "Capture saved: "
-  },
-  "RSIK.Status.CaptureFailed2": {
-    "ko": "진단 실패: ",
-    "en": "Capture failed: "
   },
   "RSIK.Status.GutterRemoved": {
     "ko": "배수로 제거",
@@ -962,5 +938,9 @@
   "RSIK.Status.AllRoadStyles": {
     "ko": "모든 도로 교체\n",
     "en": "All road styles\n"
+  },
+  "RSIK.Status.FinishingJunctions": {
+    "ko": "교차로 마무리",
+    "en": "Finishing junctions"
   }
 }

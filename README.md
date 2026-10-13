@@ -16,11 +16,12 @@ A Cities: Skylines II mod for Korean-style lane markings, crosswalks, road decal
 - Automatic or manually placed arrows, stop lines, speed markings and Korean road text.
 - Red pavement, sidewalk paving, tactile paving, curbs, gutters and cycle strips.
 - Section-based editing, searchable tools and configurable panel layout.
+- Faster Apply All with separate ordinary-road and highway scopes, road-size defaults and junction marking cleanup.
 - Native Korean/English UI and optional I18NEveryWhere community translations.
 
 ## Build
 
-This source snapshot corresponds to 0.1.215. The asset pack is maintained separately.
+This source snapshot corresponds to 0.1.225. The asset pack is maintained separately.
 
 Requires Windows, the official Cities: Skylines II modding toolchain (with its CSII_* environment variables), .NET SDK, .NET Framework 4.8 targeting support, and Node.js 18+.
 

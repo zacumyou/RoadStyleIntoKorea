@@ -1,4 +1,4 @@
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.Mathematics;
 namespace RoadStyleIntoKorea {public partial class StyleSystem {
  bool SnapRedEndpoint(float3 hit,out LinePoint point,out Entity owner){

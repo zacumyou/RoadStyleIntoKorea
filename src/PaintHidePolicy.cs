@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 namespace RoadStyleIntoKorea {
  internal sealed class PaintHidePolicy<TItem,TOwner> {
   readonly Dictionary<TItem,HashSet<TOwner>> owners=new Dictionary<TItem,HashSet<TOwner>>();

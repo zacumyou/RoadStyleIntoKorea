@@ -1,4 +1,4 @@
-using System.Collections.Generic;using Unity.Mathematics;
+﻿using System.Collections.Generic;using Unity.Mathematics;
 namespace RoadStyleIntoKorea { internal static class CornerUVPolicy {
 internal static bool Correct(List<float3> points,List<int> faces,List<float2> uv,float3 along,float3 across){
 bool distorted=false;

@@ -1,4 +1,4 @@
-using Game.Net;
+﻿using Game.Net;
 namespace RoadStyleIntoKorea {
 internal static class RoadSupportPolicy {
  // Highway is a traffic-rule flag, not an exclusion from cosmetic road tools.

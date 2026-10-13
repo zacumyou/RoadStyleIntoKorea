@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 namespace RoadStyleIntoKorea {
  internal static class RoadSignPolicy {
   // Persisted IDs: append entries; never reorder these names.

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Game.Net;
 using Unity.Entities;
@@ -99,8 +99,8 @@ namespace RoadStyleIntoKorea {
    }
    crossingPlans.Clear();crossingSizes.Clear();crossingTrafficPlans.Clear();InvalidateToolPreview();
   }}
-  void ApplyBulkStructures(Entity road,bool defaults){
-   bool highway=HighwayRoad(road),curb=!highway||S.HighwayCurbs,gutter=!highway||S.HighwayGutters;
+  void ApplyBulkStructures(Entity road,bool defaults,bool includeGutters=true){
+   bool highway=HighwayRoad(road),curb=!highway||S.HighwayCurbs,gutter=includeGutters&&(!highway||S.HighwayGutters);
    if(!curb&&!gutter)return;
    int style=defaults?1:GutterBrush;
    gutter&=assets.Get(GutterAsset(style))!=Entity.Null;
@@ -116,8 +116,3 @@ namespace RoadStyleIntoKorea {
   }
  }
 }
-
-
-
-
-

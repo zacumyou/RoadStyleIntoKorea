@@ -1,10 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Game.Net;
 using Game.Prefabs;
 using Unity.Entities;
 using Unity.Mathematics;
 using ObjectTransform=Game.Objects.Transform;
-
 namespace RoadStyleIntoKorea
 {
     public partial class StyleSystem
@@ -18,6 +17,20 @@ namespace RoadStyleIntoKorea
                 if(math.isfinite(extent)&&extent>.1f)return extent;
             }
             return fallback;
+        }
+        bool UTurnDecalClear(Entity owner,string symbol,Entity prefab,ObjectTransform transform)
+        {
+            if(symbol.IndexOf("UTurn",System.StringComparison.Ordinal)<0)return true;
+            float half=DecalHalfLength(prefab,3.8f);var forward=math.rotate(transform.m_Rotation,new float3(0,0,1));
+            float halfWidth=1.5f;if(EntityManager.HasComponent<ObjectGeometryData>(prefab)){var b=EntityManager.GetComponentData<ObjectGeometryData>(prefab).m_Bounds;halfWidth=math.max(math.abs(b.min.x),math.abs(b.max.x));}
+            foreach(var crossing in NearbyCrossings(owner)){
+                var arc=new Geometry.Arc(CrosswalkCurve(crossing));
+                for(int i=0;i<=8;i++){
+                    var point=transform.m_Position+forward*(-half+2*half*i/8);var near=Geometry.Position(arc.Curve,arc.Nearest(point));
+                    if(math.abs(point.y-near.y)<2&&math.distance(point.xz,near.xz)<CrossingWidth(crossing)*.5f+AutomaticUTurnPolicy.CrosswalkGap+halfWidth+half/8){return false;}
+                }
+            }
+            return true;
         }
         void EnsureApproachArrows(Entity owner,Record record,List<Drive> drives)
         {
@@ -35,7 +48,7 @@ namespace RoadStyleIntoKorea
                     bool regular=item.Symbols.Exists(s=>s!="UTurn");
                     if(!regular&&symbols.Exists(s=>s!="UTurn"))continue;
                     bool planned=PlanArrow(item,candidates,out float at,out _);
-                    if(!planned)at=item.Along;
+                    if(!planned)continue;
                     if(at<stop&&stop-at<=math.max(12,RoadArrowGap(drive.Owner)+1)){
                         present=true;
                         if(planned)for(int i=0;i<item.Symbols.Count;i++)drive.PrimaryPaint.Add(new ArrowPolicy.Occupied(ArrowStackAt(at,item.Symbols,i),DecalHalfLength(assets.Get(AssetCatalog.Arrow(item.Symbols[i])),3.8f)));
@@ -56,7 +69,9 @@ namespace RoadStyleIntoKorea
                 for(int i=0;i<count;i++)
                 {
                     float at=ArrowStackAt(first,symbols,i);var prefab=assets.Get(AssetCatalog.Arrow(symbols[i]));
-                    PaintObject(owner,record,prefab,new ObjectTransform(drive.Arc.At(at),quaternion.LookRotationSafe(drive.Arc.Direction(at),new float3(0,1,0))));
+                    var transform=new ObjectTransform(drive.Arc.At(at),quaternion.LookRotationSafe(drive.Arc.Direction(at),new float3(0,1,0)));
+                    if(!UTurnDecalClear(owner,symbols[i],prefab,transform))continue;
+                    PaintObject(owner,record,prefab,transform);
                     drive.PrimaryPaint.Add(new ArrowPolicy.Occupied(at,DecalHalfLength(prefab,3.8f)));
                 }
                 drive.PrimaryReady=true;
@@ -111,7 +126,7 @@ namespace RoadStyleIntoKorea
                     for(int i=0;i<=8;i++)
                     {
                         var p=drive.Arc.At(distance-half+2*half*i/8);var q=cross.At(cross.Distance(cross.Nearest(p)));
-                        if(math.abs(p.y-q.y)<2&&math.distance(p.xz,q.xz)<CrossingWidth(crossing)*.5f+ArrowPolicy.MarkingGap){clear=false;break;}
+                        if(math.abs(p.y-q.y)<2&&math.distance(p.xz,q.xz)<CrossingWidth(crossing)*.5f+AutomaticUTurnPolicy.CrosswalkGap+drive.Width*.5f+half/8){clear=false;break;}
                     }
                     if(!clear)break;
                 }

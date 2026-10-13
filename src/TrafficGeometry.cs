@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Colossal.Mathematics;
 using Game;
@@ -8,7 +8,6 @@ using Game.Pathfind;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-
 namespace RoadStyleIntoKorea
 {
     public partial class StyleSystem
@@ -190,6 +189,3 @@ count++;
     public partial class TrafficGeometrySystem:GameSystemBase
     {protected override void OnUpdate(){var s=World.GetExistingSystemManaged<StyleSystem>();s?.ApplyTrafficGeometry();s?.ApplyWalkHeights();}}
 }
-
-
-

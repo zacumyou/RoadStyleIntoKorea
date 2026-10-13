@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -24,24 +24,18 @@ namespace RoadStyleIntoKorea {
 ["중앙선 변경 대기 / Center line change queued"]="RSIK.Status.CenterLineChangeQueued",
 ["중앙선 대상이 없습니다 / No center line target"]="RSIK.Status.NoCenterLineTarget",
 ["횡단보도 변경 대기 / Crosswalk change queued"]="RSIK.Status.CrosswalkChangeQueued",
-["진단 기록 중입니다 / Capture already running"]="RSIK.Status.CaptureAlreadyRunning",
 ["보도블록 변경 대기 / Paving change queued"]="RSIK.Status.PavingChangeQueued",
 ["유턴 점선 변경 대기 / U-turn zone queued"]="RSIK.Status.UTurnZoneQueued",
 ["도시를 먼저 불러오세요 / Load a city first"]="RSIK.Status.LoadACityFirst",
 ["원래 표지 복원 완료 / Originals restored"]="RSIK.Status.OriginalsRestored",
 [" — 도로 segment / road segments: "]="RSIK.Status.RoadSegments",
-["도로 진단 기록 시작 / Capture started: "]="RSIK.Status.CaptureStarted",
 ["가장자리 변경 대기 / Edge change queued"]="RSIK.Status.EdgeChangeQueued",
-["진단 용량 제한 / Capture truncated: "]="RSIK.Status.CaptureTruncated",
 ["유도선 적용 완료 / Guides applied: "]="RSIK.Status.GuidesApplied",
 ["진단 기록 중 / Owners remaining: "]="RSIK.Status.OwnersRemaining",
-["진단 저장 실패 / Capture failed: "]="RSIK.Status.CaptureFailed",
 ["보도블록 NetLane 누락 / Missing: "]="RSIK.Status.Missing",
 ["개별 표시 복원 / Marking restored"]="RSIK.Status.MarkingRestored",
 ["하나씩 표시 제거 / Marking removed"]="RSIK.Status.MarkingRemoved",
 ["유턴 점선 길이 / U-turn length: "]="RSIK.Status.UTurnLength",
-["진단 저장 완료 / Capture saved: "]="RSIK.Status.CaptureSaved",
-["진단 실패 / Capture failed: "]="RSIK.Status.CaptureFailed2",
 ["배수로 제거 / Gutter removed"]="RSIK.Status.GutterRemoved",
 ["배수로 적용 / Gutter applied"]="RSIK.Status.GutterApplied",
 ["가장자리 브러시 / Edge brush: "]="RSIK.Status.EdgeBrush",
@@ -54,6 +48,7 @@ namespace RoadStyleIntoKorea {
 ["복원 중 / Restoring: "]="RSIK.Status.Restoring",
 ["에셋 누락 / Missing: "]="RSIK.Status.Missing4",
 [", 제외 / skipped: "]="RSIK.Status.Skipped",
+["교차로 마무리 / Finishing junctions"]="RSIK.Status.FinishingJunctions",
 ["교체 중 / Replacing"]="RSIK.Status.Replacing",
 [", 실패 / failed: "]="RSIK.Status.Failed",
 ["취소됨 / Cancelled"]="RSIK.Status.Cancelled",

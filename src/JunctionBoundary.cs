@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Game.Net;
 using Unity.Entities;
@@ -45,6 +45,9 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
    foreach(var lane in candidates){
     if(!Live(lane)||hiddenOwners.Contains(lane)||EntityManager.HasComponent<Game.Tools.Hidden>(lane)||!EntityManager.HasComponent<Curve>(lane)||EntityManager.HasComponent<CarLane>(lane)||EntityManager.HasComponent<PedestrianLane>(lane))continue;
     string name=assets.Name(Prefab(lane));if(!MarkingPolicy.IsNativeJunctionMark(name))continue;
+    // Stop bars have their own crosswalk-safe placement and replacement lifecycle.
+    // Junction cleanup must not erase them, including oblique bars.
+    if(name.IndexOf("Stop Line",System.StringComparison.OrdinalIgnoreCase)>=0)continue;
     if(!EntityManager.HasComponent<Game.Prefabs.NetLaneGeometryData>(Prefab(lane)))continue;
     var source=CurveOf(lane);var pieces=new List<Bezier4x3>();
     // Without crossings retain the original node-only divider cleanup scope.
@@ -54,6 +57,9 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
      if(other!=node&&EntityManager.HasBuffer<GuideChoice>(other)&&EntityManager.GetBuffer<GuideChoice>(other,true).Length>0){
       var both=new List<Bezier4x3>();foreach(var piece in pieces)both.AddRange(EdgeApproachPolicy.OutsideJunction(piece,CrossingBoundaries(other,.35f)));pieces=both;
      }
+    }
+    if(MarkingPolicy.IsGuideDivider(name))foreach(var road in owners)if(IsRoad(road)){
+     var clipped=new List<Bezier4x3>();foreach(var piece in pieces)clipped.AddRange(DividerBeforeStops(road,piece));pieces=clipped;
     }
     float kept=0;foreach(var piece in pieces)kept+=new Geometry.Arc(piece).Length;
     if(new Geometry.Arc(source).Length-kept<.025f)continue;

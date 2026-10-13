@@ -1,4 +1,4 @@
-using Unity.Mathematics;using Colossal.Mathematics;
+﻿using Unity.Mathematics;using Colossal.Mathematics;
 namespace RoadStyleIntoKorea
 {
     // Matches NetCompositionMeshLitShader vertex program, source/target sync knots.

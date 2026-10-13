@@ -1,10 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Game.Common;
 using Game.Net;
 using Unity.Entities;
 using Unity.Mathematics;
-
 namespace RoadStyleIntoKorea
 {
     public partial class StyleSystem
@@ -88,7 +87,6 @@ namespace RoadStyleIntoKorea
             }
             return original;
         }
-
         void AlignStopLines(Entity owner,Record record,List<Drive> drives,bool draw=true)
         {
             if(draw&&(EntityManager.HasBuffer<ManualDecalChoice>(owner)||HasColorGuide(owner)))manualDirty.Add(owner);
@@ -137,8 +135,12 @@ namespace RoadStyleIntoKorea
                     }
                     if(!fits)
                     {
-                        // Never fall back to a native bar that can violate the tip limit.
-                        if(limited)foreach(var d in group){d.Stop=-1;d.StopSuppressed=true;}
+                        foreach(var d in group)if(S.StopLines&&draw){
+                            var p=d.Arc.At(d.Stop);var f=d.Arc.Direction(d.Stop);var sideVector=Geometry.Left(f)*d.Width*.5f;
+                            int before=record.Paint.Count;
+                            foreach(var bar in StopCenterPolicy.ClearBar(Geometry.Line(p-sideVector,p+sideVector),StopBarCenters(owner,lanes)))PaintLane(owner,record,assets.Get("NA Car Stop Line"),bar);
+                            d.StopPainted=record.Paint.Count>before;
+                        }
                         continue;
                     }
                     float min=float.MaxValue,max=float.MinValue;float3 right=default,leftEnd=default;
@@ -150,9 +152,23 @@ namespace RoadStyleIntoKorea
                         if(lateral-half<min){min=lateral-half;right=origin+across*min;right.y=p.y;}
                         if(lateral+half>max){max=lateral+half;leftEnd=origin+across*max;leftEnd.y=p.y;}
                     }
-                    if(S.StopLines&&draw){foreach(var bar in StopCenterPolicy.ClearBar(Geometry.Line(right,leftEnd),StopBarCenters(owner,lanes)))PaintLane(owner,record,assets.Get("NA Car Stop Line"),bar);foreach(var d in group)d.StopPainted=true;}
+                    if(S.StopLines&&draw){int before=record.Paint.Count;foreach(var bar in StopCenterPolicy.ClearBar(Geometry.Line(right,leftEnd),StopBarCenters(owner,lanes)))PaintLane(owner,record,assets.Get("NA Car Stop Line"),bar);foreach(var d in group)d.StopPainted=record.Paint.Count>before;}
                 }
             }
+        }
+        IEnumerable<Bezier4x3> DividerBeforeStops(Entity road,Bezier4x3 curve)
+        {
+            var pieces=new List<Bezier4x3>{curve};if(!IsRoad(road))return pieces;
+            var bars=new HashSet<Entity>();
+            if(records.TryGetValue(road,out var main))foreach(var e in main.Paint)bars.Add(e);
+            if(approachStopRecords.TryGetValue(road,out var stops))foreach(var e in stops.Paint)bars.Add(e);
+            var center=new Geometry.Arc(CurveOf(road));
+            foreach(var e in bars){
+                if(!Live(e)||!EntityManager.HasComponent<Curve>(e)||assets.Name(Prefab(e)).IndexOf("Stop Line",System.StringComparison.OrdinalIgnoreCase)<0)continue;
+                var bar=CurveOf(e);float t=center.Nearest(Geometry.Position(bar,.5f));var forward=Geometry.Tangent(center.Curve,t)*(t<.5f?-1:1);
+                var clipped=new List<Bezier4x3>();foreach(var piece in pieces)clipped.AddRange(StopCenterPolicy.BeforeBar(piece,bar,forward));pieces=clipped;
+            }
+            return pieces;
         }
         internal void CycleEdgeBrush()
         {

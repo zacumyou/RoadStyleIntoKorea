@@ -1,16 +1,14 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal;
 using Colossal.IO.AssetDatabase;
 using Game.Modding;
 using Game.Settings;
-
 namespace RoadStyleIntoKorea
 {
     public enum PavingStyle { Brick01=1, Brick02=2, Brick03=3, Brick04=4, Brick05=5 }
     public enum EdgeStyle { Original, None, WhiteSolid, YellowSolid, YellowDouble, YellowZigzag }
     public enum CrosswalkSize { Two=2, Three=3, Four=4, SingleThree=13 }
     public enum ToolSide { ClickedSide, BothSides }
-
     [FileLocation("RoadStyleIntoKorea")]
     [SettingsUITabOrder("Apply", "Crosswalk", "Edges", "Directions", "Surface", "Performance")]
     [SettingsUIGroupOrder("Actions", "Crossings", "Approach", "EdgeLines", "Arrows", "Guides", "Wear", "Budget")]
@@ -23,6 +21,11 @@ namespace RoadStyleIntoKorea
         public bool Enabled { get => true; set { } }
         [SettingsUISection("Apply", "Actions"), SettingsUIButton, SettingsUIConfirmation("RSIK.ReplaceAll.Confirm", "주의하세요!\n이것은 실험 기능이며, 세이브 파일이 망가지거나 심각한 성능 저하를 불러일으킬 수 있습니다"), SettingsUIDisableByCondition(typeof(Settings), nameof(CannotApply))]
         public bool ReplaceAll { set { if (value) Mod.Runtime?.RequestApply(); } }
+        [SettingsUISection("Apply", "Actions"), SettingsUIButton, SettingsUIConfirmation("RSIK.ReplaceAll.Confirm", "Apply road styles?"), SettingsUIDisableByCondition(typeof(Settings), nameof(CannotApply))]
+        public bool ReplaceOrdinary { set { if(value)Mod.Runtime?.RequestApply(1); } }
+        [SettingsUISection("Apply", "Actions"), SettingsUIButton, SettingsUIConfirmation("RSIK.ReplaceAll.Confirm", "Apply road styles?"), SettingsUIDisableByCondition(typeof(Settings), nameof(CannotApply))]
+        public bool ReplaceHighways { set { if(value)Mod.Runtime?.RequestApply(2); } }
+
         [SettingsUISection("Apply", "Actions"), SettingsUIButton]
         public bool RestoreAll { set { if (value) Mod.Runtime?.RequestRestore(); } }
         [SettingsUISection("Apply", "Actions"), SettingsUIButton]
@@ -41,8 +44,6 @@ namespace RoadStyleIntoKorea
         [SettingsUISection("Apply", "Actions")] public PavingStyle BulkPaving { get; set; }=PavingStyle.Brick01;
         [SettingsUISection("Apply", "Actions"),SettingsUIButton,SettingsUIDisableByCondition(typeof(Settings),nameof(CannotApply))]
         public bool ReplaceCategoryAll {set {if(value)Mod.Runtime?.RequestBulk();}}
-
-
         [SettingsUISection("Crosswalk", "Crossings")] public bool SyncTraffic { get; set; } = true;
         [SettingsUISection("Crosswalk", "Crossings")] public bool Crosswalks { get; set; } = true;
         [SettingsUISection("Crosswalk", "Crossings")] public bool AutoCrosswalkSize { get; set; } = true;
@@ -74,7 +75,6 @@ namespace RoadStyleIntoKorea
         public int DiamondCount { get; set; } = 1;
         [SettingsUISection("Crosswalk", "Approach"), SettingsUISlider(min=5,max=50,step=1,unit="integer")]
         public int DiamondSpacing { get; set; } = 15;
-
         [SettingsUISection("Edges", "EdgeLines")] public bool EdgeLines { get; set; } = true;
         [SettingsUISection("Edges", "EdgeLines")] public EdgeStyle DefaultEdge { get; set; } = EdgeStyle.Original;
         [SettingsUISection("Edges", "EdgeLines")] public CenterStyle DefaultCenter { get; set; } = CenterStyle.YellowDouble;
@@ -144,9 +144,11 @@ namespace RoadStyleIntoKorea
             string[] groups={"Actions","적용 및 복원","Apply and restore","Crossings","횡단보도와 정지선","Crosswalks and stop lines","Approach","접근부 표지","Approach markings","EdgeLines","도로 한쪽씩 선택","Choose each side","Arrows","진행 방향","Direction arrows","Guides","좌회전 유도선","Left-turn guides","Budget","프레임별 처리량","Work per frame"};
             for(int i=0;i<groups.Length;i+=3)d[s.GetOptionGroupLocaleID(groups[i])]=groups[i+(ko?1:2)];
             Add(d,"Enabled","이번 도시에서 사용","Enable for this city session","도시를 불러올 때마다 꺼집니다. 켠 뒤 모두 교체를 누르세요. 끄면 원래 표지로 복원합니다.","Off after each city load. Enable, then press Replace all. Disable to restore original markings.");
-            Add(d,"ReplaceAll","모든 도로 스타일 교체","Replace all road styles","실험 기능. 현재 옵션의 기본 중앙선·가장자리·횡단보도·보도 스타일과 접근부 설정을 모든 도로에 적용합니다. 개별 선택과 수동 접근부·유도선은 기본 설정으로 교체됩니다. 경계석·배수로의 개별 선택은 원래 상태로 복원합니다. 카메라 중심에 가까운 도로부터 처리합니다.","Experimental. Applies the configured default center, edge, crossing, paving and approach styles to every road, replacing individual selections, manual approach decals and guides. Resets individual curb/gutter overrides to native. Starts nearest the camera center.");
+            Add(d,"ReplaceOrdinary","일반도로만 전체 적용","Apply to ordinary roads","고속도로 속성이 없는 도로에만 전체 적용합니다.","Applies all styles only to roads without the highway flag.");
+            Add(d,"ReplaceHighways","고속도로만 전체 적용","Apply to highways","고속도로 속성이 있는 도로에만 전체 적용합니다. 고속도로 포장 등 별도 설정은 유지합니다.","Applies all styles only to roads with the highway flag. Highway paving and other highway options are respected.");
+            Add(d,"ReplaceAll","전체 적용","Apply to all roads","실험 기능. 현재 옵션의 기본 중앙선·가장자리·횡단보도·보도 스타일과 접근부 설정을 모든 도로에 적용합니다. 개별 선택과 수동 접근부·유도선은 기본 설정으로 교체됩니다. 경계석·배수로의 개별 선택은 원래 상태로 복원합니다. 카메라 중심에 가까운 도로부터 처리합니다.","Experimental. Applies the configured default center, edge, crossing, paving and approach styles to every road, replacing individual selections, manual approach decals and guides. Resets individual curb/gutter overrides to native. Starts nearest the camera center.");
             d["Options.WARNING[RSIK.ReplaceAll.Confirm]"]=ko?"주의하세요!\n이것은 실험 기능이며, 세이브 파일이 망가지거나 심각한 성능 저하를 불러일으킬 수 있습니다":"Caution!\nThis is an experimental feature and may corrupt your save file or cause severe performance degradation.";
-            Add(d,"AllRoadProgress","모든 도로 교체 진행","All road replacement progress","도로 구간 기준 완료·처리 중·실패·제외 수입니다. 접속 노드와 접근부 처리가 끝나야 해당 구간을 완료로 셉니다.","Completed, active, failed and skipped road segments. A segment completes after its node and approach work finishes.");
+            Add(d,"AllRoadProgress","모든 도로 교체 진행","All road replacement progress","도로 구간 기준 완료·처리 중·실패·제외 수입니다. 도로 구간 처리 후 교차로를 모아서 마무리합니다.","Completed, active, failed and skipped road segments. Junction work is grouped into a final phase after road segments.");
             Add(d,"DefaultCenter","기본 중앙선 스타일","Default center line style","모든 도로 스타일 교체에 사용할 중앙선입니다.","Center style used by Replace all road styles.");
             Add(d,"DefaultPaving","기본 보도블록 스타일","Default paving style","모든 도로 스타일 교체에 사용할 보도블록입니다.","Paving style used by Replace all road styles.");
             Add(d,"HighwayPaving","고속도로에도 보도블록 일괄 추가","Include highway paving","모두 추가·새 도로 자동 적용·전체 교체에서 고속도로 보도블록을 포함합니다. 수동 배치는 제한하지 않습니다.","Include highway paving in bulk and automatic styles. Manual placement remains available.");
@@ -224,4 +226,3 @@ namespace RoadStyleIntoKorea
         public void Unload() { }
     }
 }
-

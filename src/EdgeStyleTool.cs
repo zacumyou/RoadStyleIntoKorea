@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Game;
 using Game.Common;
 using Game.Prefabs;
@@ -8,7 +8,6 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
-
 namespace RoadStyleIntoKorea
 {
     public class EdgeToolPrefab:PrefabBase { public bool Crosswalk; public bool CrossingDistance; public bool DrawLine; public bool ColorGuide; public bool RedPaving; public bool Paving; public bool Curb; public bool Gutter; public bool SideRoad; public bool RemovePaint; public bool Center; public bool UTurn; public bool Guide; public bool GuideAuto; public bool Approach; public bool AddAll; public bool RemoveAll; public int ManualDecal; public int Divider; }
@@ -259,29 +258,3 @@ namespace RoadStyleIntoKorea
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

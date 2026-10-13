@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Game.Common;
 using Game.Net;
@@ -10,6 +10,7 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
  bool loadRestorePending;
  float nextLoadAssetCheck;
  void CancelLoadRestore(){loadRestorePending=false;CancelProgressiveLoad();}
+
  void RestoreBeforeWorldReady(){
   loadRestorePending=true;nextLoadAssetCheck=0;
  }
@@ -28,7 +29,6 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
  }
  void BeginScheduledRestore(){{
   if(!loadRestorePending||restoreRequested)return;
-
   try{
    float now=UnityEngine.Time.realtimeSinceStartup;if(now<nextLoadAssetCheck)return;
    if(!CachedAssetsReady()){nextLoadAssetCheck=now+.25f;return;}
@@ -55,6 +55,3 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
   return false;
  }
 }}
-
-
-

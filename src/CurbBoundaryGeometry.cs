@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Mathematics;
 namespace RoadStyleIntoKorea {
  internal static class CurbBoundaryGeometry {

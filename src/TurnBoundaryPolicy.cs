@@ -1,4 +1,4 @@
-using System.Collections.Generic;using Colossal.Mathematics;using Unity.Mathematics;
+﻿using System.Collections.Generic;using Colossal.Mathematics;using Unity.Mathematics;
 namespace RoadStyleIntoKorea { internal static class TurnBoundaryPolicy {
 // Offset derivative preserves tangent and curvature across section boundaries.
 static void Sample(Bezier4x3 c,float t,float offset,out float3 point,out float3 derivative){

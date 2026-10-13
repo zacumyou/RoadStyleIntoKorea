@@ -1,4 +1,4 @@
-using System;using System.Collections.Generic;using Game.Net;using Game.Tools;using Unity.Entities;using Unity.Mathematics;
+﻿using System;using System.Collections.Generic;using Game.Net;using Game.Tools;using Unity.Entities;using Unity.Mathematics;
 namespace RoadStyleIntoKorea {public partial class StyleSystem {
 readonly HashSet<Entity> crossOnlyPending=new HashSet<Entity>();
 void EnqueueCrossOnly(Entity e,bool updateGuides=true){if(EntityManager.HasBuffer<DrawnLineChoice>(e))manualDirty.Add(e);if(SafeNode(e))foreach(var link in EntityManager.GetBuffer<ConnectedEdge>(e,true))if(EntityManager.HasBuffer<DrawnLineChoice>(link.m_Edge))manualDirty.Add(link.m_Edge);ClearLinePlans();if(updateGuides&&EntityManager.Exists(e)&&EntityManager.HasBuffer<GuideChoice>(e))QueueDerivedGuide(e);EnqueueSelective(e,crossOnlyPending);}
@@ -7,12 +7,12 @@ void ClearCross(Record r){foreach(var e in r.CrossPaint){if(EntityManager.Exists
 void HideApproachStops(Record r,List<Entity> lanes,List<Drive> drives){
  if(!S.StopLines)return;
  var stops=new HashSet<Entity>(lanes);
- foreach(var d in drives)if(d.StopPainted||d.StopSuppressed)foreach(var lane in Lanes(d.End))stops.Add(lane);
+ foreach(var d in drives)if(d.StopPainted)foreach(var lane in Lanes(d.End))stops.Add(lane);
  foreach(var lane in stops){
   if(assets.Name(Prefab(lane)).IndexOf("Stop Line",StringComparison.OrdinalIgnoreCase)<0)continue;
   var arc=new Geometry.Arc(CurveOf(lane));
   foreach(var d in drives){
-   if(!d.StopPainted&&!d.StopSuppressed)continue;
+   if(!d.StopPainted)continue;
    var direction=d.Arc.Direction(d.Arc.Length);float t=arc.Nearest(d.Curve.d);var delta=Geometry.Position(arc.Curve,t)-d.Curve.d;
    if(math.abs(delta.y)>2||math.abs(math.dot(Geometry.Tangent(arc.Curve,t),direction))>.5f||math.abs(math.dot(delta,direction))>=15||math.abs(math.dot(delta,Geometry.Left(direction)))>d.Width*.5f+.3f)continue;
    Hide(lane,r);break;

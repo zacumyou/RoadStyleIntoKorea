@@ -1,4 +1,4 @@
-import {localize,LocalText} from "./localization";
+﻿import {localize,LocalText} from "./localization";
 import React,{useEffect,useRef} from "react";
 import {bindValue,useValue,trigger} from "cs2/api";
 import {Button} from "cs2/ui";

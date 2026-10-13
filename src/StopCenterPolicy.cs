@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Unity.Mathematics;
 
@@ -9,6 +9,16 @@ namespace RoadStyleIntoKorea
         // One metre from the centerline tip to the stop-bar axis leaves room
         // for the native stop bar footprint and a visible positive separation.
         internal const float Setback=1f;
+        internal static IEnumerable<Bezier4x3> BeforeBar(Bezier4x3 curve,Bezier4x3 bar,float3 forward)
+        {
+            var across=math.normalizesafe(new float3(bar.d.x-bar.a.x,0,bar.d.z-bar.a.z));
+            var normal=Geometry.Left(across);if(math.dot(normal,forward)<0)normal=-normal;
+            var mid=Geometry.Position(bar,.5f);var arc=new Geometry.Arc(curve);
+            var route=new Geometry.Route(curve);float at;var probe=route.IntersectPlane(mid,normal,out at)||route.IntersectPlane(mid,-normal,out at)?route.At(at):Geometry.Position(curve,arc.Nearest(mid));
+            // Only the lanes spanned by this stop bar, never the opposing carriageway.
+            if(math.abs(math.dot(Geometry.Tangent(curve,arc.Nearest(probe)),normal))<.75f||math.abs(math.dot(probe-mid,normal))>20||math.abs(probe.y-mid.y)>2||math.abs(math.dot(probe-mid,across))>math.distance(bar.a,bar.d)*.5f+.6f){yield return curve;yield break;}
+            foreach(var piece in EdgeApproachPolicy.Clip(curve,new List<EdgeApproachPolicy.Limit>{new EdgeApproachPolicy.Limit{Origin=mid-normal*.4f,Inward=-normal}}))yield return piece;
+        }
         // Double-line half width + stop-bar half thickness + visible clearance.
         internal const float BarClearance=.16f+.25f+.1f;
         internal static IEnumerable<Bezier4x3> ClearBar(Bezier4x3 bar,List<Geometry.Arc> centers)

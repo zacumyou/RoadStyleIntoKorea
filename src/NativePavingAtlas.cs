@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Colossal.IO.AssetDatabase;
@@ -65,7 +65,6 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
    while(row<atlas.height){
 {
      var timer=System.Diagnostics.Stopwatch.StartNew();
-     
      do{
       int offset=row*atlas.width,patternRow=rows[row]*tile.width;
       for(int x=first;x<atlas.width;x++){var color=pattern[patternRow+columns[x]];color.a=pixels[offset+x].a;pixels[offset+x]=color;}

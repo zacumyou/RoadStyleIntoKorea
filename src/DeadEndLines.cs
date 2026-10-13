@@ -1,4 +1,4 @@
-using System.Collections.Generic;using Colossal.Mathematics;using Game.Net;using Unity.Entities;using Unity.Mathematics;
+﻿using System.Collections.Generic;using Colossal.Mathematics;using Game.Net;using Unity.Entities;using Unity.Mathematics;
 namespace RoadStyleIntoKorea { public partial class StyleSystem {
 void JoinCenterEnds(Entity node,Record record,bool inspect=false){
 if(!SafeNode(node))return;var roads=new HashSet<Entity>();foreach(var e in EntityManager.GetBuffer<ConnectedEdge>(node,true))if(IsRoad(e.m_Edge))roads.Add(e.m_Edge);if(roads.Count==2){JoinCenterSeam(node,record,new List<Entity>(roads),inspect);return;}if(roads.Count!=1)return;foreach(var road in roads)JoinDeadEnd(node,record,road,true,inspect);

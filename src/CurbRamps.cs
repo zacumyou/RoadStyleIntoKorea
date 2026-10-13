@@ -1,4 +1,4 @@
-using Unity.Entities;
+﻿using Unity.Entities;
 namespace RoadStyleIntoKorea {public partial class StyleSystem {
  CurbRampPolicy CurbRamps(Entity owner){
   var ramps=new CurbRampPolicy();

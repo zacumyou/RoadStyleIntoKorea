@@ -1,4 +1,4 @@
-using Colossal.Serialization.Entities;
+﻿using Colossal.Serialization.Entities;
 using Unity.Entities;
 using Unity.Mathematics;
 namespace RoadStyleIntoKorea {

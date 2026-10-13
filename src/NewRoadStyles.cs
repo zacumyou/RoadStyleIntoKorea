@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Game.Common;
 using Game.Net;
 using PrefabRef=Game.Prefabs.PrefabRef;
@@ -166,4 +166,3 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
   newRoadStyles.Dequeue();ChooseLocalStyles(road,false,true);
  }
 }}
-

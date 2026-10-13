@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Unity.Mathematics;
 namespace RoadStyleIntoKorea {internal static class CrosswalkSurfacePolicy {

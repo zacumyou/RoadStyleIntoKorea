@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Colossal.Serialization.Entities;
 using Game.Common;
@@ -8,11 +8,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 namespace RoadStyleIntoKorea {
- public struct GuideChoice:IBufferElementData,ISerializable {
-  public float3 Start,End;
-  public void Serialize<T>(T w) where T:IWriter {w.Write(1);w.Write(Start);w.Write(End);}
-  public void Deserialize<T>(T r) where T:IReader {r.Read(out int v);r.Read(out Start);r.Read(out End);if(v!=1||!math.all(math.isfinite(Start))||!math.all(math.isfinite(End)))Start=End=default;}
- }
  public partial class StyleSystem {
   sealed class GuideCandidate {internal Bezier4x3 Source,Paint;internal CarLaneFlags Flags;internal Geometry.Arc Arc;}
   struct GuideCommand {internal Entity Node;internal GuideChoice Choice;internal int Kind;}
@@ -131,22 +126,26 @@ namespace RoadStyleIntoKorea {
      guideDirty.Add(node);if(EntityManager.HasBuffer<ConnectedEdge>(node))foreach(var edge in EntityManager.GetBuffer<ConnectedEdge>(node,true))QueueBoundaryGuides(edge.m_Edge);targetedActive=true;
     }
    }
+   if(defaultsReplacing&&!defaultsFinalizing){foreach(var node in new List<Entity>(guideDirty))if(DeferDefaultNode(node,32))guideDirty.Remove(node);}
    if(progressiveLoad&&guideCommands.Count==0){foreach(var node in new List<Entity>(guideDirty))if(GuideDependenciesPending(node)){guideDirty.Remove(node);DeferLoad(node,32);}}
    if(guideDirty.Count==0)return;Entity work=Entity.Null;foreach(var node in guideDirty){if(GuideDependenciesPending(node))continue;work=node;break;}if(work==Entity.Null)return;
    if(guideRecords.TryGetValue(work,out var previous))foreach(var e in previous.Paint)if(Live(e)&&EntityManager.HasComponent<Created>(e))return;
    guideDirty.Remove(work);ObserveOwnerShape(work);ReleaseGuides(work);if(!SafeNode(work)||!EntityManager.HasBuffer<GuideChoice>(work))return;
    var selected=new List<GuideChoice>();foreach(var c in EntityManager.GetBuffer<GuideChoice>(work,true))selected.Add(c);
    if(selected.Count==0)return;
-   var position=EntityManager.GetComponentData<Node>(work).m_Position;var available=GuideCandidates(work);var crossings=NearbyCrossings(work);var limits=CrossingBoundaries(work,S.PaintClearance+.15f,true);var record=new Record();guideRecords[work]=record;
+   var position=EntityManager.GetComponentData<Node>(work).m_Position;bool cleanupOnly=true;foreach(var selection in selected)if(!selection.CleanupOnly)cleanupOnly=false;var available=cleanupOnly?new List<GuideCandidate>():GuideCandidates(work);var crossings=NearbyCrossings(work);var limits=CrossingBoundaries(work,S.PaintClearance+.15f,true);var record=new Record();guideRecords[work]=record;
       try{
     if(selected.Count>0)CleanGuideInterior(work,record);
-    foreach(var choice in selected){var candidate=available.Find(x=>GuidePolicy.Pair(x.Source.a-position,x.Source.d-position,choice.Start,choice.End));if(candidate==null)continue;
+    foreach(var choice in selected){if(choice.CleanupOnly)continue;var candidate=available.Find(x=>GuidePolicy.Pair(x.Source.a-position,x.Source.d-position,choice.Start,choice.End));if(candidate==null)continue;
     foreach(var interior in EdgeApproachPolicy.Clip(candidate.Paint,limits))
     foreach(var clear in ClearPaint(interior,crossings,S.PaintClearance)){var arc=new Geometry.Arc(clear);float dash=math.clamp(S.GuideDash,.1f,5),gap=math.clamp(S.GuideGap,.5f,5);for(float from=.25f;from<arc.Length-.25f;from+=dash+gap)PaintLane(work,record,assets.Get(AssetCatalog.White),arc.Slice(from,math.min(from+dash,arc.Length-.25f)));}
-   }if(EntityManager.HasBuffer<ConnectedEdge>(work))foreach(var edge in EntityManager.GetBuffer<ConnectedEdge>(work,true))if(EntityManager.HasBuffer<ManualDecalChoice>(edge.m_Edge))manualDirty.Add(edge.m_Edge);
+   }if(EntityManager.HasBuffer<ConnectedEdge>(work))foreach(var edge in EntityManager.GetBuffer<ConnectedEdge>(work,true))if(EntityManager.HasBuffer<ManualDecalChoice>(edge.m_Edge)){
+    // Cleanup-only work affects divider/stop replacements, not independent
+    // arrows, speed signs or manually drawn curves. Avoid rebuilding those.
+    bool rebuild=!cleanupOnly;foreach(var manual in EntityManager.GetBuffer<ManualDecalChoice>(edge.m_Edge,true))if(manual.Kind==1||manual.Kind==7){rebuild=true;break;}
+    if(rebuild)manualDirty.Add(edge.m_Edge);
+   }
    Status="유도선 적용 완료 / Guides applied: "+selected.Count;}
    catch(System.Exception ){failed++;ReleaseGuides(work);}  }}
  }
 }
-
-

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Game.Common;
 using Game.Net;
@@ -8,7 +8,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using CarLane=Game.Net.CarLane;
 using SecondaryLane=Game.Net.SecondaryLane;
-
 namespace RoadStyleIntoKorea
 {
     public partial class StyleSystem
@@ -180,6 +179,3 @@ namespace RoadStyleIntoKorea
         }
     }
 }
-
-
-

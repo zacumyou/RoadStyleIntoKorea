@@ -1,4 +1,4 @@
-using Colossal.Mathematics;using Unity.Mathematics;
+﻿using Colossal.Mathematics;using Unity.Mathematics;
 namespace RoadStyleIntoKorea {
 internal static class CrossingAlignmentPolicy {
 internal static Bezier4x3 Align(Bezier4x3 original,float3 forward){

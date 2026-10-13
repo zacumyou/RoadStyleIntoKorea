@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Colossal.Mathematics;
 using Colossal.Serialization.Entities;
@@ -7,7 +7,6 @@ using Game.Net;
 using Game.Prefabs;
 using Unity.Entities;
 using Unity.Mathematics;
-
 namespace RoadStyleIntoKorea
 {
     [InternalBufferCapacity(0)]
@@ -237,7 +236,6 @@ namespace RoadStyleIntoKorea
                 var choices=new List<PavingChoice>();foreach(var c in EntityManager.GetBuffer<PavingChoice>(edge,true))choices.Add(c);
                 foreach(var region in PavingRegions(edge))
                 {
-                    
                     int style=PavingSelection(edge,region,choices);
                     if(style<1||style>PavingPolicy.StyleCount)continue;
                     // Start-node local cross-sections face into the junction, opposite
@@ -245,7 +243,6 @@ namespace RoadStyleIntoKorea
                     float min=start?-region.PaintMax:region.PaintMin,max=start?-region.PaintMin:region.PaintMax;
                     bool right=min+max>=0;
                     float shift=(data.m_Width-region.RoadWidth)*.5f*(right?1:-1);min+=shift;max+=shift;
-
                     // Recover the complete native sidewalk, then reserve .6 m in
                     // physical space rather than a shrinking cross-section ratio.
                     if(region.Kind==1){if(right)min-=.6f;else max+=.6f;}
@@ -277,10 +274,3 @@ namespace RoadStyleIntoKorea
         }
     }
 }
-
-
-
-
-
-
-

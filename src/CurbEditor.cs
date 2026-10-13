@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Serialization.Entities;
 using Game.Common;
 using Game.Net;
@@ -36,6 +36,7 @@ namespace RoadStyleIntoKorea {
   void ClearCurbs(){curbDirty.Clear();foreach(var owner in new List<Entity>(curbRecords.Keys))ReleaseCurb(owner);}
   bool TickCurbs(){{
    if(curbDirty.Count==0)return false;Entity owner=Entity.Null;foreach(var e in curbDirty){owner=e;break;}
+   if(DeferDefaultNode(owner,128)){curbDirty.Remove(owner);return true;}
    if(Live(owner)&&!CachedAssetsReady())return false;
    if(curbRecords.TryGetValue(owner,out var old))foreach(var e in old.Paint)if(Live(e)&&EntityManager.HasComponent<Created>(e))return false;
    EntityManager.CompleteAllTrackedJobs();curbDirty.Remove(owner);ReleaseCurb(owner);if(!Live(owner))return true;
@@ -46,6 +47,7 @@ namespace RoadStyleIntoKorea {
   bool CurbRepresentative(PavingRegion r){CurbLimits(r,out float min,out _);return math.abs(r.PaintMin-min)<.01f;}
   void BuildEdgeCurbs(Entity edge,Record r){
    if(!EntityManager.HasBuffer<CurbChoice>(edge)||EntityManager.GetBuffer<CurbChoice>(edge,true).Length==0||!EntityManager.HasComponent<EdgeGeometry>(edge))return;var shape=EntityManager.GetComponentData<EdgeGeometry>(edge);
+   var sharedRamps=CurbRamps(edge);
    Geometry.Arc sideRoadArc=EntityManager.HasBuffer<SideRoadChoice>(edge)&&EntityManager.GetBuffer<SideRoadChoice>(edge,true).Length>0?new Geometry.Arc(CurveOf(edge)):null;
    foreach(var region in PavingRegions(edge))if(region.Kind==2&&CurbRepresentative(region)&&CurbSelected(edge,region)){
     CurbLimits(region,out float min,out float max);bool fromA=min+max>=0;if(region.Kind==1){if(fromA)min-=.6f;else max+=.6f;}
@@ -54,8 +56,8 @@ namespace RoadStyleIntoKorea {
      var b=Between(s.m_Left,s.m_Right,.5f+max/region.RoadWidth,CurbHeight(region));
      var border=fromA?a:b;var arc=new Geometry.Arc(border);float start=0;
      var gaps=SideRoadIntervals(edge,border,sideRoadArc==null?0:SideRoadRegionSide(sideRoadArc,region));
-     foreach(var gap in gaps){if(gap.x-start>.05f){float lo=arc.T(start),hi=arc.T(gap.x);PaintCurbLane(edge,r,Geometry.Cut(a,lo,hi),Geometry.Cut(b,lo,hi),fromA,0);}start=gap.y;}
-     if(arc.Length-start>.05f){float lo=arc.T(start);PaintCurbLane(edge,r,Geometry.Cut(a,lo,1),Geometry.Cut(b,lo,1),fromA,0);}
+     foreach(var gap in gaps){if(gap.x-start>.05f){float lo=arc.T(start),hi=arc.T(gap.x);PaintCurbLane(edge,r,Geometry.Cut(a,lo,hi),Geometry.Cut(b,lo,hi),fromA,0,sharedRamps);}start=gap.y;}
+     if(arc.Length-start>.05f){float lo=arc.T(start);PaintCurbLane(edge,r,Geometry.Cut(a,lo,1),Geometry.Cut(b,lo,1),fromA,0,sharedRamps);}
     }
    }
   }
@@ -80,6 +82,3 @@ namespace RoadStyleIntoKorea {
   }
  }
 }
-
-
-

@@ -1,9 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Game.Net;
 using Unity.Entities;
 using Unity.Mathematics;
-
 namespace RoadStyleIntoKorea
 {
     public partial class StyleSystem

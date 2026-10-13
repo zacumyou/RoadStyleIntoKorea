@@ -1,4 +1,4 @@
-using System;using System.Collections.Generic;
+﻿using System;using System.Collections.Generic;
 using Colossal.Serialization.Entities;using Game;using Game.Common;using Game.Net;using Game.Pathfind;using Game.Prefabs;using Unity.Collections;using Unity.Entities;using Unity.Mathematics;
 namespace RoadStyleIntoKorea {
 // A simulation lane persists normally: vehicles may reference it in a saved path.

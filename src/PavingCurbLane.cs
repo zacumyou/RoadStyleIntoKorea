@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -28,9 +28,9 @@ namespace RoadStyleIntoKorea {
    }catch{foreach(var asset in acquired)asset.Unload();UnityEngine.Object.Destroy(material);throw;}
    finally{if(loaded)surface.Unload();}
   }
-  void PaintCurbLane(Entity owner,Record record,Bezier4x3 a,Bezier4x3 b,bool fromA,float inset=0){
+  void PaintCurbLane(Entity owner,Record record,Bezier4x3 a,Bezier4x3 b,bool fromA,float inset=0,CurbRampPolicy sharedRamps=null){
    var outside=new Geometry.Arc(fromA?a:b);var inside=fromA?b:a;var curve=CurbLaneGeometry.Curve(a,b,fromA,inset);
-   var ramps=CurbRamps(owner);
+   var ramps=sharedRamps??CurbRamps(owner);
    var back=CurbLaneGeometry.Curve(a,b,!fromA,0);
    foreach(var clear in new[]{back}){
     NativeCurbGeometry.Build(clear,out var backVertices,out var backIndices,out var backUV,null,true,ramps);

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 namespace RoadStyleIntoKorea
 {
     internal static class ToolText
@@ -26,10 +26,6 @@ namespace RoadStyleIntoKorea
             d["Assets.NAME[RSIKManualTextTool]"]=ko?"글자 표지":"Text marking";
             d["Assets.NAME[RSIKAddAllTool]"]=ko?"모두 추가":"Add all";
             d["Assets.NAME[RSIKRemoveAllTool]"]=ko?"모두 제거":"Remove all";
-            d["RSIK.Capture.0"]=ko?"진단 범위: 구간 + 양끝 노드":"Capture: segment + end nodes";
-            d["RSIK.Capture.1"]=ko?"진단 범위: 가까운 교차로 + 연결 구간":"Capture: nearest junction + connected segments";
-            d["RSIK.Capture.2"]=ko?"진단 범위: 연결 도로 3단계 (최대 64개)":"Capture: connected roads, 3 hops (max 64 owners)";
-            d["RSIK.Capture.Help"]=ko?"Shift+R 범위 변경 · 드래그 후 놓아 저장 · 옵션 상태에 파일 경로 표시":"Shift+R changes scope; click to save. File path shown in settings status.";
             d["Common.ACTION["+Action(false,true)+"]"]=ko?"선택한 가장자리선 적용":"Apply selected edge line";
             d["Common.ACTION["+Action(false,false)+"]"]=ko?"가장자리 개별 선택 해제":"Reset edge override";
             d["Common.ACTION["+Action(true,true)+"]"]=ko?"선택한 횡단보도 크기 적용":"Apply selected crosswalk size";
@@ -67,7 +63,3 @@ namespace RoadStyleIntoKorea
         }
     }
 }
-
-
-
-

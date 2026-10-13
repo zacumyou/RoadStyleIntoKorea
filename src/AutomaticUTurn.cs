@@ -1,4 +1,4 @@
-using Game.Net;
+﻿using Game.Net;
 using Unity.Entities;
 using Unity.Mathematics;
 namespace RoadStyleIntoKorea {public partial class StyleSystem {
@@ -14,7 +14,7 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
    foreach(var crossing in NearbyCrossings(road)){
     var edge=CrossingRoad(crossing,out bool side);if(edge!=road||side!=start)continue;
     var c=CrosswalkCurve(crossing);
-    setback=math.max(setback,math.max(math.dot(c.a-origin,inward),math.dot(c.d-origin,inward))+CrossingWidth(crossing)*.5f+S.PaintClearance);
+    setback=math.max(setback,math.max(math.dot(c.a-origin,inward),math.dot(c.d-origin,inward))+CrossingWidth(crossing)*.5f+AutomaticUTurnPolicy.CrosswalkGap);
    }
    if(!AutomaticUTurnPolicy.CenterDistance(arc.Length,length,setback,start,out float at))continue;
    position=arc.T(at);return true;

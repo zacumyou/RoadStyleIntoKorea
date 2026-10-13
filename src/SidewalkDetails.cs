@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Game.Net;
 using Game.Prefabs;
@@ -47,7 +47,6 @@ namespace RoadStyleIntoKorea {
    var shape=EntityManager.GetComponentData<EdgeGeometry>(road);var section=second?shape.m_End:shape.m_Start;
    var left=Geometry.Position(section.m_Left,t);var right=Geometry.Position(section.m_Right,t);
    float offset=ManualPlacementPolicy.SidewalkOffset(hit,left,right,region.RoadWidth);
-
    offset=fits?math.clamp(offset,region.PaintMin+half,region.PaintMax-half):(region.PaintMin+region.PaintMax)*.5f;
    bool snapped=fits&&SnapSidewalkDetail(road,region,kind,ref offset);if(snapped)SignHover="detail.snapped";
    var prefab=assets.Get(SidewalkDetailAsset(kind));bool ready=Live(prefab)&&EntityManager.HasComponent<NetLaneGeometryData>(prefab);
@@ -72,12 +71,3 @@ namespace RoadStyleIntoKorea {
   }}
  }
 }
-
-
-
-
-
-
-
-
-

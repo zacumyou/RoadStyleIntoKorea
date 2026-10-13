@@ -1,4 +1,4 @@
-using System;using System.Collections.Generic;using Colossal.IO.AssetDatabase;using Game.Prefabs;using Unity.Entities;using Unity.Collections;using UnityEngine;
+﻿using System;using System.Collections.Generic;using Colossal.IO.AssetDatabase;using Game.Prefabs;using Unity.Entities;using Unity.Collections;using UnityEngine;
 namespace RoadStyleIntoKorea {public partial class StyleSystem {
 sealed class TransportMaterial {internal Material Material;internal Texture Original;}
 readonly List<TransportMaterial> transportMaterials=new List<TransportMaterial>();Texture2D transportClear;
@@ -51,4 +51,3 @@ counts.Add(count);
 }return MarkingPolicy.SmallJunction(counts);
 }
 }}
-

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Colossal.Serialization.Entities;
 using Colossal.Mathematics;
@@ -11,7 +11,6 @@ using UnityEngine.Rendering.HighDefinition;
 using Colossal.IO.AssetDatabase;
 using Unity.Collections;
 using UnityEngine.Rendering;
-
 namespace RoadStyleIntoKorea
 {
     public partial class StyleSystem
@@ -29,7 +28,6 @@ namespace RoadStyleIntoKorea
             }
             return sideRoadHoverArc;
         }
-
         bool SideRoadAt(Entity road,float3 hit,out SideRoadChoice choice,out float3 point)
         {
             choice=default;point=default;
@@ -271,7 +269,3 @@ namespace RoadStyleIntoKorea
         void DisposeSideRoadMaterials(){sideRoadCutSources.Clear();sideRoadHoverRoad=Entity.Null;sideRoadHoverArc=null;sideRoadWork.Clear();sideRoadUVs.Clear();foreach(var material in sideRoadMaterials.Values)UnityEngine.Object.Destroy(material);sideRoadMaterials.Clear();}
     }
 }
-
-
-
-

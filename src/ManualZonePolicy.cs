@@ -1,4 +1,4 @@
-using Colossal.Mathematics;using Unity.Mathematics;
+﻿using Colossal.Mathematics;using Unity.Mathematics;
 namespace RoadStyleIntoKorea {internal static class ManualZonePolicy {internal static bool Interval(Bezier4x3 roadCurve,Bezier4x3 curve,float position,float length,out float lo,out float hi){
   return Interval(new Geometry.Arc(roadCurve),new Geometry.Arc(curve),position,length,out lo,out hi);
  }

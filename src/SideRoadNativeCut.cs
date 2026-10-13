@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Colossal.IO.AssetDatabase;
 using Colossal.Mathematics;
@@ -11,7 +11,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine.Rendering;
-
 namespace RoadStyleIntoKorea {
  public partial class StyleSystem {
   sealed class NativeSideRoadCut {
@@ -149,4 +148,3 @@ namespace RoadStyleIntoKorea {
   }
  }
 }
-

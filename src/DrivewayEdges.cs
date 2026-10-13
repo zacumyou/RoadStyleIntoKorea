@@ -1,11 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Game.Net;
 using Game.Prefabs;
 using Unity.Entities;
 using Unity.Mathematics;
 using CarLane=Game.Net.CarLane;
-
 namespace RoadStyleIntoKorea
 {
     public partial class StyleSystem
@@ -13,7 +12,6 @@ namespace RoadStyleIntoKorea
         readonly Dictionary<Entity,List<DrivewayPolicy.Connection>> drivewayWork=new Dictionary<Entity,List<DrivewayPolicy.Connection>>();
         readonly HashSet<Entity> drivewayDirty=new HashSet<Entity>(),drivewayQueued=new HashSet<Entity>();
         float drivewaySince=-1,drivewayLast;
-
         bool SideVehicleConnection(Entity lane)=>EntityManager.HasComponent<CarLane>(lane)
             &&(EntityManager.GetComponentData<CarLane>(lane).m_Flags&CarLaneFlags.SideConnection)!=0;
         float2 DrivewayWidths(Entity lane)
@@ -142,4 +140,3 @@ namespace RoadStyleIntoKorea
         void ClearDriveways(){drivewayWork.Clear();drivewayDirty.Clear();drivewayQueued.Clear();drivewaySince=-1;drivewayLast=0;}
     }
 }
-

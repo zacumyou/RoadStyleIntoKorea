@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Game.Net;
 using Game.Pathfind;
 using Unity.Entities;

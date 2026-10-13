@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 namespace RoadStyleIntoKorea {
  // Compact consumed slots so repeated offscreen scans retain O(pending owners) storage.
  internal sealed class RotationQueue<T> {

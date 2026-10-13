@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Unity.Mathematics;
 namespace RoadStyleIntoKorea {
@@ -34,9 +34,10 @@ namespace RoadStyleIntoKorea {
      var bisector=math.normalizesafe(before+after,after);
      left=bisector/math.max(.25f,math.dot(bisector,after));
     }
+    float rampScale=ramps==null?1:ramps.Height(path[i])/Rise;
     for(int j=0;j<stride;j++){
      var s=section[outerFace?j+2:j];
-     vertices.Add(path[i]+left*(outerFace?0:s.x-Band)+new float3(0,s.y*(ramps==null?1:ramps.Height(path[i])/Rise),0));
+     vertices.Add(path[i]+left*(outerFace?0:s.x-Band)+new float3(0,s.y*rampScale,0));
      uv.Add(new float2(s.z,distance*-.0312347412f));
     }
     if(i==0)continue;int k=(i-1)*stride;
@@ -52,8 +53,9 @@ namespace RoadStyleIntoKorea {
    int stride=outerFace?2:6;
    for(int i=0;i<path.Count;i++){
     float t=arc.Nearest(path[i]),distance=arc.Distance(t);var p=path[i];var left=Geometry.Left(Geometry.Tangent(curve,t));
+    float rampScale=ramps==null?1:ramps.Height(path[i])/Rise;
     for(int j=0;j<stride;j++){var s=section[outerFace?j+2:j];
-     var v=p+left*(outerFace?0:s.x-Band);v.y=(surfaceHeight==null?v.y:surfaceHeight(v))+s.y*(ramps==null?1:ramps.Height(p)/Rise);
+     var v=p+left*(outerFace?0:s.x-Band);v.y=(surfaceHeight==null?v.y:surfaceHeight(v))+s.y*rampScale;
      vertices.Add(v);uv.Add(new float2(s.z,distance*-0.0312347412f));
     }
     if(i==0)continue;int k=(i-1)*stride;

@@ -1,3 +1,17 @@
+# 0.1.225
+
+한국어
+- 전체 적용 속도를 개선하고, 일반도로·고속도로를 따로 적용할 수 있도록 했습니다.
+- 도로 규모에 맞춰 횡단보도와 보도블록을 적용하고, 자동 노면 표지의 밀도를 줄였습니다.
+- 교차로 정지선 누락과 구분선 돌출을 보정하고, 횡단보도에 너무 가까운 유턴 표지를 생략하도록 했습니다.
+- 교차로 부근에서 직접 그린 차선이 일부 보이지 않는 현상을 개선했습니다.
+
+English
+- Improved Apply All performance and added separate options for ordinary roads and highways.
+- Crosswalks and paving now adapt to road size, with fewer automatic road markings.
+- Adjusted missing stop bars and divider overshoot at junctions, and omitted U-turn markings too close to crosswalks.
+- Improved rendering of manually drawn lane markings near junctions.
+
 # 0.1.215
 
 한국어

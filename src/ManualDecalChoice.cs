@@ -1,4 +1,4 @@
-using Colossal.Serialization.Entities;using Unity.Entities;using Unity.Mathematics;
+﻿using Colossal.Serialization.Entities;using Unity.Entities;using Unity.Mathematics;
 namespace RoadStyleIntoKorea {
  // Placement instructions only; rendered entities remain transient.
  public struct ManualDecalChoice:IBufferElementData,ISerializable {

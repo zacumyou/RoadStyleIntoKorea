@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Game.Prefabs;
 using Game.Net;
 namespace RoadStyleIntoKorea {
@@ -7,6 +7,11 @@ internal static class ArrowPolicy {
         // but their centers were aligned. Keep the old longest-arrow tip
         // location and derive each center from its actual forward bound.
         internal const float ReferenceFront=3.7f;
+        internal static bool BehindStop(Unity.Mathematics.float3 position,Unity.Mathematics.float3 forward,Unity.Mathematics.float3 stop,Unity.Mathematics.float3 normal,Unity.Mathematics.float2 bounds,float halfWidth){
+            float along=Unity.Mathematics.math.dot(forward,normal);
+            float extent=Unity.Mathematics.math.max(bounds.x*along,bounds.y*along)+halfWidth*Unity.Mathematics.math.abs(Unity.Mathematics.math.dot(Geometry.Left(forward),normal));
+            return Unity.Mathematics.math.dot(position-stop,normal)+extent<=-.1f;
+        }
         internal static bool TryTopPlacement(float length,float stop,float gap,List<Unity.Mathematics.float2> bounds,out float first){
             first=0;if(bounds.Count==0||stop<0)return false;
             float tip=System.Math.Min(length-.1f,stop-System.Math.Max(.1f,gap-ReferenceFront));

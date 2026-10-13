@@ -1,4 +1,4 @@
-using Colossal.UI.Binding;
+﻿using Colossal.UI.Binding;
 using Game;
 using Game.Tools;
 namespace RoadStyleIntoKorea {
@@ -31,6 +31,7 @@ public partial class RoadMenuUI:Game.UI.UISystemBase {
   AddBinding(new TriggerBinding<string>("RoadStyleIntoKorea","command",Command));
  }
  void Command(string command){
+  
 {
   var tools=World.GetOrCreateSystemManaged<ToolSystem>();
   if(command=="exit"){if(tools.activeTool is EdgeStyleTool)tools.activeTool=World.GetOrCreateSystemManaged<DefaultToolSystem>();return;}
@@ -57,11 +58,3 @@ public partial class RoadMenuUI:Game.UI.UISystemBase {
  }
  protected override void OnGamePreload(Colossal.Serialization.Entities.Purpose purpose,GameMode mode){opened=false;menuQuery.Update("");var system=World.GetExistingSystemManaged<StyleSystem>();if(system!=null)system.MenuSearchFocused=false;base.OnGamePreload(purpose,mode);}
 }}
-
-
-
-
-
-
-
-

@@ -1,4 +1,4 @@
-using Game.Prefabs;
+﻿using Game.Prefabs;
 namespace RoadStyleIntoKorea {
  internal static class NativeCrossingPolicy {
   internal const CompositionFlags.Side Mask=CompositionFlags.Side.AddCrosswalk|CompositionFlags.Side.RemoveCrosswalk;

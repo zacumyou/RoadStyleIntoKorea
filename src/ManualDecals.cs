@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Serialization.Entities;
 using Game.Common;
 using Game.Net;
@@ -99,12 +99,3 @@ namespace RoadStyleIntoKorea {
   }}
  }
 }
-
-
-
-
-
-
-
-
-

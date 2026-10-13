@@ -1,11 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Game;
 using Game.Common;
 using Game.Net;
 using Game.Tools;
 using Unity.Collections;
 using Unity.Entities;
-
 namespace RoadStyleIntoKorea
 {
     public partial class StyleSystem
@@ -48,7 +47,6 @@ namespace RoadStyleIntoKorea
             var prefab=Prefab(lane);var flags=EntityManager.HasComponent<Game.Net.CarLane>(lane)?EntityManager.GetComponentData<Game.Net.CarLane>(lane).m_Flags:0;float width=Width(lane);int speed=RoadKmh(owner);
             var connectionWidths=(flags&CarLaneFlags.SideConnection)!=0?DrivewayWidths(lane):default;
             bool changed=laneRefreshStamps.TryGetValue(lane,out var old)&&(old.Owner!=owner||old.Prefab!=prefab||(old.Flags&VisualLaneFlags)!=(flags&VisualLaneFlags)||old.Width!=width||!old.ConnectionWidths.Equals(connectionWidths)||old.Speed!=speed||!Geometry.SameCurve(old.Curve.m_Bezier,curve.m_Bezier));
-            
             old.Curve=curve;old.Owner=owner;old.Prefab=prefab;old.Flags=flags;old.Width=width;old.ConnectionWidths=connectionWidths;old.Speed=speed;laneRefreshStamps[lane]=old;return changed;
         }
         readonly HashSet<Entity> topologyDirty=new HashSet<Entity>();
@@ -68,7 +66,6 @@ namespace RoadStyleIntoKorea
             float now=UnityEngine.Time.realtimeSinceStartup;
             if(topologyDirty.Count==0)dirtySince=now;
             if(topologyDirty.Add(owner)){ClearLinePlans();InvalidateToolPreview();}dirtyLast=now;
-
         }
         IEnumerable<Entity> DirectRefreshNeighbors(Entity owner){
             if(!EntityManager.Exists(owner))yield break;
@@ -123,7 +120,6 @@ namespace RoadStyleIntoKorea
                         if(previous.EdgePaint.Count>0||previous.EdgeJoins.Count>0||previous.EdgeHidden.Count>0)EnqueueEdgeOnly(owner);
                         if(previous.CrossPaint.Count>0||previous.CrossHidden.Count>0)EnqueueCrossOnly(owner);
                     }
-                    
                     if(EntityManager.HasBuffer<ManualDecalChoice>(owner)||EntityManager.HasBuffer<DrawnLineChoice>(owner))manualDirty.Add(owner);
                     if(EntityManager.HasComponent<ApproachChoice>(owner)&&EntityManager.GetComponentData<ApproachChoice>(owner).Enabled)approachPending.Add(owner);
                     if(EntityManager.HasComponent<CenterChoice>(owner)||EntityManager.HasComponent<UTurnChoice>(owner))EnqueueCenterOnly(owner);
@@ -140,9 +136,3 @@ namespace RoadStyleIntoKorea
         }}
     }
 }
-
-
-
-
-
-

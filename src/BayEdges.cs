@@ -1,4 +1,4 @@
-using System;using System.Collections.Generic;using Colossal.Mathematics;using Game.Net;using Game.Prefabs;using Unity.Entities;using Unity.Mathematics;
+﻿using System;using System.Collections.Generic;using Colossal.Mathematics;using Game.Net;using Game.Prefabs;using Unity.Entities;using Unity.Mathematics;
 namespace RoadStyleIntoKorea { public partial class StyleSystem {
 bool BayEdgeCurves(Entity owner,bool left,float half,List<Bezier4x3> output){
 if(!EntityManager.HasComponent<Composition>(owner)||!EntityManager.HasComponent<EdgeGeometry>(owner))return false;

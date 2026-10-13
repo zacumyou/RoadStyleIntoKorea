@@ -1,4 +1,4 @@
-namespace RoadStyleIntoKorea {
+﻿namespace RoadStyleIntoKorea {
  internal static class PaintRecoveryPolicy {
   internal static bool EnteredView(bool known,bool previous,bool visible)=>visible&&(!known||!previous);
   internal static bool EmptyVisibleBatch(bool passedCulling,int batchCount)=>passedCulling&&batchCount==0;

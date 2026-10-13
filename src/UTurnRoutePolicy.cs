@@ -1,4 +1,4 @@
-using Colossal.Mathematics;using Unity.Mathematics;
+﻿using Colossal.Mathematics;using Unity.Mathematics;
 namespace RoadStyleIntoKorea {internal static class UTurnRoutePolicy {
  internal static bool AllowCreate(bool occupied,int stable)=>!occupied&&stable>=2;
  internal static bool SameLinks(Game.Pathfind.PathNode start,Game.Pathfind.PathNode end,Game.Pathfind.PathNode source,Game.Pathfind.PathNode target)=>start.EqualsIgnoreCurvePos(source)&&end.EqualsIgnoreCurvePos(target);

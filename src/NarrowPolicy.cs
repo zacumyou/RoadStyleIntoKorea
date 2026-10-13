@@ -1,4 +1,4 @@
-using Unity.Mathematics;
+﻿using Unity.Mathematics;
 namespace RoadStyleIntoKorea {
 internal static class NarrowPolicy {
  internal static System.Collections.Generic.List<string> Symbols(Game.Prefabs.LaneDirectionData direction,Game.Net.CarLaneFlags turns){

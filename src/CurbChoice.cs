@@ -1,4 +1,4 @@
-using Colossal.Serialization.Entities;using Unity.Entities;using Unity.Mathematics;
+﻿using Colossal.Serialization.Entities;using Unity.Entities;using Unity.Mathematics;
 namespace RoadStyleIntoKorea {
  public struct CurbChoice:IBufferElementData,ISerializable {
   public int Kind;public float Min,Max;

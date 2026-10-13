@@ -1,4 +1,4 @@
-import {localize,LocalText} from "./localization";
+﻿import {localize,LocalText} from "./localization";
 import React from "react";
 import {useMenuPlacement} from "./use-menu-placement";
 import {ModRegistrar} from "cs2/modding";

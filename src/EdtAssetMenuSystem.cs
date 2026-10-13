@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Colossal.Serialization.Entities;
 using System.Collections.Generic;
 using Game;
@@ -19,9 +19,9 @@ namespace RoadStyleIntoKorea {
    foreach(var item in EntityManager.GetBuffer<UIGroupElement>(group,true))members.Add(item.m_Prefab);
    foreach(var item in EntityManager.GetBuffer<UnlockRequirement>(group,true))requirements.Add(item.m_Prefab);
   }
-  EntityQuery query;float nextCheck,nextScan;bool ready;
+  EntityQuery query;float nextCheck,nextScan;string lastStatus;bool ready;
   protected override void OnCreate(){base.OnCreate();query=GetEntityQuery(ComponentType.ReadOnly<PrefabData>());}
-  protected override void OnGamePreload(Purpose purpose,GameMode mode){ready=false;targets.Clear();nextCheck=nextScan=0;base.OnGamePreload(purpose,mode);}
+  protected override void OnGamePreload(Purpose purpose,GameMode mode){ready=false;targets.Clear();nextCheck=nextScan=0;lastStatus=null;base.OnGamePreload(purpose,mode);}
   protected override void OnGameLoadingComplete(Purpose purpose,GameMode mode){base.OnGameLoadingComplete(purpose,mode);ready=mode==GameMode.Game||mode==GameMode.Editor;}
   bool Category(PrefabSystem ps,string name,out UIGroupPrefab group,out Entity entity){
    group=null;entity=Entity.Null;
@@ -34,7 +34,7 @@ namespace RoadStyleIntoKorea {
    var ps=World.GetExistingSystemManaged<PrefabSystem>();if(ps==null)return;
    bool lanesReady=Category(ps,"RoadMarking NetLanes",out var laneGroup,out var laneEntity);
    bool decalsReady=Category(ps,"RoadMarkings Decals",out var decalGroup,out var decalEntity);
-   if(!lanesReady&&!decalsReady){return;}
+   if(!lanesReady&&!decalsReady){Report("waiting for EDT categories; no asset groups changed");return;}
    if(targets.Count<priorities.Count&&now>=nextScan){
     nextScan=now+10;
     using(var entities=query.ToEntityArray(Allocator.Temp))foreach(var entity in entities){
@@ -45,7 +45,7 @@ namespace RoadStyleIntoKorea {
    }
    if(lanesReady)ReadMembers(laneEntity,laneMembers,laneRequirements);
    if(decalsReady)ReadMembers(decalEntity,decalMembers,decalRequirements);
-   var stale=new List<string>();
+   int lanes=0,decals=0,changed=0;var stale=new List<string>();
    foreach(var target in targets){
     var entity=target.Value;if(!EntityManager.Exists(entity)||!ps.TryGetPrefab<PrefabBase>(entity,out var prefab)||prefab==null||prefab.name!=target.Key){stale.Add(target.Key);continue;}
     bool lane=prefab is NetLaneGeometryPrefab;
@@ -53,10 +53,11 @@ namespace RoadStyleIntoKorea {
     if(lane?!EntityManager.HasComponent<NetLaneGeometryData>(entity):!EntityManager.HasComponent<ObjectData>(entity))continue;
     if(EntityManager.HasComponent<Created>(entity)||EntityManager.HasComponent<Deleted>(entity))continue;
     var group=lane?laneGroup:decalGroup;var groupEntity=lane?laneEntity:decalEntity;
-    Bind(prefab,entity,group,groupEntity,priorities[target.Key],!lane,lane?laneMembers:decalMembers,lane?laneRequirements:decalRequirements);
-    
+    if(Bind(prefab,entity,group,groupEntity,priorities[target.Key],!lane,lane?laneMembers:decalMembers,lane?laneRequirements:decalRequirements))changed++;
+    if(lane)lanes++;else decals++;
    }
    foreach(var name in stale)targets.Remove(name);
+   Report($"netlanes={lanes}/70 decals={decals}/60 loaded={targets.Count}/130 groups={lanesReady}/{decalsReady}");
   }
   bool Bind(PrefabBase prefab,Entity entity,UIGroupPrefab group,Entity groupEntity,int priority,bool decal,HashSet<Entity> members,HashSet<Entity> unlocks){
    bool changed=false;
@@ -84,6 +85,6 @@ namespace RoadStyleIntoKorea {
    if(EntityManager.HasBuffer<UIGroupElement>(group)){var b=EntityManager.GetBuffer<UIGroupElement>(group);for(int i=b.Length-1;i>=0;i--)if(b[i].m_Prefab==entity)b.RemoveAt(i);}
    if(EntityManager.HasBuffer<UnlockRequirement>(group)){var b=EntityManager.GetBuffer<UnlockRequirement>(group);for(int i=b.Length-1;i>=0;i--)if(b[i].m_Prefab==entity)b.RemoveAt(i);}
   }
+  void Report(string status){if(status==lastStatus)return;lastStatus=status;}
  }
 }
-

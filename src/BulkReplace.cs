@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Game.Net;
 using Game.Tools;
@@ -19,6 +19,8 @@ public partial class StyleSystem {
  bool targetedActive;
  void EnqueueSelective(Entity owner,HashSet<Entity> category){
   if(owner==Entity.Null)return;targetedActive=true;
+  int mask=category==centerOnlyPending?1:category==edgeOnlyPending?2:category==crossOnlyPending?4:category==pavingOnlyPending?8:0;
+  if(mask!=0&&DeferDefaultNode(owner,mask))return;
   if(pending.Contains(owner)){if(centerOnlyPending.Contains(owner)||crossOnlyPending.Contains(owner)||edgeOnlyPending.Contains(owner)||pavingOnlyPending.Contains(owner))category.Add(owner);return;}
   Enqueue(owner);category.Add(owner);
  }

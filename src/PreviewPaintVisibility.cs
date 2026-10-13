@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Game.Common;
 using Game.Net;
 using Game.Tools;
@@ -46,7 +46,7 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
   }
   RestorePreviewAttachments(unchanged);
   if(unchanged.Count==0)return;
-  bool synced=false;
+  bool synced=false;int restored=0;
   using(var paint=hiddenGeneratedPaint.ToEntityArray(Allocator.Temp))foreach(var e in paint){
    var owner=EntityManager.GetComponentData<Owner>(e).m_Owner;
    if(!unchanged.Contains(owner)||removedPaint.Contains(e)||suppressedWarnings.Contains(e)||hiddenOwners.Contains(e))continue;
@@ -59,7 +59,7 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
      if(!previewDetachedPaint.ContainsKey(e))previewDetachedPaint[e]=(owner,lanes[i]);lanes.RemoveAt(i);
     }
    }
-   EntityManager.RemoveComponent<Hidden>(e);EntityManager.RemoveComponent<Overridden>(e);DirtyBatch(e);QueuePaintRegistration(e);
+   EntityManager.RemoveComponent<Hidden>(e);EntityManager.RemoveComponent<Overridden>(e);DirtyBatch(e);QueuePaintRegistration(e);restored++;
   }
  }
 }}

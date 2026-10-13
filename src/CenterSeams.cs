@@ -1,4 +1,4 @@
-using System.Collections.Generic;using Colossal.Mathematics;using Game.Net;using Unity.Entities;using Unity.Mathematics;
+﻿using System.Collections.Generic;using Colossal.Mathematics;using Game.Net;using Unity.Entities;using Unity.Mathematics;
 namespace RoadStyleIntoKorea {public partial class StyleSystem {
 int CenterSeamChoice(Entity road,float3 point){
 if(!EntityManager.HasComponent<CenterChoice>(road))return 0;var choice=EntityManager.GetComponentData<CenterChoice>(road);if(!CenterDivided(road))return HasOpposingTraffic(road)?choice.Left:0;
@@ -10,7 +10,6 @@ float CenterSeamDistance(Entity road,float3 point){float best=float.MaxValue;for
 void JoinCenterSeam(Entity node,Record record,List<Entity> roads,bool inspect){
 var native=new List<Entity>();foreach(var lane in Lanes(node))if(EntityManager.HasComponent<Game.Net.SecondaryLane>(lane)&&!EntityManager.HasComponent<CarLane>(lane)&&UTurnPolicy.CenterLine(assets.Name(Prefab(lane))))native.Add(lane);
 if(native.Count==0){JoinMissingCenterSeam(node,record,roads,inspect);return;}
-
 var endpoints=new[]{CenterEndpoints(roads[0],node),CenterEndpoints(roads[1],node)};
 var painted=new List<Bezier4x3>();
 foreach(var lane in native){var source=CurveOf(lane);var curve=source;bool duplicate=false;foreach(var done in painted)if(Geometry.SameCurve(curve,done)||Geometry.SameCurve(Geometry.Reverse(curve),done)){duplicate=true;break;}
@@ -83,4 +82,3 @@ if(!inspect)PaintLane(node,record,prefab,clear);
  }
 }
 }}
-

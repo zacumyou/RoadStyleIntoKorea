@@ -1,4 +1,4 @@
-using Game.Net;
+﻿using Game.Net;
 using Game.Prefabs;
 using Unity.Entities;
 using Unity.Mathematics;

@@ -1,4 +1,4 @@
-using Game.Pathfind;
+﻿using Game.Pathfind;
 namespace RoadStyleIntoKorea {
  internal static class ColorGuideNetworkPolicy {
   internal static bool Connected(PathNode end,PathNode start)=>end.GetOwnerIndex()!=0&&end.Equals(start);

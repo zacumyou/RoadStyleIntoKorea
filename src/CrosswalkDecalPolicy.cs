@@ -1,4 +1,4 @@
-using Colossal.Mathematics;
+﻿using Colossal.Mathematics;
 using Unity.Mathematics;
 namespace RoadStyleIntoKorea {internal static class CrosswalkDecalPolicy {
  internal static bool Overlaps(Bezier4x3 crossing,float width,float3 position,float3 forward,float halfLength,float halfWidth){

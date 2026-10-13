@@ -1,4 +1,4 @@
-using Unity.Mathematics;
+﻿using Unity.Mathematics;
 namespace RoadStyleIntoKorea {internal static class ManualPlacementPolicy {
  internal static float3 IntersectionNormal(float3 forward,float3 laneDirection,bool both)=>both&&math.dot(laneDirection,forward)<0?-forward:forward;
  internal static float SidewalkOffset(float3 hit,float3 left,float3 right,float width){var across=right.xz-left.xz;return (math.dot(hit.xz-left.xz,across)/math.max(.0001f,math.lengthsq(across))-.5f)*width;}

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Mathematics;
 using Game.Common;
 using Game.Net;
@@ -153,8 +153,17 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
   foreach(var choice in choices){
    if(RedPavingPolicy.IsRed(choice.Style)){try{if(!redSurfaceRead){redSurface=RedRoadSurface(owner);redSurfaceRead=true;}BuildRedPaving(owner,record,choice,redSurface);}catch(System.Exception ){}continue;}
    if(choice.Style<0||choice.Style>=DrawnLinePolicy.Assets.Length)continue;var asset=assets.Get(DrawnLinePolicy.Assets[choice.Style]);if(asset==Entity.Null)continue;
-   var c=LineTransform(owner,choice.Local,false);if(math.distance(c.a,c.d)<.1f)continue;bool color=DrawnLinePolicy.IsColor(choice.Style);if(color&&obstacles==null){obstacles=ColorGuideObstacles(owner);}foreach(var clear in ClearPaint(c,NearbyCrossings(owner),color?.25f:.05f)){if(color){foreach(var part in Geometry.ClearSlices(clear,p=>ColorGuideClear(p,obstacles)))PaintLane(owner,record,asset,part);}else PaintLane(owner,record,asset,clear);}
+   var c=LineTransform(owner,choice.Local,false);if(math.distance(c.a,c.d)<.1f)continue;bool color=DrawnLinePolicy.IsColor(choice.Style);if(color&&obstacles==null){obstacles=ColorGuideObstacles(owner);}foreach(var clear in ClearPaint(c,NearbyCrossings(owner),color?.25f:.05f)){if(color){foreach(var part in Geometry.ClearSlices(clear,p=>ColorGuideClear(p,obstacles)))PaintDrawnLane(owner,record,asset,part);}else PaintDrawnLane(owner,record,asset,clear);}
   }
+ }
+ // Match native road lanes: without EdgeLane/NodeLane/Elevation, the renderer
+ // uses CurveParams.y=1 instead of the road-lane value 0. Explicit elevation
+ // retains the authored 3D curve without adding pathfinding or node offsets.
+ void PaintDrawnLane(Entity owner,Record record,Entity asset,Bezier4x3 curve){
+  int first=record.Paint.Count;
+  float period=EntityManager.GetComponentData<Game.Prefabs.NetLaneGeometryData>(asset).m_Size.z;
+  foreach(var piece in DrawnLinePolicy.RenderPieces(curve,period))PaintLane(owner,record,asset,piece);
+  for(int i=first;i<record.Paint.Count;i++)EntityManager.AddComponentData(record.Paint[i],new Game.Net.Elevation{m_Elevation=new float2(0)});
  }
  void RestoreDrawnLines(){using(var q=EntityManager.CreateEntityQuery(ComponentType.ReadOnly<DrawnLineChoice>()))using(var owners=q.ToEntityArray(Allocator.Temp))foreach(var owner in owners)if(LineOwner(owner))manualDirty.Add(owner);}
 }}

@@ -1,4 +1,4 @@
-using Unity.Mathematics;
+﻿using Unity.Mathematics;
 namespace RoadStyleIntoKorea {internal static class LoadBudgetPolicy {
  internal static int AdmissionCount(int queued,float frameSeconds)=>math.min(math.max(0,12-queued),frameSeconds>.0334f?1:frameSeconds>.02f?2:4);
  internal static bool VisibleAdmission(int queued,float sinceEdit)=>queued<12&&sinceEdit>=.15f;

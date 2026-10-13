@@ -1,4 +1,4 @@
-using Colossal.Mathematics;using Unity.Mathematics;
+﻿using Colossal.Mathematics;using Unity.Mathematics;
 namespace RoadStyleIntoKorea { internal static class CenterLinePolicy {
 internal static string Asset(int style)=>style==3?"CSKRCenterYellowSolid6mNetLane":style==4?"CSKRCenterYellowDouble6mNetLane":style==2?"CSKREdgeWhiteSolid6mNetLane":"";
 internal static float HalfWidth(int style)=>style==4?.16f:.08f;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Colossal.Mathematics;
@@ -18,7 +18,6 @@ using SubLane=Game.Net.SubLane;
 using CarLane=Game.Net.CarLane;
 using PedestrianLane=Game.Net.PedestrianLane;
 using ParkingLane=Game.Net.ParkingLane;
-
 namespace RoadStyleIntoKorea
 {
     // Only user choices persist. Decorative paint never participates in path finding.
@@ -52,7 +51,7 @@ namespace RoadStyleIntoKorea
         }
         sealed class Drive
         {
-            internal Entity Entity,Crossing,End,Owner;internal Bezier4x3 Curve;internal float Width;internal float Stop=-1;internal bool StopPainted,StopSuppressed;
+            internal Entity Entity,Crossing,End,Owner;internal Bezier4x3 Curve;internal float Width;internal float Stop=-1;internal bool StopPainted;
             internal Geometry.Route Arc;
             internal CarLaneFlags Turns;
             internal int MergeDirection;
@@ -108,7 +107,7 @@ namespace RoadStyleIntoKorea
             foreach(var v in b){var e=v.m_Edge;if(!Live(e)||!EntityManager.HasComponent<PrefabRef>(e))continue;var p=EntityManager.GetComponentData<PrefabRef>(e).m_Prefab;if(!EntityManager.HasComponent<RoadData>(p))continue;if(!IsRoad(e))return false;road=true;}
             return road;
         }
-        internal void RequestApply(){if(!CannotReplaceAll)applyRequested=true;}
+        internal void RequestApply(int scope=0){if(!CannotReplaceAll){defaultsScope=math.clamp(scope,0,2);applyRequested=true;}}
         internal void RequestRestore(){restoreRequested=true;}
         internal void Inspect()
         {
@@ -143,13 +142,13 @@ namespace RoadStyleIntoKorea
             if(EntityManager.HasComponent<Edge>(e)){var v=EntityManager.GetComponentData<Edge>(e);Enqueue(v.m_Start);Enqueue(v.m_End);}
         }
         protected override void OnUpdate(){
-UpdateStyles();
+UpdateWithTrace();
         }
-        void UpdateStyles()
+        void UpdateWithTrace()
         {
             if(!ready||S==null||saving)return;
             ReleaseDeletedStyleOwners();CollectNewRoadStyles();
-            var frameWork=Stopwatch.StartNew();
+            var frameWork=Stopwatch.StartNew();double bulkBudget=defaultsReplacing?DefaultFrameBudget():ApplyAllPolicy.FrameMilliseconds;
             BeginScheduledRestore();
             CollectTopology();
             AdmitLoadWork();
@@ -157,11 +156,21 @@ UpdateStyles();
             CheckNativeCrossings();
             bool guideFrame=!restoreRequested&&(guideCommands.Count>0||guideDirty.Count>0);
             if(!restoreRequested&&S.Enabled)TickGuides();
+            if(defaultsReplacing&&defaultsFinalizing&&!restoreRequested&&S.Enabled)
+                for(int step=1;step<16&&frameWork.Elapsed.TotalMilliseconds<bulkBudget;step++){
+                    int before=guideDirty.Count+guideCommands.Count;if(before==0)break;
+                    TickGuides();if(guideDirty.Count+guideCommands.Count>=before)break;
+                }
             if(loadBatchActive&&guideFrame&&frameWork.Elapsed.TotalMilliseconds>=LoadBudgetPolicy.FrameBudget(UnityEngine.Time.unscaledDeltaTime))return;
             bool localFrame=!restoreRequested&&S.Enabled&&TickLocalStyles();
             bool approachFrame=localFrame||crossingDistancePriority.Count==0&&(!restoreRequested&&S.Enabled&&TickCurbs()||!restoreRequested&&S.Enabled&&TickManual()||!restoreRequested&&S.Enabled&&TickApproaches());
             // Advance cheap iterator stages in the same frame, within the shared budget.
-            if((loadBatchActive||defaultsReplacing)&&!localFrame&&!restoreRequested&&S.Enabled)
+            if(defaultsReplacing&&!localFrame&&!restoreRequested&&S.Enabled&&crossingDistancePriority.Count==0){
+                // Bulk application can spend more time per frame than live editing.
+                // Each tick retains its native Created/ownership guards; stop if blocked.
+                for(int step=1;step<ApplyAllPolicy.StageLimit&&frameWork.Elapsed.TotalMilliseconds<bulkBudget;step++)
+                    if(!(TickCurbs()||TickManual()||TickApproaches()))break;
+            }else if(loadBatchActive&&!localFrame&&!restoreRequested&&S.Enabled)
                 for(int step=1;step<4&&approachWork!=null&&frameWork.Elapsed.TotalMilliseconds<LoadBudgetPolicy.FrameBudget(UnityEngine.Time.unscaledDeltaTime);step++)TickApproaches();
             UpdateTransportAppearance();
             if(S.Enabled&&!restoring&&!restoreRequested)RetryNativePaving();
@@ -184,8 +193,8 @@ UpdateStyles();
             TickNewRoadStyles();
             if(!active&&!pavingActive&&!targetedActive&&queue.Count==0)return;
             var watch=frameWork;int count=0;
-            int ownerLimit=loadBatchActive||defaultsReplacing?math.min(4,math.clamp(S.RoadsPerFrame,1,64)):math.clamp(S.RoadsPerFrame,1,64);
-            double timeLimit=loadBatchActive||defaultsReplacing?math.min(S.Milliseconds,LoadBudgetPolicy.FrameBudget(UnityEngine.Time.unscaledDeltaTime)):math.clamp(S.Milliseconds,1,8);
+            int ownerLimit=defaultsReplacing?ApplyAllPolicy.OwnerLimit:loadBatchActive?math.min(4,math.clamp(S.RoadsPerFrame,1,64)):math.clamp(S.RoadsPerFrame,1,64);
+            double timeLimit=defaultsReplacing?bulkBudget:loadBatchActive?math.min(S.Milliseconds,LoadBudgetPolicy.FrameBudget(UnityEngine.Time.unscaledDeltaTime)):math.clamp(S.Milliseconds,1,8);
             int attempts=queue.Count;
             if(attempts>0)EntityManager.CompleteAllTrackedJobs();
             while((!approachFrame||loadBatchActive||defaultsReplacing)&&queue.Count>0&&attempts-->0&&count<ownerLimit&&watch.Elapsed.TotalMilliseconds<timeLimit)
@@ -298,7 +307,7 @@ UpdateStyles();
                 float targetWidth=EntityManager.GetComponentData<NetLaneData>(prefab).m_Width;
                 var cuts=crossingCuts;
                 EntityManager.AddComponentData(e,MarkingPolicy.CrosswalkNode(originalNode));
-                if(ForceCrosswalkArrows(sourceCrosswalk)||!IsNarrowRoad(CrossingRoad(sourceCrosswalk,out _))&&!CrosswalkStylePolicy.Single(CrossingSize(sourceCrosswalk)))
+                if(ForceCrosswalkArrows(sourceCrosswalk))
                     PaintPedestrianArrows(owner,r,curve,CrossingSize(sourceCrosswalk),cuts,curbStart,curbEnd,ForceCrosswalkArrows(sourceCrosswalk));
                 curve=CrosswalkStripePolicy.TrimEntries(curve,cuts);
                 EntityManager.SetComponentData(e,new Curve{m_Bezier=curve,m_Length=new Geometry.Arc(curve).Length});
@@ -361,6 +370,7 @@ UpdateStyles();
                 var prefab=Prefab(lane);if(!EntityManager.HasComponent<NetLaneGeometryData>(prefab))continue;
                 var canonical=CanonicalCrossing(lane);
                 if(canonical==lane){int before=r.Paint.Count;PaintLane(owner,r,assets.Get(AssetCatalog.Crosswalk(CrossingSize(lane))),CrosswalkCurve(lane),lane);if(r.Paint.Count==before)continue;}
+                
                 Hide(lane,r);
             }
         }
@@ -381,7 +391,6 @@ UpdateStyles();
             ClipNativeDividers(owner,r,lanes);
             if(EntityManager.HasBuffer<GuideChoice>(owner))guideDirty.Add(owner);
         }
-
         List<Entity> Crossings(Entity edge,List<Entity> lanes)
         {
             var all=new List<Entity>(lanes);var e=EntityManager.GetComponentData<Edge>(edge);
@@ -517,9 +526,9 @@ UpdateStyles();
                     cutStart=math.min(cutStart,lo);cutEnd=math.max(cutEnd,hi);
                 }
                 if(cutEnd<=cutStart)continue;
-                if(cutStart>0.001f)PaintDivider(owner,r,Prefab(lane),Geometry.Cut(c,0,cutStart));
+                if(cutStart>0.001f)foreach(var before in EdgeApproachPolicy.Clip(Geometry.Cut(c,0,cutStart),solidLimits))PaintDivider(owner,r,Prefab(lane),before);
                 foreach(var solid in EdgeApproachPolicy.Clip(Geometry.Cut(c,cutStart,cutEnd),solidLimits))PaintDivider(owner,r,assets.Get(AssetCatalog.White),solid);
-                if(cutEnd<0.999f)PaintDivider(owner,r,Prefab(lane),Geometry.Cut(c,cutEnd,1));Hide(lane,r);
+                if(cutEnd<0.999f)foreach(var after in EdgeApproachPolicy.Clip(Geometry.Cut(c,cutEnd,1),solidLimits))PaintDivider(owner,r,Prefab(lane),after);Hide(lane,r);
             }
         }
         internal void ChooseEdge(Entity edge,bool left,bool reset)
@@ -660,9 +669,12 @@ UpdateStyles();
                 if(other.Source==item.Source||other.Route!=route)continue;
                 if(other.Along>item.Along+.01f||(math.abs(other.Along-item.Along)<=.01f&&other.Source.Index<item.Source.Index)){foremost=false;break;}
             }
-            if(foremost)relocate=TryStopArrowPlacement(route,route.Stop,item.Symbols,item.Symbols.Count,out along);
+            if(route==null)return false;
+            if(foremost){relocate=TryStopArrowPlacement(route,route.Stop,item.Symbols,item.Symbols.Count,out along);if(!relocate)return false;}
             if(!relocate)along=item.Along;
-            return item.Symbols.Count<=1||(route!=null&&FitsArrowStack(route,along,item.Symbols));
+            if(!FitsArrowStack(route,along,item.Symbols))return false;
+            for(int i=0;i<item.Symbols.Count;i++)if(!ArrowStopClear(route,ArrowStackAt(along,item.Symbols,i),item.Symbols[i]))return false;
+            relocate=true;return true;
         }
         void ReplaceArrows(Entity owner,Record r,List<Drive> roadDrives=null)
         {
@@ -678,9 +690,9 @@ UpdateStyles();
                 bool removeUTurn=item.Narrow&&(originalDirection.m_Left==LaneDirectionType.UTurn||originalDirection.m_Right==LaneDirectionType.UTurn);
                 if(!S.Arrows&&!removeUTurn)continue;
                 if(symbols.Count==0){if(removeUTurn)Hide(item.Source,r);continue;}
-                // If relocation cannot fit, use the source position; never hide an arrow just to deduplicate it.
+                // Do not fall back to a native decal that extends beyond the stop line.
                 if(!PlanArrow(item,all,out float along,out bool relocate))
-                {unsupportedArrows++;continue;}
+                {unsupportedArrows++;Hide(item.Source,r);continue;}
                 for(int i=0;i<symbols.Count;i++)
                 {
                     var at=item.Transform;
@@ -690,6 +702,7 @@ UpdateStyles();
                         at.m_Position.y+=math.clamp(item.Height,-.4f,.4f);
                         at.m_Rotation=quaternion.LookRotationSafe(route.Arc.Direction(distance),new float3(0,1,0));
                     }
+                    if(!UTurnDecalClear(owner,symbols[i],assets.Get(AssetCatalog.Arrow(symbols[i])),at))continue;
                     PaintObject(owner,r,assets.Get(AssetCatalog.Arrow(symbols[i])),at);
                     if(route!=null)route.PrimaryPaint.Add(new ArrowPolicy.Occupied(ArrowStackAt(along,symbols,i),DecalHalfLength(assets.Get(AssetCatalog.Arrow(symbols[i])),3.8f)));
                 }
@@ -755,9 +768,7 @@ UpdateStyles();
         {
             if(saving||!ready)return;
             PreservePreviewPaint();
-
             // ECS queries visit only visuals that vanilla revealed and owners being deleted, not every road each frame.
-
             // Native LaneHiddenSystem reveals lanes owned by visible roads.
             // Persisted mod ownership remains authoritative during that transient state. Use our ownership ledger before RequiredBatchesSystem consumes visibility.
             using(var list=revealed.ToEntityArray(Allocator.Temp))foreach(var e in list)if(Live(e)&&hiddenOwners.Contains(e)){
@@ -789,19 +800,4 @@ UpdateStyles();
             ResumeNativePaving();ResumeNativeSideRoadCuts();ResumeFlowAfterSave();ResumeWalkHeights();saveTemps.Clear();saveHidden.Clear();saving=false;
         }
     }
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

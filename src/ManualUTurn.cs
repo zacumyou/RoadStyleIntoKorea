@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Colossal.Serialization.Entities;
 using Colossal.Mathematics;
 using Game.Net;
@@ -24,6 +24,10 @@ public partial class StyleSystem {
   if(choice.Automatic&&!AutoUTurnPosition(edge,choice.Length,out choice.Position)){if(prefab!=Entity.Null)PaintLane(edge,record,prefab,curve);return;}
   if(!UTurnInterval(edge,curve,choice.Position,out float lo,out float hi)){if(prefab!=Entity.Null)PaintLane(edge,record,prefab,curve);return;}
   var arc=new Geometry.Arc(curve);
+  if(choice.Automatic){
+   var zone=arc.Slice(lo,hi);float kept=0;foreach(var part in ClearPaint(zone,NearbyCrossings(edge),AutomaticUTurnPolicy.CrosswalkGap,edge))kept+=new Geometry.Arc(part).Length;
+   if(kept<new Geometry.Arc(zone).Length-.05f){if(prefab!=Entity.Null)PaintLane(edge,record,prefab,curve);return;}
+  }
   // Split real geometry: secondary NetLane renderers do not consistently honor CutRange.
   if(prefab!=Entity.Null)foreach(var part in ManualZonePolicy.Outside(arc,lo,hi))PaintLane(edge,record,prefab,part);
   foreach(var clear in ClearPaint(arc.Slice(lo,hi),NearbyCrossings(edge),S.PaintClearance,edge))PaintLane(edge,record,assets.Get(AssetCatalog.UTurnZone),clear);

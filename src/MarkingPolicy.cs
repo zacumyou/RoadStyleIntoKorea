@@ -1,4 +1,4 @@
-using Game.Net;
+﻿using Game.Net;
 using System.Collections.Generic;
 using Colossal.Mathematics;
 using Unity.Mathematics;

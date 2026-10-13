@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Colossal.IO.AssetDatabase;
 using Colossal.Mathematics;

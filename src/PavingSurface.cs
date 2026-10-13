@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Colossal.IO.AssetDatabase;
 using Colossal.Mathematics;
@@ -86,7 +86,6 @@ namespace RoadStyleIntoKorea
             var vertices=new List<Vector3>();var uv=new List<Vector2>();var triangles=new List<int>();
             var anchor=positions[0];
             for(int i=0;i<positions.Count;i++){vertices.Add((Vector3)(positions[i]-anchor));var tex=textureUV[i];uv.Add(new Vector2(tex.x,tex.y));}
-            
             for(int i=0;i+2<indices.Count;i+=3)
             {
                 var keys=new[]{math.round(positions[indices[i]]*1000).ToString(),math.round(positions[indices[i+1]]*1000).ToString(),math.round(positions[indices[i+2]]*1000).ToString()};

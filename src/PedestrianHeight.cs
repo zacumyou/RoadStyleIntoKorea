@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Game.Common;
 using Game.Net;
 using Game.Pathfind;
@@ -105,6 +105,3 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
    EntityManager.SetComponentData(lane,applied);MarkTrafficUpdated(lane);changed++;
   }   }
 }}
-
-
-

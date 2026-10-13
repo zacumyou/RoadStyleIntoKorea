@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Mathematics;
 namespace RoadStyleIntoKorea {internal static class ManualStopPolicy {
  internal static bool Overlap(Colossal.Mathematics.Bezier4x3 curve,float3 stop,float3 forward,float width,out float2 interval){

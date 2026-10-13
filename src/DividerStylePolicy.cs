@@ -1,4 +1,4 @@
-namespace RoadStyleIntoKorea {
+﻿namespace RoadStyleIntoKorea {
  internal static class DividerStylePolicy {
   // Persisted style IDs. Zero follows the automatic rule.
   internal static readonly string[] Assets={"","CSKRHighwayWhiteRightToLeft5mNetLane","CSKRHighwayWhiteLeftToRight5mNetLane","CSKRBusBlueSolid6mNetLane","CSKRBusBlueDashed6mNetLane","CSKRBusBlueRightToLeft6mNetLane","CSKRBusBlueLeftToRight6mNetLane"};
