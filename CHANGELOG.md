@@ -1,3 +1,17 @@
+# 0.1.233
+
+한국어
+- 신규 도로의 스타일 자동 적용을 켜고 끄는 옵션을 추가했습니다.
+- 중앙분리대가 여러 개인 도로에서 중앙선을 하나씩 편집할 수 있습니다.
+- 고가도로의 유도선·방지턱 표시와 유도선 끊김 처리를 개선했습니다.
+- 자동 배수로 생성, 짧은 도로의 표지 겹침, 화면 밖으로 가려지는 표지 목록을 수정했습니다.
+
+English
+- Added an option to turn automatic styling of new roads on or off.
+- Center lines can now be edited individually on roads with multiple medians.
+- Improved guide line and speed hump rendering on elevated roads, and guide line gap handling.
+- Fixed automatic gutter creation, overlapping markings on short roads, and marking lists opening off-screen.
+
 # 0.1.225
 
 한국어

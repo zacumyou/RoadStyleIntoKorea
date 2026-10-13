@@ -33,12 +33,12 @@ namespace RoadStyleIntoKorea {
     }
     localStyleCommands.Enqueue(()=>{
      if(!IsRoad(owner))return;PrepareToolTarget(owner);var ends=EntityManager.GetComponentData<Edge>(owner);
-     if(remove){EntityManager.RemoveComponent<CurbChoice>(owner);EntityManager.RemoveComponent<GutterChoice>(owner);EntityManager.RemoveComponent<RemovedPaintChoice>(owner);EnqueueCurb(owner);EntityManager.RemoveComponent<ManualDecalChoice>(owner);EntityManager.RemoveComponent<DrawnLineChoice>(owner);manualDirty.Add(owner);EntityManager.RemoveComponent<CenterChoice>(owner);EntityManager.RemoveComponent<EdgeChoice>(owner);EntityManager.RemoveComponent<UTurnChoice>(owner);}
+     if(remove){EntityManager.RemoveComponent<CurbChoice>(owner);EntityManager.RemoveComponent<GutterChoice>(owner);EntityManager.RemoveComponent<RemovedPaintChoice>(owner);EnqueueCurb(owner);EntityManager.RemoveComponent<ManualDecalChoice>(owner);EntityManager.RemoveComponent<DrawnLineChoice>(owner);manualDirty.Add(owner);EntityManager.RemoveComponent<CenterChoice>(owner);EntityManager.RemoveComponent<CenterPathChoice>(owner);EntityManager.RemoveComponent<EdgeChoice>(owner);EntityManager.RemoveComponent<UTurnChoice>(owner);}
      else {
       int center=defaults?(int)S.DefaultCenter:(int)(CenterDivided(owner)?EdgeStyle.YellowSolid:EdgeStyle.YellowDouble);
       int edge=defaults?(int)(S.EdgeLines?S.DefaultEdge:EdgeStyle.Original):(int)S.Brush;if(!defaults&&edge<2)edge=(int)EdgeStyle.YellowSolid;
       if(!EntityManager.HasComponent<CenterChoice>(owner))EntityManager.AddComponent<CenterChoice>(owner);
-      EntityManager.SetComponentData(owner,new CenterChoice{Left=center+1,Right=center+1});
+      EntityManager.RemoveComponent<CenterPathChoice>(owner);EntityManager.SetComponentData(owner,new CenterChoice{Left=center+1,Right=center+1});
       if(!EntityManager.HasComponent<EdgeChoice>(owner))EntityManager.AddComponent<EdgeChoice>(owner);
       EntityManager.SetComponentData(owner,new EdgeChoice{Left=edge+1,Right=edge+1});
       if((!defaults||S.UTurnZones)&&ManualUTurnAllowed(owner)){if(!EntityManager.HasComponent<UTurnChoice>(owner))EntityManager.AddComponent<UTurnChoice>(owner);EntityManager.SetComponentData(owner,new UTurnChoice{Position=.5f,Length=UTurnRoutePolicy.ClampLength(S.UTurnZoneLength),Automatic=true});}
@@ -78,7 +78,7 @@ namespace RoadStyleIntoKorea {
    // Remove selections together before scheduling any dependent reconstruction.
    EntityManager.RemoveComponent<CurbChoice>(owner);EntityManager.RemoveComponent<GutterChoice>(owner);
    EntityManager.RemoveComponent<RemovedPaintChoice>(owner);EntityManager.RemoveComponent<ManualDecalChoice>(owner);
-   EntityManager.RemoveComponent<DrawnLineChoice>(owner);EntityManager.RemoveComponent<CenterChoice>(owner);
+   EntityManager.RemoveComponent<DrawnLineChoice>(owner);EntityManager.RemoveComponent<CenterChoice>(owner);EntityManager.RemoveComponent<CenterPathChoice>(owner);
    EntityManager.RemoveComponent<EdgeChoice>(owner);EntityManager.RemoveComponent<UTurnChoice>(owner);
    int sideRoads=EntityManager.HasBuffer<SideRoadChoice>(owner)?EntityManager.GetBuffer<SideRoadChoice>(owner,true).Length:0;
    EntityManager.RemoveComponent<SideRoadChoice>(owner);sideRoadWork.Remove(owner);
@@ -99,18 +99,14 @@ namespace RoadStyleIntoKorea {
    }
    crossingPlans.Clear();crossingSizes.Clear();crossingTrafficPlans.Clear();InvalidateToolPreview();
   }}
-  void ApplyBulkStructures(Entity road,bool defaults,bool includeGutters=true){
-   bool highway=HighwayRoad(road),curb=!highway||S.HighwayCurbs,gutter=includeGutters&&(!highway||S.HighwayGutters);
-   if(!curb&&!gutter)return;
-   int style=defaults?1:GutterBrush;
-   gutter&=assets.Get(GutterAsset(style))!=Entity.Null;
+  void ApplyBulkStructures(Entity road,bool defaults){
+   bool highway=HighwayRoad(road),curb=!highway||S.HighwayCurbs;
+   if(!curb)return;
    var regions=PavingRegions(road);
    if(curb&&!EntityManager.HasBuffer<CurbChoice>(road))EntityManager.AddBuffer<CurbChoice>(road);
-   if(gutter&&!EntityManager.HasBuffer<GutterChoice>(road))EntityManager.AddBuffer<GutterChoice>(road);
    foreach(var region in regions){
     if(!AutomaticPavingRegion(road,region))continue;
     if(curb&&!CurbSelected(road,region)){CurbLimits(region,out float min,out float max);EntityManager.GetBuffer<CurbChoice>(road).Add(new CurbChoice{Kind=region.Kind,Min=min,Max=max});}
-    if(gutter&&GutterSelected(road,region)==0){GutterLimits(region,out float min,out float max);EntityManager.GetBuffer<GutterChoice>(road).Add(new GutterChoice{Kind=region.Kind,Style=style,Min=min,Max=max});}
    }
    EnqueueCurb(road);EnqueuePaving(road);var ends=EntityManager.GetComponentData<Edge>(road);EnqueuePaving(ends.m_Start);EnqueuePaving(ends.m_End);
   }

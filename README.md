@@ -1,4 +1,4 @@
-# Road Style Into Korea [Beta]
+﻿# Road Style Into Korea [Beta]
 
 한국식 차선·횡단보도·노면 표지와 보도를 꾸미는 Cities: Skylines II 모드입니다.
 A Cities: Skylines II mod for Korean-style lane markings, crosswalks, road decals and sidewalk details.
@@ -21,7 +21,7 @@ A Cities: Skylines II mod for Korean-style lane markings, crosswalks, road decal
 
 ## Build
 
-This source snapshot corresponds to 0.1.225. The asset pack is maintained separately.
+This source snapshot corresponds to 0.1.233. The asset pack is maintained separately.
 
 Requires Windows, the official Cities: Skylines II modding toolchain (with its CSII_* environment variables), .NET SDK, .NET Framework 4.8 targeting support, and Node.js 18+.
 

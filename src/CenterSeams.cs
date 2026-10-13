@@ -2,9 +2,9 @@
 namespace RoadStyleIntoKorea {public partial class StyleSystem {
 int CenterSeamChoice(Entity road,float3 point){
 if(!EntityManager.HasComponent<CenterChoice>(road))return 0;var choice=EntityManager.GetComponentData<CenterChoice>(road);if(!CenterDivided(road))return HasOpposingTraffic(road)?choice.Left:0;
-float best=float.MaxValue;bool left=false;foreach(var path in CenterPaths(road,Lanes(road),EdgeStyle.YellowDouble)){
-var arc=new Geometry.Arc(path.Curve);float d=math.distancesq(point,Geometry.Position(path.Curve,arc.Nearest(point)));if(d<best){best=d;left=path.Left;}}
-return left?choice.Left:choice.Right;
+float best=float.MaxValue;int code=0;foreach(var path in CenterPaths(road,Lanes(road),EdgeStyle.YellowDouble)){
+var arc=new Geometry.Arc(path.Curve);float d=math.distancesq(point,Geometry.Position(path.Curve,arc.Nearest(point)));if(d<best){best=d;code=CenterCode(road,path);}}
+return code;
 }
 float CenterSeamDistance(Entity road,float3 point){float best=float.MaxValue;foreach(var path in CenterPaths(road,Lanes(road),EdgeStyle.YellowDouble)){best=math.min(best,math.min(math.distancesq(point,path.Curve.a),math.distancesq(point,path.Curve.d)));}return best;}
 void JoinCenterSeam(Entity node,Record record,List<Entity> roads,bool inspect){
@@ -36,19 +36,14 @@ sealed class CenterEndpoint {internal float3 Point,Into;internal int Code;}
 static CenterEndpoint ClosestCenterEndpoint(List<CenterEndpoint> endpoints,float3 point){CenterEndpoint best=null;float distance=float.MaxValue;foreach(var e in endpoints){float d=math.distancesq(point,e.Point);if(d<distance){best=e;distance=d;}}return best;}
 List<CenterEndpoint> CenterEndpoints(Entity road,Entity node){
  var result=new List<CenterEndpoint>();var position=EntityManager.GetComponentData<Node>(node).m_Position;
- var lanes=Lanes(road);var choice=EntityManager.HasComponent<CenterChoice>(road)?EntityManager.GetComponentData<CenterChoice>(road):default;
- bool divided=CenterDivided(road);
- foreach(bool left in new[]{true,false}){
-  if(!divided&&!left)continue;int code=left?choice.Left:choice.Right;
-  var style=code>1?(EdgeStyle)(code-1):EdgeStyle.YellowSolid;
+ var lanes=Lanes(road);
+ foreach(var path in StyledCenterPaths(road,lanes)){
+  var style=path.Code>1?(EdgeStyle)(path.Code-1):EdgeStyle.YellowSolid;
   CenterEndpoint best=null;float distance=float.MaxValue;
-  foreach(var path in CenterPaths(road,lanes,style)){
-   if(divided&&path.Left!=left)continue;
-   foreach(var curve in CenterVisible(road,path,style,lanes)){
-    bool end=math.distancesq(curve.d,position)<math.distancesq(curve.a,position);var point=end?curve.d:curve.a;
-    float d=math.distancesq(point,position);if(d>=distance)continue;distance=d;
-    best=new CenterEndpoint{Point=point,Into=Geometry.Tangent(curve,end?1:0)*(end?1:-1),Code=code};
-   }
+  foreach(var curve in CenterVisible(road,path,style,lanes)){
+   bool end=math.distancesq(curve.d,position)<math.distancesq(curve.a,position);var point=end?curve.d:curve.a;
+   float d=math.distancesq(point,position);if(d>=distance)continue;distance=d;
+   best=new CenterEndpoint{Point=point,Into=Geometry.Tangent(curve,end?1:0)*(end?1:-1),Code=path.Code};
   }
   if(best!=null&&!result.Exists(e=>math.distance(e.Point,best.Point)<.02f))result.Add(best);
  }

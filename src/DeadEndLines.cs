@@ -16,7 +16,7 @@ var source=CurveOf(lane);float st=roadArc.Nearest(source.a),et=roadArc.Nearest(s
 bool startLeft=math.dot(source.a-Geometry.Position(roadArc.Curve,st),Geometry.Left(Geometry.Tangent(roadArc.Curve,st)))>=0;
 bool endLeft=math.dot(source.d-Geometry.Position(roadArc.Curve,et),Geometry.Left(Geometry.Tangent(roadArc.Curve,et)))>=0;
 for(int side=0;side<2;side++){
-bool left=side==0?startLeft:endLeft;int code=central?(left?centerChoice.Left:centerChoice.Right):(left?edgeChoice.Left:edgeChoice.Right);
+bool left=side==0?startLeft:endLeft;int code=central?CenterSeamChoice(road,side==0?source.a:source.d):(left?edgeChoice.Left:edgeChoice.Right);
 var style=code==0?(central||!active?EdgeStyle.Original:S.DefaultEdge):(EdgeStyle)(code-1);if(style==EdgeStyle.None||style==EdgeStyle.Original)continue;
 float half=central?CenterLinePolicy.HalfWidth((int)style):EdgePaintHalfWidth(style);float offset=central?math.max(0,Width(lane)*.5f-half-.05f):-EdgeTaperPolicy.OutsideOffset(Width(lane),half,S.EdgeLaneGap);
 System.Func<float3,bool> fits=p=>{foreach(var ribbon in ribbons)if(ribbon.ContainsPaint(p,half+.08f))return true;return false;};

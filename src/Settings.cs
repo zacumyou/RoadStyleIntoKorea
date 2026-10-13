@@ -36,6 +36,7 @@ namespace RoadStyleIntoKorea
         public string AllRoadProgress => RoadStyleIntoKorea.StatusText.Display(Mod.Runtime?.AllRoadProgress ?? "도시를 불러오세요 / Load a city");
         public Game.UI.Localization.LocalizedString StatusText()=>Game.UI.Localization.LocalizedString.Value(Status);
         public Game.UI.Localization.LocalizedString AllRoadProgressText()=>Game.UI.Localization.LocalizedString.Value(RoadStyleIntoKorea.StatusText.Get("RSIK.Status.AllRoadStyles")+AllRoadProgress);
+        [SettingsUISection("Apply", "Actions")] public bool AutoStyleNewRoads { get; set; } = true;
         public bool CannotApply() => Mod.Runtime==null||Mod.Runtime.CannotReplaceAll;
         [SettingsUISection("Apply", "Actions")] public ReplaceCategory BulkCategory { get; set; }
         [SettingsUISection("Apply", "Actions")] public CenterStyle BulkCenter { get; set; }=CenterStyle.YellowDouble;
@@ -103,7 +104,7 @@ namespace RoadStyleIntoKorea
         [SettingsUISection("Surface", "Wear")] public bool Paving { get; set; } = true;
         [SettingsUISection("Surface", "Wear")] public bool HighwayPaving { get; set; } = false;
         [SettingsUISection("Surface", "Wear")] public bool HighwayCurbs { get; set; } = false;
-        [SettingsUISection("Surface", "Wear")] public bool HighwayGutters { get; set; } = false;
+        [SettingsUIHidden] public bool HighwayGutters { get; set; } = false;
         [SettingsUISection("Surface", "Wear")] public PavingStyle DefaultPaving { get; set; } = PavingStyle.Brick01;
         [SettingsUIHidden] public PavingStyle PavingBrush { get; set; } = PavingStyle.Brick01;
         [SettingsUISection("Surface", "Wear")] public bool LaneBoundaryCracks { get; set; }
@@ -121,7 +122,7 @@ namespace RoadStyleIntoKorea
             HideTransportColor=HideTransportText=true;
             Paving=true;PavingBrush=PavingStyle.Brick01;LaneBoundaryCracks=false;
             UTurnZones=false;UTurnZoneLength=8;
-            Enabled=true;SpeedSigns=true;SyncTraffic=true;AutoCrosswalkSize=true;ArrowStopDistance=5; Crosswalks=StopLines=SolidApproach=Diamonds=EdgeLines=Arrows=LeftGuides=UpdateEditedRoads=true;
+            AutoStyleNewRoads=true;Enabled=true;SpeedSigns=true;SyncTraffic=true;AutoCrosswalkSize=true;ArrowStopDistance=5; Crosswalks=StopLines=SolidApproach=Diamonds=EdgeLines=Arrows=LeftGuides=UpdateEditedRoads=true;
             StopGap=3;CrosswalkClearance=14;HideJunctionLines=false;PlacementVersion=10;DefaultCrosswalk=CrosswalkBrush=CrosswalkSize.Three;PaintClearance=1; SolidPercent=25; SolidMinimum=10; SolidMaximum=50; DiamondDistance=20; DiamondCount=1; DiamondSpacing=15;
             DefaultEdge=EdgeStyle.Original; Brush=EdgeStyle.YellowSolid; Side=ToolSide.ClickedSide; EdgeLaneGap=0; EdgeInset=0;
             TurnAngle=45; GuideLeftOffset=1.5f; GuideDash=.4f;GuideGap=.5f; Milliseconds=2; RoadsPerFrame=8;
@@ -144,6 +145,7 @@ namespace RoadStyleIntoKorea
             string[] groups={"Actions","적용 및 복원","Apply and restore","Crossings","횡단보도와 정지선","Crosswalks and stop lines","Approach","접근부 표지","Approach markings","EdgeLines","도로 한쪽씩 선택","Choose each side","Arrows","진행 방향","Direction arrows","Guides","좌회전 유도선","Left-turn guides","Budget","프레임별 처리량","Work per frame"};
             for(int i=0;i<groups.Length;i+=3)d[s.GetOptionGroupLocaleID(groups[i])]=groups[i+(ko?1:2)];
             Add(d,"Enabled","이번 도시에서 사용","Enable for this city session","도시를 불러올 때마다 꺼집니다. 켠 뒤 모두 교체를 누르세요. 끄면 원래 표지로 복원합니다.","Off after each city load. Enable, then press Replace all. Disable to restore original markings.");
+            Add(d,"AutoStyleNewRoads","신규 도로에 스타일 자동 적용","Automatically style new roads","새로 건설한 도로에 기본 스타일을 자동 적용합니다. 끄면 이후 건설한 도로는 자동 적용하지 않습니다. 기존 도로 편집 시 스타일 유지와 수동·전체 적용에는 영향을 주지 않습니다.","Automatically applies default styles to newly built roads. Disable to leave future roads unstyled. Existing style preservation during road edits, manual tools and Apply All are unaffected.");
             Add(d,"ReplaceOrdinary","일반도로만 전체 적용","Apply to ordinary roads","고속도로 속성이 없는 도로에만 전체 적용합니다.","Applies all styles only to roads without the highway flag.");
             Add(d,"ReplaceHighways","고속도로만 전체 적용","Apply to highways","고속도로 속성이 있는 도로에만 전체 적용합니다. 고속도로 포장 등 별도 설정은 유지합니다.","Applies all styles only to roads with the highway flag. Highway paving and other highway options are respected.");
             Add(d,"ReplaceAll","전체 적용","Apply to all roads","실험 기능. 현재 옵션의 기본 중앙선·가장자리·횡단보도·보도 스타일과 접근부 설정을 모든 도로에 적용합니다. 개별 선택과 수동 접근부·유도선은 기본 설정으로 교체됩니다. 경계석·배수로의 개별 선택은 원래 상태로 복원합니다. 카메라 중심에 가까운 도로부터 처리합니다.","Experimental. Applies the configured default center, edge, crossing, paving and approach styles to every road, replacing individual selections, manual approach decals and guides. Resets individual curb/gutter overrides to native. Starts nearest the camera center.");
@@ -153,7 +155,6 @@ namespace RoadStyleIntoKorea
             Add(d,"DefaultPaving","기본 보도블록 스타일","Default paving style","모든 도로 스타일 교체에 사용할 보도블록입니다.","Paving style used by Replace all road styles.");
             Add(d,"HighwayPaving","고속도로에도 보도블록 일괄 추가","Include highway paving","모두 추가·새 도로 자동 적용·전체 교체에서 고속도로 보도블록을 포함합니다. 수동 배치는 제한하지 않습니다.","Include highway paving in bulk and automatic styles. Manual placement remains available.");
             Add(d,"HighwayCurbs","고속도로에도 경계석 일괄 추가","Include highway curbs","모두 추가·새 도로 자동 적용·전체 교체에서 고속도로 경계석을 포함합니다.","Include highway curbs in bulk and automatic styles.");
-            Add(d,"HighwayGutters","고속도로에도 배수로 일괄 추가","Include highway gutters","모두 추가·새 도로 자동 적용·전체 교체에서 고속도로 배수로를 포함합니다.","Include highway gutters in bulk and automatic styles.");
             Add(d,"RestoreAll","원래 표지로 모두 복원","Restore original markings","작업을 취소하고 원래 표시를 복원합니다. 도로별 가장자리 선택은 보존됩니다.","Cancels work and restores original visuals. Per-road edge choices are retained.");
             Add(d,"InspectAssets","필요 에셋 확인","Check required assets","현재 로드된 에셋을 검사합니다. 누락이 있으면 모두 교체를 시작하지 않습니다.","Checks loaded prefabs. Replace all will not start if required assets are missing.");
             Add(d,"Status","처리 상태","Status","완료 수와 누락된 에셋을 표시합니다.","Shows progress and missing assets.");

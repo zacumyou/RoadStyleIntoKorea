@@ -137,8 +137,10 @@ namespace RoadStyleIntoKorea
                     {
                         foreach(var d in group)if(S.StopLines&&draw){
                             var p=d.Arc.At(d.Stop);var f=d.Arc.Direction(d.Stop);var sideVector=Geometry.Left(f)*d.Width*.5f;
+                            var candidate=Geometry.Line(p-sideVector,p+sideVector);
+                            if(!StopBarClear(owner,candidate)){d.Stop=-1;d.StopSuppressed=true;continue;}
                             int before=record.Paint.Count;
-                            foreach(var bar in StopCenterPolicy.ClearBar(Geometry.Line(p-sideVector,p+sideVector),StopBarCenters(owner,lanes)))PaintLane(owner,record,assets.Get("NA Car Stop Line"),bar);
+                            foreach(var bar in StopCenterPolicy.ClearBar(candidate,StopBarCenters(owner,lanes)))PaintLane(owner,record,assets.Get("NA Car Stop Line"),bar);
                             d.StopPainted=record.Paint.Count>before;
                         }
                         continue;
@@ -152,9 +154,16 @@ namespace RoadStyleIntoKorea
                         if(lateral-half<min){min=lateral-half;right=origin+across*min;right.y=p.y;}
                         if(lateral+half>max){max=lateral+half;leftEnd=origin+across*max;leftEnd.y=p.y;}
                     }
+                    if(!StopBarClear(owner,Geometry.Line(right,leftEnd))){foreach(var d in group){d.Stop=-1;d.StopSuppressed=true;}continue;}
                     if(S.StopLines&&draw){int before=record.Paint.Count;foreach(var bar in StopCenterPolicy.ClearBar(Geometry.Line(right,leftEnd),StopBarCenters(owner,lanes)))PaintLane(owner,record,assets.Get("NA Car Stop Line"),bar);foreach(var d in group)d.StopPainted=record.Paint.Count>before;}
                 }
             }
+        }
+        bool StopBarClear(Entity owner,Bezier4x3 bar)
+        {
+            foreach(var crossing in NearbyCrossings(owner))
+                if(MarkingPolicy.StopOverlapsCrosswalk(bar,CrosswalkCurve(crossing),CrossingWidth(crossing)))return false;
+            return true;
         }
         IEnumerable<Bezier4x3> DividerBeforeStops(Entity road,Bezier4x3 curve)
         {

@@ -10,7 +10,7 @@ namespace RoadStyleIntoKorea
     }
     public partial class StyleSystem
     {
-        sealed class CenterPath{internal Bezier4x3 Curve,Original;internal bool Left,Shifted;internal Entity Source;internal Geometry.Arc Arc;}
+        sealed class CenterPath{internal Bezier4x3 Curve,Original;internal bool Left,Shifted;internal float Offset;internal int Code;internal Entity Source;internal Geometry.Arc Arc;}
         bool CenterDivided(Entity edge)
         {
             if(!EntityManager.HasComponent<Composition>(edge))return false;
@@ -57,7 +57,7 @@ namespace RoadStyleIntoKorea
                 bool left=math.dot(mid-Geometry.Position(center.Curve,t),Geometry.Left(Geometry.Tangent(center.Curve,t)))>=0;
                 var original=CenterLinePolicy.MedianSide(c,Width(lane),CenterLinePolicy.HalfWidth((int)style));
                 float extra=InnerEmptyWidth(edge,c,Width(lane));
-                result.Add(new CenterPath{Curve=CenterLinePolicy.MedianSide(c,Width(lane)+extra*2,CenterLinePolicy.HalfWidth((int)style)),Original=original,Shifted=extra>.001f,Left=left});
+                result.Add(new CenterPath{Curve=CenterLinePolicy.MedianSide(c,Width(lane)+extra*2,CenterLinePolicy.HalfWidth((int)style)),Original=original,Shifted=extra>.001f,Left=left,Offset=math.dot(mid-Geometry.Position(center.Curve,t),Geometry.Left(Geometry.Tangent(center.Curve,t)))});
             }
             return result;
         }
@@ -76,25 +76,29 @@ namespace RoadStyleIntoKorea
         }
         readonly List<EdgePaintPlan> centerPaintPlans=new List<EdgePaintPlan>();
         void ClearLinePlans(){edgePaintPlans.Clear();centerPaintPlans.Clear();roadRibbonFrameCache.Clear();sidewalkFrameCache.Clear();}
+        int CenterCode(Entity edge,CenterPath path){
+            if(EntityManager.HasBuffer<CenterPathChoice>(edge))foreach(var c in EntityManager.GetBuffer<CenterPathChoice>(edge,true))if(math.abs(c.Offset-path.Offset)<.1f)return c.Code;
+            var choice=EntityManager.HasComponent<CenterChoice>(edge)?EntityManager.GetComponentData<CenterChoice>(edge):default;
+            return !CenterDivided(edge)||path.Left?choice.Left:choice.Right;
+        }
+        List<CenterPath> StyledCenterPaths(Entity edge,List<Entity> lanes){
+            var result=new List<CenterPath>();
+            var choice=EntityManager.HasComponent<CenterChoice>(edge)?EntityManager.GetComponentData<CenterChoice>(edge):default;
+            var codes=new HashSet<int>{choice.Left,choice.Right};if(EntityManager.HasBuffer<CenterPathChoice>(edge))foreach(var c in EntityManager.GetBuffer<CenterPathChoice>(edge,true))codes.Add(c.Code);
+            foreach(int code in codes)foreach(var p in CenterPaths(edge,lanes,code>1?(EdgeStyle)(code-1):EdgeStyle.YellowSolid))if(CenterCode(edge,p)==code){p.Code=code;result.Add(p);}
+            return result;
+        }
         void ApplyCenterLines(Entity edge,Record record,List<Entity> lanes)
         {
             if(!EntityManager.HasComponent<CenterChoice>(edge))return;
-            var choice=EntityManager.GetComponentData<CenterChoice>(edge);bool divided=CenterDivided(edge);
-            foreach(bool left in new[]{true,false})
-            {
-                if(!divided&&!left)continue;
-                int code=left?choice.Left:choice.Right;if(code==0)continue;var style=(EdgeStyle)(code-1);
-                var paintedPaths=new List<Colossal.Mathematics.Bezier4x3>();
-                foreach(var path in CenterPaths(edge,lanes,style))
-                {
-                    if(divided&&path.Left!=left)continue;
-                    bool duplicate=paintedPaths.Exists(c=>SameCenterPath(c,path.Curve));
-                    if(duplicate){HideCenterOriginals(path,lanes,record);continue;}paintedPaths.Add(path.Curve);
-                    int before=record.Paint.Count;
-                    if(style!=EdgeStyle.None||EntityManager.HasComponent<UTurnChoice>(edge))foreach(var c in CenterVisible(edge,path,style,lanes))PaintCenterZone(edge,record,style==EdgeStyle.None?Entity.Null:assets.Get(CenterLinePolicy.Asset((int)style)),c);
-                    if(style!=EdgeStyle.None&&before==record.Paint.Count&&NearbyCrossings(edge).Count==0)continue;
-                    HideCenterOriginals(path,lanes,record);
-                }
+            var paintedPaths=new List<Bezier4x3>();
+            foreach(var path in StyledCenterPaths(edge,lanes)){
+                int code=path.Code;if(code==0)continue;var style=(EdgeStyle)(code-1);
+                if(paintedPaths.Exists(c=>SameCenterPath(c,path.Curve))){HideCenterOriginals(path,lanes,record);continue;}paintedPaths.Add(path.Curve);
+                int before=record.Paint.Count;
+                if(style!=EdgeStyle.None||EntityManager.HasComponent<UTurnChoice>(edge))foreach(var c in CenterVisible(edge,path,style,lanes))PaintCenterZone(edge,record,style==EdgeStyle.None?Entity.Null:assets.Get(CenterLinePolicy.Asset((int)style)),c);
+                if(style!=EdgeStyle.None&&before==record.Paint.Count&&NearbyCrossings(edge).Count==0)continue;
+                HideCenterOriginals(path,lanes,record);
             }
         }
         static bool SameCenterPath(Bezier4x3 a,Bezier4x3 b){
@@ -116,30 +120,37 @@ namespace RoadStyleIntoKorea
             }
         }
         internal void CycleCenterBrush(){S.CenterBrush=(EdgeStyle)CenterLinePolicy.Next((int)S.CenterBrush);InvalidateToolPreview();}
-        Entity centerPreviewEdge;int centerPreviewRevision=-1;EdgeStyle centerPreviewBrush;
+        bool centerPreviewIndividual;Entity centerPreviewEdge;int centerPreviewRevision=-1;EdgeStyle centerPreviewBrush;
         readonly List<CenterPath> centerPreview=new List<CenterPath>();
-        internal bool DrawCenterPreview(Entity edge,float3 hit,Game.Rendering.OverlayRenderSystem.Buffer buffer)
+        internal float DrawCenterPreview(Entity edge,float3 hit,Game.Rendering.OverlayRenderSystem.Buffer buffer)
         {
             if(centerPreviewEdge!=edge||centerPreviewRevision!=toolRevision||centerPreviewBrush!=S.CenterBrush)
             {
                 centerPreviewEdge=edge;centerPreviewRevision=toolRevision;centerPreviewBrush=S.CenterBrush;centerPreview.Clear();
-                var lanes=Lanes(edge);foreach(var path in CenterPaths(edge,lanes,S.CenterBrush))foreach(var c in CenterVisible(edge,path,S.CenterBrush,lanes))centerPreview.Add(new CenterPath{Curve=c,Left=path.Left,Arc=new Geometry.Arc(c)});
+                var lanes=Lanes(edge);var paths=CenterPaths(edge,lanes,S.CenterBrush);centerPreviewIndividual=MultipleCenterPaths(paths);foreach(var path in paths)foreach(var c in CenterVisible(edge,path,S.CenterBrush,lanes))centerPreview.Add(new CenterPath{Curve=c,Left=path.Left,Offset=path.Offset,Arc=new Geometry.Arc(c)});
             }
-            bool selected=false;float best=float.MaxValue;
-            foreach(var p in centerPreview){float d=math.distancesq(Geometry.Position(p.Curve,p.Arc.Nearest(hit)),hit);if(d<best){best=d;selected=p.Left;}}
-            bool divided=CenterDivided(edge);foreach(var p in centerPreview)if(CenterLinePolicy.Select(divided,S.CenterSide==ToolSide.BothSides,selected,p.Left))buffer.DrawCurve(S.Enabled?EdgeStyleTool.BrushColor(S.CenterBrush,.7f):new Color(1,.2f,.2f,.7f),p.Curve,math.max(.25f,CenterLinePolicy.HalfWidth((int)S.CenterBrush)*2));
+            float selected=float.NaN;bool selectedLeft=false;float best=float.MaxValue;
+            foreach(var p in centerPreview){float d=math.distancesq(Geometry.Position(p.Curve,p.Arc.Nearest(hit)),hit);if(d<best){best=d;selected=p.Offset;selectedLeft=p.Left;}}
+            bool divided=CenterDivided(edge);bool individual=centerPreviewIndividual;foreach(var p in centerPreview)if(individual?math.abs(p.Offset-selected)<.1f:CenterLinePolicy.Select(divided,S.CenterSide==ToolSide.BothSides,selectedLeft,p.Left))buffer.DrawCurve(S.Enabled?EdgeStyleTool.BrushColor(S.CenterBrush,.7f):new Color(1,.2f,.2f,.7f),p.Curve,math.max(.25f,CenterLinePolicy.HalfWidth((int)S.CenterBrush)*2));
             return selected;
         }
-        internal void ChooseCenter(Entity edge,bool left,bool reset)
+        static bool MultipleCenterPaths(List<CenterPath> paths){var offsets=new List<float>();foreach(var p in paths)if(!offsets.Exists(x=>math.abs(x-p.Offset)<.1f))offsets.Add(p.Offset);return offsets.Count>2;}
+        internal void ChooseCenter(Entity edge,float offset,bool reset)
         {
-            if(!S.Enabled||!IsRoad(edge)||!CachedAssetsReady())return;
+            if(!math.isfinite(offset)||!S.Enabled||!IsRoad(edge)||!CachedAssetsReady())return;
             if(S.CenterBrush!=EdgeStyle.None){var asset=assets.Get(CenterLinePolicy.Asset((int)S.CenterBrush));if(asset==Entity.Null||!EntityManager.HasComponent<NetLaneGeometryData>(asset)){Status="중앙선 에셋 누락 / Center line asset missing";return;}}
-            var lanes=Lanes(edge);if(CenterPaths(edge,lanes,S.CenterBrush).Count==0){Status="중앙선 대상이 없습니다 / No center line target";return;}
+            var lanes=Lanes(edge);var paths=CenterPaths(edge,lanes,S.CenterBrush);if(paths.Count==0){Status="중앙선 대상이 없습니다 / No center line target";return;}
             var choice=EntityManager.HasComponent<CenterChoice>(edge)?EntityManager.GetComponentData<CenterChoice>(edge):default;
-            int value=reset?0:(int)S.CenterBrush+1;bool both=!CenterDivided(edge)||S.CenterSide==ToolSide.BothSides;
-            if((!both&&(left?choice.Left:choice.Right)==value)||(both&&choice.Left==value&&choice.Right==value))return;
+            bool left=offset>=0;int value=reset?0:(int)S.CenterBrush+1;bool both=!CenterDivided(edge)||S.CenterSide==ToolSide.BothSides;
             if(reset)ToolResetHandled=true;
-            if(both||left)choice.Left=value;if(both||!left)choice.Right=value;
+            if(CenterDivided(edge)&&MultipleCenterPaths(paths)){
+                var choices=EntityManager.HasBuffer<CenterPathChoice>(edge)?EntityManager.GetBuffer<CenterPathChoice>(edge):EntityManager.AddBuffer<CenterPathChoice>(edge);
+                int found=-1;for(int i=0;i<choices.Length;i++)if(math.abs(choices[i].Offset-offset)<.1f){found=i;break;}
+                var item=new CenterPathChoice{Offset=offset,Code=value};if(found>=0)choices[found]=item;else choices.Add(item);
+            }else{
+                EntityManager.RemoveComponent<CenterPathChoice>(edge);
+                if(both||left)choice.Left=value;if(both||!left)choice.Right=value;
+            }
             if(!EntityManager.HasComponent<CenterChoice>(edge))EntityManager.AddComponent<CenterChoice>(edge);EntityManager.SetComponentData(edge,choice);
             if(EntityManager.HasBuffer<ManualDecalChoice>(edge))manualDirty.Add(edge);EnqueueCenterOnly(edge);var ends=EntityManager.GetComponentData<Edge>(edge);EnqueueCenterOnly(ends.m_Start);EnqueueCenterOnly(ends.m_End);InvalidateToolPreview();Status="중앙선 변경 대기 / Center line change queued";
         }

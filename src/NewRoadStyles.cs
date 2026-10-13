@@ -13,7 +13,7 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
  readonly List<KeyValuePair<Geometry.Arc,float>> replacedRoadCurves=new List<KeyValuePair<Geometry.Arc,float>>();
  sealed class ReplacedStyle {
   internal Geometry.Arc Arc;internal Entity Prefab;internal float Expires;
-  internal CenterChoice? Center;internal EdgeChoice? Edge;internal CrosswalkChoice? Crosswalk;
+  internal CenterPathChoice[] CenterPaths;internal CenterChoice? Center;internal EdgeChoice? Edge;internal CrosswalkChoice? Crosswalk;
   internal ApproachChoice? Approach;internal UTurnChoice? UTurn;
   internal DrawnLineChoice[] Drawn;internal PavingChoice[] Paving;internal ManualDecalChoice[] Manual;internal CurbChoice[] Curb;internal GutterChoice[] Gutter;internal SideRoadChoice[] SideRoad;
  }
@@ -31,7 +31,7 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
   // Native lane construction and the local work queue can outlive the short
   // automatic-style delay, especially when several roads are edited at once.
   replacedStyles.Add(new ReplacedStyle{Arc=new Geometry.Arc(curve),Prefab=Prefab(road),Expires=now+120,
-   Center=EntityManager.HasComponent<CenterChoice>(road)?EntityManager.GetComponentData<CenterChoice>(road):(CenterChoice?)null,
+   CenterPaths=ChoiceBuffer<CenterPathChoice>(road),Center=EntityManager.HasComponent<CenterChoice>(road)?EntityManager.GetComponentData<CenterChoice>(road):(CenterChoice?)null,
    Edge=EntityManager.HasComponent<EdgeChoice>(road)?EntityManager.GetComponentData<EdgeChoice>(road):(EdgeChoice?)null,
    Crosswalk=EntityManager.HasComponent<CrosswalkChoice>(road)?EntityManager.GetComponentData<CrosswalkChoice>(road):(CrosswalkChoice?)null,
    Approach=EntityManager.HasComponent<ApproachChoice>(road)?EntityManager.GetComponentData<ApproachChoice>(road):(ApproachChoice?)null,
@@ -76,6 +76,7 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
   if(old.Center.HasValue&&!EntityManager.HasComponent<CenterChoice>(road)){
    var c=old.Center.Value;if(reverse){int side=c.Left;c.Left=c.Right;c.Right=side;}EntityManager.AddComponentData(road,c);copied=true;
   }
+  if(old.CenterPaths!=null){var paths=(CenterPathChoice[])old.CenterPaths.Clone();if(reverse)for(int i=0;i<paths.Length;i++)paths[i].Offset=-paths[i].Offset;CopyChoiceBuffer(road,paths);}
   if(old.Edge.HasValue&&!EntityManager.HasComponent<EdgeChoice>(road)){
    var c=old.Edge.Value;if(reverse){int side=c.Left;c.Left=c.Right;c.Right=side;}EntityManager.AddComponentData(road,c);copied=true;
   }
@@ -146,6 +147,7 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
    if(EntityManager.HasComponent<Curve>(road))knownRoadCurves[road]=CurveOf(road);
    if(now<newRoadHistoryBusyUntil||!S.Enabled||restoring||restoreRequested||!IsRoad(road))continue;
    bool replaced=TryReplacedStyle(road,out _,out _);
+   if(!S.AutoStyleNewRoads&&!replaced)continue;
    if(HasRoadStyleChoice(road)&&!replaced)continue;
    if(IsExistingRoadPiece(road)&&!replaced)continue;
    newRoadStyles.Enqueue(new KeyValuePair<Entity,float>(road,now+.5f));
@@ -161,6 +163,8 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
   if(TryReplacedStyle(road,out var old,out bool reverse)){newRoadStyles.Dequeue();TransferReplacedStyle(road,old,reverse);return;}
   if(HasRoadStyleChoice(road)){newRoadStyles.Dequeue();return;}
   if(IsExistingRoadPiece(road)){newRoadStyles.Dequeue();return;}
+  // Recheck after inheritance: disabling must also discard queued fresh-road work.
+  if(!S.AutoStyleNewRoads){newRoadStyles.Dequeue();return;}
   if(UnityEngine.Time.realtimeSinceStartup<newRoadAssetsAt)return;
   if(!CachedAssetsReady()){newRoadAssetsAt=UnityEngine.Time.realtimeSinceStartup+2;return;}
   newRoadStyles.Dequeue();ChooseLocalStyles(road,false,true);

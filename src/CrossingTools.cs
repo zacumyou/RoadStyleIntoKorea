@@ -124,6 +124,7 @@ namespace RoadStyleIntoKorea
             QueueBoundaryGuides(road);
             if(EntityManager.HasComponent<CenterChoice>(road)||EntityManager.HasComponent<UTurnChoice>(road))EnqueueCenterOnly(road);
             if(EntityManager.HasComponent<ApproachChoice>(road)&&EntityManager.GetComponentData<ApproachChoice>(road).Enabled)approachPending.Add(road);
+            else if(active)EnqueueMarkings(road);
         }
         float CrossingWidth(Entity lane)=>StyleCrossing(lane)?CrosswalkStylePolicy.Width(CrossingSize(lane)):math.max(.5f,Width(lane));
         readonly Dictionary<Entity,List<Entity>> nearbyFrameCache=new Dictionary<Entity,List<Entity>>();

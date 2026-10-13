@@ -72,7 +72,9 @@ namespace RoadStyleIntoKorea {
   }
   void PaintGutter(Entity owner,Record record,int style,Bezier4x3 curve){
    var prefab=assets.Get(GutterAsset(style));if(!Live(prefab)||!EntityManager.HasComponent<NetLaneGeometryData>(prefab)){Status="배수로 에셋 누락 / Missing: "+GutterAsset(style);return;}
-   PaintLane(owner,record,prefab,curve);
+   if(IsRoad(owner)){
+    foreach(var clear in BoundaryPaint(owner,curve,GutterPolicy.Width*.5f+.15f))PaintLane(owner,record,prefab,clear);
+   }else PaintLane(owner,record,prefab,curve);
   }
   void BuildEdgeGutters(Entity edge,Record record){
    if(!HasGutterSelection(edge)||!EntityManager.HasComponent<EdgeGeometry>(edge))return;
@@ -105,30 +107,9 @@ namespace RoadStyleIntoKorea {
    PaintGutter(road,record,style,curve);
   }
   void BuildCornerGutters(Entity node,Record record){
-   if(BuildGutterSeam(node,record))return;
-   var edges=new List<Entity>();foreach(var e in EntityManager.GetBuffer<ConnectedEdge>(node,true))edges.Add(e.m_Edge);
-   var emitted=new List<Bezier4x3>();
-   foreach(var edge in edges){
-    if(!IsRoad(edge)||!HasGutterSelection(edge)||!EntityManager.HasComponent<Composition>(edge))continue;
-    bool start=EntityManager.GetComponentData<Edge>(edge).m_Start==node;
-    if(start&&!EntityManager.HasComponent<StartNodeGeometry>(edge)||!start&&!EntityManager.HasComponent<EndNodeGeometry>(edge))continue;
-    var cp=EntityManager.GetComponentData<Composition>(edge);var composition=start?cp.m_StartNode:cp.m_EndNode;if(!EntityManager.HasComponent<NetCompositionData>(composition))continue;
-    var data=EntityManager.GetComponentData<NetCompositionData>(composition);var shape=start?EntityManager.GetComponentData<StartNodeGeometry>(edge).m_Geometry:EntityManager.GetComponentData<EndNodeGeometry>(edge).m_Geometry;
-    if(shape.m_MiddleRadius>0||data.m_Width<1)continue;
-    foreach(var region in PavingRegions(edge)){
-     int style=GutterSelected(edge,region);if(style==0)continue;GutterLimits(region,out float lo,out float hi);if(math.abs(region.Min-lo)>.01f)continue;
-     CurbLimits(region,out lo,out hi);
-     float min=start?-hi:lo,max=start?-lo:hi;bool right=min+max>=0;float shift=(data.m_Width-region.RoadWidth)*.5f*(right?1:-1);min+=shift;max+=shift;
-     var s=right?shape.m_Right:shape.m_Left;float origin=right?data.m_MiddleOffset:-data.m_Width*.5f;float width=right?data.m_Width*.5f-data.m_MiddleOffset:data.m_MiddleOffset+data.m_Width*.5f;
-     if(width<=0||min<origin||max>origin+width)continue;
-     float height=CurbHeight(region)-(region.Kind==1?NativeCurbGeometry.Rise:0);
-     var sync=new NodeSurfaceSync{Enabled=true,Source=right?data.m_SyncVertexOffsetsRight:data.m_SyncVertexOffsetsLeft,Target=right?shape.m_SyncVertexTargetsRight:shape.m_SyncVertexTargetsLeft};
-     foreach(var curve in GutterPolicy.SyncedCurves(s.m_Left,s.m_Right,(min-origin)/width,(max-origin)/width,right,height,sync,GutterCurbBand(edge,region))){
-      if(emitted.Exists(c=>Geometry.SameCurve(c,curve)||Geometry.SameCurve(c,Geometry.Reverse(curve))))continue;
-      emitted.Add(curve);foreach(var clear in GutterClearance.Fit(curve,EdgeSidewalks(node),region.Kind==1))PaintGutter(node,record,style,clear);
-     }
-    }
-   }
+   // Native junction strips may fold across the carriageway. Only join fitted
+   // endpoints at a straight two-road seam; never project gutters onto node corners.
+   BuildGutterSeam(node,record);
   }
  }
 }

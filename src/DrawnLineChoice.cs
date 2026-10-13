@@ -30,6 +30,13 @@ namespace RoadStyleIntoKorea {
    float step=period*math.max(1,math.ceil(arc.Length/(period*128)));
    for(float from=0;from<arc.Length-.001f;from+=step)yield return arc.Slice(from,math.min(from+step,arc.Length));
   }
+  // Fit Y through sampled points, never alter the authored horizontal curve.
+  internal static Bezier4x3 FollowSurface(Bezier4x3 c,System.Func<float3,float?> height){
+   var a=height(c.a);var d=height(c.d);var p=height(Geometry.Position(c,1f/3));var q=height(Geometry.Position(c,2f/3));
+   if(!a.HasValue||!d.HasValue||!p.HasValue||!q.HasValue)return c;
+   float x=27*p.Value-8*a.Value-d.Value,y=27*q.Value-a.Value-8*d.Value;
+   c.a.y=a.Value;c.d.y=d.Value;c.b.y=(2*x-y)/18;c.c.y=(2*y-x)/18;return c;
+  }
   internal static Bezier4x3 Bend(Bezier4x3 c,float3 midpoint){var delta=(midpoint-Geometry.Position(c,.5f))*(4f/3f);return new Bezier4x3(c.a,c.b+delta,c.c+delta,c.d);}
   internal static Bezier4x3 SmoothConnect(float3 a,float3 d,float3 first,float3 last){
    var chord=d-a;float length=math.length(chord);var direction=math.normalizesafe(chord);

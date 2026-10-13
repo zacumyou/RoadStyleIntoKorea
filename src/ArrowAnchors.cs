@@ -18,7 +18,8 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
   return true;
  }
  bool ArrowStopClear(Drive drive,float at,string symbol){
-  if(drive.Stop<0)return true;
+  if(drive.StopSuppressed)return false;
+  if(drive.Stop<0){var b=ArrowBounds(symbol);return CrosswalkDecalClear(drive.Owner,drive,at,math.max(math.abs(b.x),math.abs(b.y)));}
   var normal=drive.Arc.Direction(drive.Stop);
   if(drive.Crossing!=Unity.Entities.Entity.Null)normal=CrossingAlignmentPolicy.StopNormal(CrosswalkCurve(drive.Crossing),normal);
   var bounds=ArrowBounds(symbol);var prefab=assets.Get(AssetCatalog.Arrow(symbol));

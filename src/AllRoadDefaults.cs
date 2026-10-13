@@ -94,7 +94,7 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
    EntityManager.RemoveComponent<UTurnChoice>(road);
    if(ManualUTurnAllowed(road)){EntityManager.AddComponentData(road,new UTurnChoice{Position=.5f,Length=UTurnRoutePolicy.ClampLength(S.UTurnZoneLength),Automatic=true});}
    if(!EntityManager.HasComponent<CenterChoice>(road))EntityManager.AddComponent<CenterChoice>(road);
-   EntityManager.SetComponentData(road,new CenterChoice{Left=(int)replacementCenter+1,Right=(int)replacementCenter+1});
+   EntityManager.RemoveComponent<CenterPathChoice>(road);EntityManager.SetComponentData(road,new CenterChoice{Left=(int)replacementCenter+1,Right=(int)replacementCenter+1});
    if(!EntityManager.HasComponent<EdgeChoice>(road))EntityManager.AddComponent<EdgeChoice>(road);
    EntityManager.SetComponentData(road,new EdgeChoice{Left=(int)replacementEdge+1,Right=(int)replacementEdge+1});
    if(!EntityManager.HasComponent<CrosswalkChoice>(road))EntityManager.AddComponent<CrosswalkChoice>(road);
@@ -104,7 +104,7 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
    if(!EntityManager.HasBuffer<PavingChoice>(road))EntityManager.AddBuffer<PavingChoice>(road);
    var paving=EntityManager.GetBuffer<PavingChoice>(road);paving.Clear();
    if(replacementPaving>0&&(!HighwayRoad(road)||S.HighwayPaving))foreach(var region in regions)if(AutomaticPavingRegion(road,region))paving.Add(new PavingChoice{Section=region.Section,Kind=region.Kind,Style=pavingStyle,Min=region.Min,Max=region.Max});
-   ApplyBulkStructures(road,true,false);
+   ApplyBulkStructures(road,true);
    crossingPlans.Clear();crossingTrafficPlans.Clear();crossingSizes.Clear();ClearLinePlans();
    var ends=EntityManager.GetComponentData<Edge>(road);
    foreach(var node in new[]{ends.m_Start,ends.m_End})if(SafeNode(node)){

@@ -48,7 +48,7 @@ namespace RoadStyleIntoKorea
             }
         }
         static float Cross(float2 a,float2 b)=>a.x*b.y-a.y*b.x;
-        internal bool TryHeight(float3 p,out float height)
+        internal bool TryHeight(float3 p,out float height,float maxDistance=.6f)
         {
             height=p.y;float best=float.MaxValue;bool found=false;
             var cell=(int2)math.floor(p.xz/CellSize);
@@ -59,7 +59,7 @@ namespace RoadStyleIntoKorea
                 float b=Cross(w,v)/det,c=Cross(u,w)/det;
                 if(b<-.0001f||c<-.0001f||b+c>1.0001f)continue;
                 float y=t.A.y+b*t.HeightDelta.x+c*t.HeightDelta.y,distance=math.abs(y-p.y);
-                if(distance>.6f||distance>=best)continue;
+                if(distance>maxDistance||distance>=best)continue;
                 height=y;best=distance;found=true;
             }
             return found;

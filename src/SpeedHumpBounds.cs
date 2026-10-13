@@ -21,14 +21,7 @@ namespace RoadStyleIntoKorea {
     int code=left?edgeChoice.Left:edgeChoice.Right;var style=code==0?(active?S.DefaultEdge:EdgeStyle.Original):(EdgeStyle)math.clamp(code-1,0,5);
     if(!S.EdgeLines||style==EdgeStyle.Original)humpBounds.Add(new Geometry.Route(curve));
    }
-   var choice=EntityManager.HasComponent<CenterChoice>(road)?EntityManager.GetComponentData<CenterChoice>(road):default;
-   bool divided=CenterDivided(road);
-   foreach(bool left in new[]{true,false}){
-    if(!divided&&!left)continue;
-    int code=left?choice.Left:choice.Right;var style=code==0?EdgeStyle.Original:(EdgeStyle)(code-1);
-    if(style==EdgeStyle.None)continue;
-    foreach(var path in CenterPaths(road,lanes,style))if(!divided||path.Left==left)humpBounds.Add(new Geometry.Route(path.Curve));
-   }
+   foreach(var path in StyledCenterPaths(road,lanes))if(path.Code!=2)humpBounds.Add(new Geometry.Route(path.Curve));
   }
   ManualDecalChoice FitHumpBoundaries(Entity road,ManualDecalChoice bar,List<ManualDecalChoice> lanes){
    CacheHumpBoundaries(road);

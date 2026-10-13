@@ -87,11 +87,18 @@ namespace RoadStyleIntoKorea {
    if(!IsRoad(road)){if(GuideRoad(road)){try{BuildDrawnLines(road);ObserveOwnerShape(road);}catch(System.Exception ){ReleaseManual(road);}}return true;}
      var choices=new List<ManualDecalChoice>();if(EntityManager.HasBuffer<ManualDecalChoice>(road))foreach(var c in EntityManager.GetBuffer<ManualDecalChoice>(road,true))if(c.Kind>0)choices.Add(c);
      if(choices.Count==0){BuildDrawnLines(road);ReconcileDecalSpacing(road,false);return true;}
-   var record=new Record();manualRecords[road]=record;List<Geometry.Arc> centers=null;
+   var record=new Record();manualRecords[road]=record;List<Geometry.Arc> centers=null;SidewalkFootprint humpSurface=null;bool humpSurfaceRead=false;
    try{PaintManualDividers(road,record,choices);ManualStopDividers(road,record,choices);HideNearbyAutomaticStops(road,record,choices);foreach(var choice in choices){
     if(choice.Kind==7)continue;if(choice.Kind==9||choice.Kind==10){PaintSidewalkDetail(road,record,choice);continue;}
     ManualPose(road,choice,out var p,out var f);var prefab=assets.Get(ManualAsset(road,choice));if(prefab==Entity.Null)continue;
-    if(choice.Kind==8){PaintLane(road,record,prefab,ManualPlacementPolicy.StopLine(p,f,choice.Width));}
+    if(choice.Kind==8){
+     if(!humpSurfaceRead){humpSurface=RedRoadSurface(road);humpSurfaceRead=true;}
+     var curve=ManualPlacementPolicy.StopLine(p,f,choice.Width);
+     float? HumpHeight(float3 point)=>humpSurface!=null&&humpSurface.TryHeight(point,out float y,2)?(float?)y:null;
+     if(humpSurface!=null)curve=DrawnLinePolicy.FollowSurface(curve,HumpHeight);
+     // Preserve the full transverse hump mesh; only its height/render mode changes.
+     PaintRoadHeightLane(road,record,prefab,curve);
+    }
     else if(choice.Kind==1){if(centers==null)centers=StopBarCenters(road,Lanes(road));foreach(var bar in StopCenterPolicy.ClearBar(ManualPlacementPolicy.StopLine(p,f,choice.Width),centers))PaintLane(road,record,prefab,bar);}
     else PaintObject(road,record,prefab,new Game.Objects.Transform(p,quaternion.LookRotationSafe(f,new float3(0,1,0))));
    }BuildDrawnLines(road);}catch(System.Exception ){ReleaseManual(road);}

@@ -198,7 +198,7 @@ namespace RoadStyleIntoKorea
             {
                 Hover(Entity.Null);var centerOverlay=World.GetOrCreateSystemManaged<Game.Rendering.OverlayRenderSystem>();
                 var centerBuffer=centerOverlay.GetBuffer(out var centerDeps);centerDeps.Complete();
-                bool selected=system.DrawCenterPreview(edge,hit.m_HitPosition,centerBuffer);
+                float selected=system.DrawCenterPreview(edge,hit.m_HitPosition,centerBuffer);
                 centerOverlay.AddBufferWriter(default);
                 if(applyAction.WasPressedThisFrame())system.ChooseCenter(edge,selected,false);
                 else if(secondaryApplyAction.WasPressedThisFrame()){system.ChooseCenter(edge,selected,true);if(!system.ToolResetHandled)ExitOnReset();}

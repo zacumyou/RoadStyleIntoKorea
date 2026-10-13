@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Colossal.Mathematics;
 using Game.Net;
 using Game.Prefabs;
 using Unity.Entities;
@@ -25,7 +26,7 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
   }
   var result=new List<ColorObstacle>();
   foreach(var e in candidates){
-   if(!Live(e)||EntityManager.HasComponent<Game.Tools.Hidden>(e)||EntityManager.HasComponent<Game.Net.CarLane>(e)||EntityManager.HasComponent<Game.Net.PedestrianLane>(e))continue;
+   if(!Live(e)||EntityManager.HasComponent<Game.Tools.Hidden>(e)||EntityManager.HasComponent<OriginalPaintHidden>(e)||EntityManager.HasComponent<Game.Net.CarLane>(e)||EntityManager.HasComponent<Game.Net.PedestrianLane>(e))continue;
    var prefab=Prefab(e);var name=assets.Name(prefab);
    if(name.Contains("ColorGuide")||MarkingPolicy.IsGuideDivider(name)||name.Contains("CSKRHighwayWhite")||name.Contains("CSKRBusBlue")||name.Contains("Divider"))continue;
    bool arrow=name.IndexOf("Arrow",System.StringComparison.OrdinalIgnoreCase)>=0||name.Contains("LaneDirection");
@@ -38,7 +39,12 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
     result.Add(new ColorObstacle{Position=tr.m_Position,Inverse=math.inverse(tr.m_Rotation),Min=min,Max=max});
    }else if(EntityManager.HasComponent<Curve>(e)){
     float width=EntityManager.HasComponent<NetLaneData>(prefab)?EntityManager.GetComponentData<NetLaneData>(prefab).m_Width:.3f;
-    result.Add(new ColorObstacle{Arc=new Geometry.Arc(CurveOf(e)),Radius=math.max(.1f,width*.5f)+.25f+(arrow||name.Contains("Stop Line")?.5f:.05f)});
+    var cuts=new List<Bounds1>();
+    if(EntityManager.HasBuffer<CutRange>(e))foreach(var cut in EntityManager.GetBuffer<CutRange>(e,true))cuts.Add(cut.m_CurveDelta);
+    cuts.Sort((a,b)=>a.min.CompareTo(b.min));float cursor=0;var curve=CurveOf(e);
+    void AddVisible(float from,float to){if(to-from>.0001f)result.Add(new ColorObstacle{Arc=new Geometry.Arc(Geometry.Cut(curve,from,to)),Radius=math.max(.1f,width*.5f)+.25f+(arrow||name.Contains("Stop Line")?.5f:.05f)});}
+    foreach(var cut in cuts){float lo=math.saturate(cut.min),hi=math.saturate(cut.max);if(hi<=lo)continue;if(lo>cursor)AddVisible(cursor,lo);cursor=math.max(cursor,hi);}
+    if(cursor<1)AddVisible(cursor,1);
    }
   }return result;
  }

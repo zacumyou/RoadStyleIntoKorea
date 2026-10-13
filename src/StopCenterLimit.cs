@@ -19,16 +19,12 @@ namespace RoadStyleIntoKorea
         {
             var result=new List<Bezier4x3>();
             bool divided=CenterDivided(owner);
-            var choice=EntityManager.HasComponent<CenterChoice>(owner)?EntityManager.GetComponentData<CenterChoice>(owner):default;
-            int code=divided&&!left?choice.Right:choice.Left;
-            var style=code==0?EdgeStyle.Original:(EdgeStyle)(code-1);
-            if(style==EdgeStyle.None)return result;
             bool manual=ManualUTurnAllowed(owner)&&EntityManager.HasComponent<UTurnChoice>(owner)&&assets.Get(AssetCatalog.UTurnZone)!=Entity.Null;
-            bool replacement=style!=EdgeStyle.Original||manual;
-            var paths=CenterPaths(owner,lanes,style);
-            foreach(var path in paths)
+            foreach(var path in StyledCenterPaths(owner,lanes))
             {
                 if(divided&&path.Left!=left)continue;
+                var style=path.Code==0?EdgeStyle.Original:(EdgeStyle)(path.Code-1);if(style==EdgeStyle.None)continue;
+                bool replacement=style!=EdgeStyle.Original||manual;
                 if(!replacement&&path.Source==Entity.Null)continue;
                 var visible=replacement?CenterVisible(owner,path,style,lanes):new List<Bezier4x3>(ClearPaint(path.Curve,NearbyCrossings(owner),.35f));
                 foreach(var c in visible)

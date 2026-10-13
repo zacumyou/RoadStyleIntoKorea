@@ -51,7 +51,7 @@ namespace RoadStyleIntoKorea
         }
         sealed class Drive
         {
-            internal Entity Entity,Crossing,End,Owner;internal Bezier4x3 Curve;internal float Width;internal float Stop=-1;internal bool StopPainted;
+            internal Entity Entity,Crossing,End,Owner;internal Bezier4x3 Curve;internal float Width;internal float Stop=-1;internal bool StopPainted,StopSuppressed;
             internal Geometry.Route Arc;
             internal CarLaneFlags Turns;
             internal int MergeDirection;
@@ -449,14 +449,16 @@ UpdateWithTrace();
                     var normal=CrossingAlignmentPolicy.StopNormal(ca.Curve,forward);
                     var plane=MarkingPolicy.StopPlane(p,normal,width,RoadStopGap(owner));
                     float stop;
-                    if(!d.Arc.IntersectPlane(plane,normal,out stop))stop=d.Arc.Length+math.dot(plane-d.Curve.d,normal)/math.max(.5f,math.dot(forward,normal));
+                    if(!d.Arc.IntersectPlane(plane,normal,out stop)||stop<.5f){
+                        d.Stop=-1;d.Crossing=cross;d.StopSuppressed=true;best=dist;continue;
+                    }
                     // Native lane ends can stop short of the crossing. Keep approach paint
                     // anchored to the available route instead of losing all dividers.
                     stop=math.min(stop,d.Arc.Length-.1f);
                     if(stop<.5f)continue;
-                    d.Stop=stop;d.Crossing=cross;best=dist;
+                    d.Stop=stop;d.Crossing=cross;d.StopSuppressed=false;best=dist;
                 }
-                if(d.Stop<0)
+                if(d.Stop<0&&!d.StopSuppressed)
                 {
                     // A native stop is still a valid approach anchor even when no replacement crossing fits.
                     var stops=new List<Entity>(lanes);stops.AddRange(Lanes(end));
@@ -669,7 +671,7 @@ UpdateWithTrace();
                 if(other.Source==item.Source||other.Route!=route)continue;
                 if(other.Along>item.Along+.01f||(math.abs(other.Along-item.Along)<=.01f&&other.Source.Index<item.Source.Index)){foremost=false;break;}
             }
-            if(route==null)return false;
+            if(route==null||route.StopSuppressed)return false;
             if(foremost){relocate=TryStopArrowPlacement(route,route.Stop,item.Symbols,item.Symbols.Count,out along);if(!relocate)return false;}
             if(!relocate)along=item.Along;
             if(!FitsArrowStack(route,along,item.Symbols))return false;
@@ -680,6 +682,8 @@ UpdateWithTrace();
         {
             var candidates=CollectArrowCandidates(new[]{owner},roadDrives);
             var all=ApproachArrows(owner,roadDrives);
+            // Native arrows can belong to the node rather than the road entity.
+            foreach(var item in all)if(item.Route!=null&&item.Route.Owner==owner&&!candidates.Exists(c=>c.Source==item.Source))candidates.Add(item);
             // Merge arrows are emitted once by EnsureApproachArrows, not per native decal.
             if(S.Arrows)foreach(var item in all)if(item.Route!=null&&item.Route.MergeDirection!=0)Hide(item.Source,r);
             foreach(var item in candidates)
