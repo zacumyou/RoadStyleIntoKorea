@@ -37,6 +37,21 @@ namespace RoadStyleIntoKorea {
    float x=27*p.Value-8*a.Value-d.Value,y=27*q.Value-a.Value-8*d.Value;
    c.a.y=a.Value;c.d.y=d.Value;c.b.y=(2*x-y)/18;c.c.y=(2*y-x)/18;return c;
   }
+  internal static Bezier4x3 OffsetFollowing(Bezier4x3 c,float offset){
+   if(math.abs(offset)<.0001f)return c;
+   var a=c.a+Geometry.Left(Geometry.Tangent(c,0))*offset;var d=c.d+Geometry.Left(Geometry.Tangent(c,1))*offset;
+   var u=Geometry.Tangent(c,0);var v=-Geometry.Tangent(c,1);
+   var target=Geometry.Position(c,.5f)+Geometry.Left(Geometry.Tangent(c,.5f))*offset;
+   var rhs=(target-(a+d)*.5f)/.375f;float uv=math.dot(u,v),det=1-uv*uv;
+   if(det<.001f)return Geometry.Offset(c,offset);
+   float h=(math.dot(rhs,u)-uv*math.dot(rhs,v))/det,k=(math.dot(rhs,v)-uv*math.dot(rhs,u))/det;
+   float limit=math.distance(a,d);if(h<0||k<0||h>limit||k>limit)return SmoothConnect(a,d,u,-v);
+   return new Bezier4x3(a,a+u*h,d+v*k,d);
+  }
+  internal static bool Covers(Geometry.Arc replacement,float3 point,float3 tangent,float halfWidth){
+   float t=replacement.Nearest(point);var p=Geometry.Position(replacement.Curve,t);var f=Geometry.Tangent(replacement.Curve,t);
+   return math.abs(point.y-p.y)<.4f&&math.abs(math.dot(f,tangent))>.94f&&math.abs(math.dot(point-p,Geometry.Left(f)))<halfWidth&&math.abs(math.dot(point-p,f))<.15f;
+  }
   internal static Bezier4x3 Bend(Bezier4x3 c,float3 midpoint){var delta=(midpoint-Geometry.Position(c,.5f))*(4f/3f);return new Bezier4x3(c.a,c.b+delta,c.c+delta,c.d);}
   internal static Bezier4x3 SmoothConnect(float3 a,float3 d,float3 first,float3 last){
    var chord=d-a;float length=math.length(chord);var direction=math.normalizesafe(chord);
@@ -47,8 +62,11 @@ namespace RoadStyleIntoKorea {
   }
   internal static Bezier4x3 AlignStart(Bezier4x3 curve,float3 tangent){
    var handle=curve.b-curve.a;var direction=math.normalizesafe(tangent,math.normalizesafe(handle));
-   if(math.dot(direction,handle)<0)direction=-direction;
-   curve.b=curve.a+direction*math.length(handle);return curve;
+   var chord=curve.d-curve.a;float length=math.length(chord);
+   if(math.dot(direction,chord)<0)direction=-direction;
+   if(math.abs(math.dot(direction,math.normalizesafe(chord)))<.05f)direction=math.normalizesafe(handle,math.normalizesafe(chord));
+   if(math.dot(direction,chord)<0)direction=math.normalizesafe(chord);
+   curve.b=curve.a+direction*math.min(math.length(handle),length*.55f);return curve;
   }
   internal static Bezier4x3 Connect(float3 a,float3 d,float3 first,float3 last){
    var chord=d-a;float handle=math.distance(a,d)/3;

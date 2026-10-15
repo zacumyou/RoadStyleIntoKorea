@@ -6,6 +6,12 @@ namespace RoadStyleIntoKorea {
  internal static class StatusText {
   internal static bool Korean=>(Game.SceneFlow.GameManager.instance?.localizationManager?.activeLocaleId??"").StartsWith("ko",StringComparison.OrdinalIgnoreCase);
   static readonly Dictionary<string,string> Keys=new Dictionary<string,string>{
+["진단 기록 중입니다 / Capture already running"]="RSIK.Status.CaptureAlreadyRunning",
+["도로 진단 기록 시작 / Capture started: "]="RSIK.Status.CaptureStarted",
+["진단 용량 제한 / Capture truncated: "]="RSIK.Status.CaptureTruncated",
+["진단 저장 실패 / Capture failed: "]="RSIK.Status.CaptureFailed",
+["진단 저장 완료 / Capture saved: "]="RSIK.Status.CaptureSaved",
+["진단 실패 / Capture failed: "]="RSIK.Status.CaptureFailed2",
 ["게임이 횡단보도를 생성하지 못했습니다. 보행 연결·도로 구성을 확인하세요 / No native crossing generated; check pedestrian connections and road configuration"]="RSIK.Status.NoNativeCrossingGeneratedCheckPedestrianConnectionsAndRoadConfiguration",
 ["유턴 점선: 왕복 3차로 이상, 중앙분리대 없는 도로 / Requires opposing traffic, 3+ lanes, no median"]="RSIK.Status.RequiresOpposingTraffic3LanesNoMedian",
 ["이 도로 템플릿은 횡단보도 추가를 지원하지 않습니다 / Road template does not support adding crossings"]="RSIK.Status.RoadTemplateDoesNotSupportAddingCrossings",

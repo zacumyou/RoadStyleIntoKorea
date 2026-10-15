@@ -5,6 +5,28 @@ namespace RoadStyleIntoKorea
 {
     internal static class EdgeJoinPolicy
     {
+        internal static bool NativeOffset(Bezier4x3 source,float3 start,float3 into,float3 end,float3 away,out Bezier4x3 curve,out float score)
+        {
+            curve=default;score=float.MaxValue;
+            var a=Geometry.Tangent(source,0);var b=Geometry.Tangent(source,1);
+            if(math.dot(a,into)<.8f||math.dot(b,away)<.8f)return false;
+            var deltaA=start-source.a;var deltaB=end-source.d;
+            float x=math.dot(deltaA,Geometry.Left(a)),y=math.dot(deltaB,Geometry.Left(b));
+            // Only small longitudinal corrections for the visible segment end trimming.
+            if(math.abs(math.dot(deltaA,a))>4||math.abs(math.dot(deltaB,b))>4||math.abs(deltaA.y)>2||math.abs(deltaB.y)>2)return false;
+            curve=Game.Net.NetUtils.OffsetCurveLeftSmooth(source,new float2(x,y));
+            // Preserve the native cubic; bridge segment end clearance separately.
+            score=math.lengthsq(deltaA)+math.lengthsq(deltaB);
+            return math.all(math.isfinite(curve.b))&&math.all(math.isfinite(curve.c));
+        }
+        internal static System.Collections.Generic.List<Bezier4x3> NativeParts(Bezier4x3 core,float3 start,float3 into,float3 end,float3 away)
+        {
+            var result=new System.Collections.Generic.List<Bezier4x3>();
+            if(math.distance(start,core.a)>.001f)result.Add(Game.Net.NetUtils.FitCurve(start,into,Geometry.Tangent(core,0),core.a));
+            result.Add(core);
+            if(math.distance(core.d,end)>.001f)result.Add(Game.Net.NetUtils.FitCurve(core.d,Geometry.Tangent(core,1),away,end));
+            return result;
+        }
         internal static bool NativeChain(System.Collections.Generic.List<Bezier4x3> candidates,float3 start,float3 end,out System.Collections.Generic.List<Bezier4x3> path)
         {
             path=new System.Collections.Generic.List<Bezier4x3>();
@@ -68,6 +90,8 @@ namespace RoadStyleIntoKorea
             if(unchanged>=0)yield return arc.Slice(unchanged,arc.Length);
         }
         internal static float InsetOffset(float laneWidth,float paintHalfWidth,float inset)=>math.max(0,laneWidth*.5f-math.max(.075f,paintHalfWidth)-.05f-math.clamp(inset,0,1));
+        // Two-road bends are not intersections. Allow quarter turns, but never a hairpin shortcut.
+        internal static bool RoadBend(float3 into,float3 away)=>math.dot(math.normalizesafe(into.xz),math.normalizesafe(away.xz))>=-.1f;
         internal static bool OtherSide(bool left,bool firstStart,bool secondStart)=>firstStart==secondStart?!left:left;
         internal static bool TryCurve(float3 start,float3 into,float3 end,float3 away,out Bezier4x3 curve)
         {
@@ -75,7 +99,12 @@ namespace RoadStyleIntoKorea
             if(!math.isfinite(distance)||distance<.03f||distance>40||math.abs(start.y-end.y)>distance*.3f+.2f)return false;
             var chord=math.normalizesafe(end-start);into=math.normalizesafe(into);away=math.normalizesafe(away);
             if(math.dot(into,chord)<.15f||math.dot(away,chord)<.15f||math.dot(into,away)<-.1f)return false;
+            // Symmetric bends follow a circular arc; chord/3 pulls 90-degree joins inward.
             float handle=distance/3;
+            if(math.abs(math.dot(into,chord)-math.dot(away,chord))<.05f){
+                float halfCos=math.sqrt(math.max(0,(1+math.dot(into,away))*.5f));
+                handle=distance*2/(3*(1+halfCos));
+            }
             curve=new Bezier4x3(start,start+into*handle,end-away*handle,end);return true;
         }
     }

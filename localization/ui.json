@@ -942,5 +942,49 @@
   "RSIK.Status.FinishingJunctions": {
     "ko": "교차로 마무리",
     "en": "Finishing junctions"
+  },
+  "RSIK.Status.CaptureAlreadyRunning": {
+    "ko": "진단 기록 중입니다",
+    "en": "Capture already running"
+  },
+  "RSIK.Status.CaptureStarted": {
+    "ko": "도로 진단 기록 시작: ",
+    "en": "Capture started: "
+  },
+  "RSIK.Status.CaptureTruncated": {
+    "ko": "진단 용량 제한: ",
+    "en": "Capture truncated: "
+  },
+  "RSIK.Status.CaptureFailed": {
+    "ko": "진단 저장 실패: ",
+    "en": "Capture failed: "
+  },
+  "RSIK.Status.CaptureSaved": {
+    "ko": "진단 저장 완료: ",
+    "en": "Capture saved: "
+  },
+  "RSIK.Status.CaptureFailed2": {
+    "ko": "진단 실패: ",
+    "en": "Capture failed: "
+  },
+  "RSIK.UI.Tool.Diagnostic": {
+    "ko": "진단 캡처",
+    "en": "Network capture"
+  },
+  "RSIK.UI.CaptureLocal": {
+    "ko": "진단: 선택 도로와 인접 노드",
+    "en": "Capture: selected road and adjacent nodes"
+  },
+  "RSIK.UI.CaptureNearby": {
+    "ko": "진단: 주변 도로",
+    "en": "Capture: nearby roads"
+  },
+  "RSIK.UI.CaptureWide": {
+    "ko": "진단: 넓은 범위",
+    "en": "Capture: wider network"
+  },
+  "RSIK.UI.ReverseStyleHint": {
+    "ko": "Shift+T: 역순",
+    "en": "Shift+T: previous style"
   }
 }

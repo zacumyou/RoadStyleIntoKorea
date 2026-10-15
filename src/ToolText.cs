@@ -10,6 +10,13 @@ namespace RoadStyleIntoKorea
         internal static Dictionary<string,string> Entries(bool ko)
         {
             var d=new Dictionary<string,string>();
+            d["Common.ACTION[RSIK Capture network]"]=ko?"선택 범위 진단 로그 저장":"Save network diagnostic capture";
+            d["RSIK.Capture.0"]=ko?"진단 범위: 구간 + 양끝 노드":"Capture: segment + end nodes";
+            d["RSIK.Capture.1"]=ko?"진단 범위: 가까운 교차로 + 연결 구간":"Capture: nearest junction + connected segments";
+            d["RSIK.Capture.2"]=ko?"진단 범위: 연결 도로 3단계 (최대 64개)":"Capture: connected roads, 3 hops (max 64 owners)";
+            d["RSIK.Capture.Help"]=ko?"Shift+R 범위 변경 · 드래그 후 놓아 저장 · 옵션 상태에 파일 경로 표시":"Shift+R changes scope; click to save. File path shown in settings status.";
+            d["Assets.NAME[RSIKDiagnosticTool]"]=ko?"도로 진단 로그":"Road diagnostic capture";
+            d["Assets.DESCRIPTION[RSIKDiagnosticTool]"]=ko?"도로를 바꾸지 않고 구간·교차로·연결 도로의 기하와 절단 원인을 기록합니다.":"Capture geometry and clipping decisions for segments, junctions and connected roads without painting.";
             d["Assets.NAME[RSIKRedPavingTool]"]=ko?"적색 포장":"Red pavement";
             d["RSIK.RedPaving.0"]=ko?"연속 포장":"Continuous";
             d["RSIK.RedPaving.1"]=ko?"반복 띠 · 3m / 공백 6m":"Stripes · 3m / gap 6m";

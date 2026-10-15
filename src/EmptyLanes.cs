@@ -10,7 +10,7 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
   var cp=EntityManager.GetComponentData<Composition>(edge).m_Edge;
   if(!EntityManager.HasBuffer<NetCompositionPiece>(cp))return spans;
   foreach(var p in EntityManager.GetBuffer<NetCompositionPiece>(cp,true)) {
-   if((p.m_SectionFlags&(NetSectionFlags.Median|NetSectionFlags.Hidden|NetSectionFlags.HiddenSurface|NetSectionFlags.Underground|NetSectionFlags.Overhead))!=0||
+   if((p.m_SectionFlags&(NetSectionFlags.Hidden|NetSectionFlags.HiddenSurface|NetSectionFlags.Underground|NetSectionFlags.Overhead))!=0||
     (p.m_PieceFlags&(NetPieceFlags.Bottom|NetPieceFlags.Side|NetPieceFlags.BlockTraffic))!=0||!EmptyLanePolicy.Empty(PieceName(p.m_Piece)))continue;
    spans.Add(new float2(p.m_Offset.x-p.m_Size.x*.5f,p.m_Offset.x+p.m_Size.x*.5f));
   }
@@ -32,7 +32,7 @@ namespace RoadStyleIntoKorea { public partial class StyleSystem {
   var cp=EntityManager.GetComponentData<Composition>(edge).m_Edge;if(!EntityManager.HasBuffer<NetCompositionLane>(cp))return 0;
   float best=float.MaxValue,extension=0;
   foreach(var lane in EntityManager.GetBuffer<NetCompositionLane>(cp,true)) {
-   if((lane.m_Flags&(LaneFlags.Road|LaneFlags.LeftLimit))!=(LaneFlags.Road|LaneFlags.LeftLimit)||
+   if((lane.m_Flags&LaneFlags.Road)==0||
     (lane.m_Flags&(LaneFlags.Master|LaneFlags.Parking|LaneFlags.Virtual))!=0||!EntityManager.HasComponent<NetLaneData>(lane.m_Lane))continue;
    float distance=math.abs(lane.m_Position.x-x);if(distance>=best||distance>laneWidth*.5f)continue;
    best=distance;int direction=(lane.m_Flags&LaneFlags.Invert)!=0?1:-1;

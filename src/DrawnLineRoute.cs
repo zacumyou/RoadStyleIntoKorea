@@ -50,7 +50,7 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
   float total=0;var lengths=new List<float>();foreach(var c in curves){float length=new Geometry.Arc(c).Length;lengths.Add(length);total+=length;}
   float at=0;
   for(int i=0;i<curves.Count;i++){
-   var c=curves[i];var left=Geometry.Offset(c,math.lerp(from,to,at/total));at+=lengths[i];var right=Geometry.Offset(c,math.lerp(from,to,at/total));
+   var c=curves[i];var left=DrawnLinePolicy.OffsetFollowing(c,math.lerp(from,to,at/total));at+=lengths[i];var right=DrawnLinePolicy.OffsetFollowing(c,math.lerp(from,to,at/total));
    lineRoute.Add(new LinePiece{Road=usedRoads[i],Curve=new Bezier4x3(left.a,math.lerp(left.b,right.b,1f/3),math.lerp(left.c,right.c,2f/3),right.d)});
   }
   for(int i=1;i<lineRoute.Count;i++){

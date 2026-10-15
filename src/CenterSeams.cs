@@ -17,20 +17,43 @@ if(duplicate){if(!inspect)Hide(lane,record);continue;}
 int first=CenterSeamDistance(roads[0],curve.a)<=CenterSeamDistance(roads[1],curve.a)?0:1;
 int start=CenterSeamChoice(roads[first],curve.a),end=CenterSeamChoice(roads[1-first],curve.d);if(start==0&&end==0)continue;
 int a=MarkingPolicy.InheritCenter(start,end),b=MarkingPolicy.InheritCenter(end,start);
+List<Bezier4x3> sections=null;
 var styles=new[]{(EdgeStyle)(a-1),(EdgeStyle)(b-1)};bool valid=true;foreach(var style in styles)if(style!=EdgeStyle.None){var asset=assets.Get(CenterLinePolicy.Asset((int)style));if(asset==Entity.Null||!EntityManager.HasComponent<Game.Prefabs.NetLaneGeometryData>(asset))valid=false;}if(!valid)continue;
 {
  var from=ClosestCenterEndpoint(endpoints[first],curve.a);var to=ClosestCenterEndpoint(endpoints[1-first],curve.d);
  if(from==null||to==null)continue;
  if(math.distance(from.Point,to.Point)<.05f){if(!inspect)Hide(lane,record);continue;}
- if(!EdgeJoinPolicy.TryCurve(from.Point,from.Into,to.Point,-to.Into,out var adjusted))continue;
- curve=adjusted;
+ if(EdgeJoinPolicy.NativeOffset(source,from.Point,from.Into,to.Point,-to.Into,out var core,out _))
+  sections=EdgeJoinPolicy.NativeParts(core,from.Point,from.Into,to.Point,-to.Into);
+ else if(EdgeJoinPolicy.TryCurve(from.Point,from.Into,to.Point,-to.Into,out var adjusted))sections=new List<Bezier4x3>{adjusted};
+ else continue;
 }
-var arc=new Geometry.Arc(curve);for(int side=0;side<2;side++){
-var style=styles[side];if(style==EdgeStyle.None)continue;var part=arc.Slice(side*arc.Length*.5f,(side+1)*arc.Length*.5f);
-foreach(var safe in BoundaryPaint(node,part,S.PaintClearance)){if(!inspect)PaintLane(node,record,assets.Get(CenterLinePolicy.Asset((int)style)),safe);}
-}
+PaintCenterChain(node,record,sections,styles[0],styles[1],inspect);
 painted.Add(source);if(!inspect)Hide(lane,record);
 }
+}
+void PaintCenterChain(Entity node,Record record,List<Bezier4x3> sections,EdgeStyle first,EdgeStyle second,bool inspect){
+ // End connectors cross the node/edge boundary; validate against both surfaces.
+ var ribbons=new List<RoadRibbon>(EdgeRoadRibbons(node));
+ if(EntityManager.HasBuffer<ConnectedEdge>(node))foreach(var link in EntityManager.GetBuffer<ConnectedEdge>(node,true))
+  if(IsRoad(link.m_Edge))ribbons.AddRange(EdgeRoadRibbons(link.m_Edge));
+ var sidewalks=EdgeSidewalks(node);
+ float total=0;foreach(var section in sections)total+=new Geometry.Arc(section).Length;
+ float distance=0;
+ foreach(var section in sections){
+  var arc=new Geometry.Arc(section);float split=total*.5f-distance;
+  var pieces=new List<Bezier4x3>();var styles=new List<EdgeStyle>();
+  if(first==second||split>=arc.Length){pieces.Add(section);styles.Add(first);}
+  else if(split<=0){pieces.Add(section);styles.Add(second);}
+  else {pieces.Add(arc.Slice(0,split));styles.Add(first);pieces.Add(arc.Slice(split,arc.Length));styles.Add(second);}
+  for(int i=0;i<pieces.Count;i++){
+   var style=styles[i];if(style==EdgeStyle.None||style==EdgeStyle.Original)continue;
+   var prefab=assets.Get(CenterLinePolicy.Asset((int)style));if(prefab==Entity.Null)continue;
+   foreach(var safe in RoadOnlyEdge(node,style,pieces[i],ribbons,sidewalks,paintHalf:CenterLinePolicy.HalfWidth((int)style),unionSurface:true))
+    foreach(var clear in ClearPaint(safe,NearbyCrossings(node),S.PaintClearance))if(!inspect)PaintLane(node,record,prefab,clear);
+  }
+  distance+=arc.Length;
+ }
 }
 sealed class CenterEndpoint {internal float3 Point,Into;internal int Code;}
 static CenterEndpoint ClosestCenterEndpoint(List<CenterEndpoint> endpoints,float3 point){CenterEndpoint best=null;float distance=float.MaxValue;foreach(var e in endpoints){float d=math.distancesq(point,e.Point);if(d<distance){best=e;distance=d;}}return best;}
@@ -51,29 +74,23 @@ List<CenterEndpoint> CenterEndpoints(Entity road,Entity node){
 }
 void JoinMissingCenterSeam(Entity node,Record record,List<Entity> roads,bool inspect){
  if(!EntityManager.HasComponent<CenterChoice>(roads[0])&&!EntityManager.HasComponent<CenterChoice>(roads[1]))return;
- var first=CenterEndpoints(roads[0],node);var second=CenterEndpoints(roads[1],node);
+ var first=CenterEndpoints(roads[0],node);var second=CenterEndpoints(roads[1],node);var firstRoad=roads[0];var secondRoad=roads[1];
  // Both branches of a terminating median must reach the single undivided center.
- if(first.Count<second.Count){var swap=first;first=second;second=swap;}
+ if(first.Count<second.Count){var swap=first;first=second;second=swap;firstRoad=roads[1];secondRoad=roads[0];}
  var used=new HashSet<CenterEndpoint>();
  foreach(var a in first){
   CenterEndpoint best=null;Bezier4x3 seam=default;float distance=float.MaxValue;
   foreach(var b in second){
    if(second.Count>1&&used.Contains(b))continue;
    // Two-road corners may turn sharply; the fitted curve still passes road/sidewalk masks.
-   if(math.distancesq(a.Point,b.Point)>=distance||!EdgeJoinPolicy.TryCurve(a.Point,a.Into,b.Point,-b.Into,out var candidate))continue;
+   if(math.distancesq(a.Point,b.Point)>=distance)continue;
+   if(!NativeEdgeJoin(node,firstRoad,secondRoad,a.Point,a.Into,b.Point,-b.Into,out var candidate)&&!EdgeJoinPolicy.TryCurve(a.Point,a.Into,b.Point,-b.Into,out candidate))continue;
    best=b;seam=candidate;distance=math.distancesq(a.Point,b.Point);
   }
   if(best==null)continue;used.Add(best);int x=a.Code,y=best.Code;if(x==0&&y==0)continue;
   int ca=MarkingPolicy.InheritCenter(x,y),cb=MarkingPolicy.InheritCenter(y,x);
-  var arc=new Geometry.Arc(seam);int parts=ca==cb?1:2;
-  for(int side=0;side<parts;side++){
-   var style=(EdgeStyle)((side==0?ca:cb)-1);if(style==EdgeStyle.None||style==EdgeStyle.Original)continue;
-   var prefab=assets.Get(CenterLinePolicy.Asset((int)style));if(prefab==Entity.Null)continue;
-   var section=parts==1?seam:arc.Slice(side*arc.Length/2,(side+1)*arc.Length/2);
-   foreach(var safe in RoadOnlyEdge(node,style,section,paintHalf:CenterLinePolicy.HalfWidth((int)style),unionSurface:true))foreach(var clear in BoundaryPaint(node,safe,S.PaintClearance)){
-if(!inspect)PaintLane(node,record,prefab,clear);
-   }
-  }
+  var chain=EdgeJoinPolicy.NativeParts(seam,a.Point,a.Into,best.Point,-best.Into);
+  PaintCenterChain(node,record,chain,(EdgeStyle)(ca-1),(EdgeStyle)(cb-1),inspect);
  }
 }
 }}

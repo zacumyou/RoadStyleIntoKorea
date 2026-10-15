@@ -6,7 +6,7 @@ using UnityEngine;
 namespace RoadStyleIntoKorea {
  public partial class EdgeStyleTool {
   readonly HashSet<Entity> dragRoads=new HashSet<Entity>();bool dragging;
-  bool DragMode=>IsLocalStylesMode||IsApproachMode;
+  bool DragMode=>IsLocalStylesMode||IsApproachMode||IsDiagnosticMode;
   void CancelStyleDrag(){dragging=false;dragRoads.Clear();}
   bool UpdateStyleDrag(StyleSystem system){
    if(!DragMode){CancelStyleDrag();return false;}
@@ -14,7 +14,7 @@ namespace RoadStyleIntoKorea {
    if(!Application.isFocused||input.hasInputFieldFocus||mouse==null){CancelStyleDrag();return true;}
    if(secondaryApplyAction.WasPressedThisFrame()){bool wasDragging=dragging;CancelStyleDrag();if(wasDragging)return true;return false;}
    if(dragging&&!mouse.leftButton.isPressed){
-    if(input.controlOverWorld&&!input.overlayActive)system.QueueDraggedStyles(dragRoads,IsApproachMode?0:(prefab as EdgeToolPrefab).RemoveAll?2:1);
+    if(input.controlOverWorld&&!input.overlayActive)system.QueueDraggedStyles(dragRoads,IsDiagnosticMode?4:IsApproachMode?0:(prefab as EdgeToolPrefab).RemoveAll?2:1);
     CancelStyleDrag();return true;
    }
    if(!input.controlOverWorld||input.overlayActive)return true;
@@ -41,6 +41,7 @@ namespace RoadStyleIntoKorea {
   struct DragStyleCommand {internal Entity Road;internal int Mode;internal bool SuppressRoadSigns;internal List<Entity> RemovalRoads;}
   readonly WorkQueue<DragStyleCommand> dragStyleCommands=new WorkQueue<DragStyleCommand>();
   internal void QueueDraggedStyles(IEnumerable<Entity> selection,int mode){
+   if(mode==4){CaptureNetworks(selection);return;}
    if(!S.Enabled||restoring)return;
    var camera=World.GetExistingSystemManaged<Game.Rendering.CameraUpdateSystem>();
    float3 focus=camera?.activeCameraController!=null?camera.activeCameraController.pivot:float3.zero;

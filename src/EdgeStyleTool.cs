@@ -10,7 +10,7 @@ using Unity.Mathematics;
 using UnityEngine;
 namespace RoadStyleIntoKorea
 {
-    public class EdgeToolPrefab:PrefabBase { public bool Crosswalk; public bool CrossingDistance; public bool DrawLine; public bool ColorGuide; public bool RedPaving; public bool Paving; public bool Curb; public bool Gutter; public bool SideRoad; public bool RemovePaint; public bool Center; public bool UTurn; public bool Guide; public bool GuideAuto; public bool Approach; public bool AddAll; public bool RemoveAll; public int ManualDecal; public int Divider; }
+    public class EdgeToolPrefab:PrefabBase { public bool Crosswalk; public bool CrossingDistance; public bool DrawLine; public bool ColorGuide; public bool RedPaving; public bool Paving; public bool Curb; public bool Gutter; public bool SideRoad; public bool RemovePaint; public bool Diagnostic; public bool Center; public bool UTurn; public bool Guide; public bool GuideAuto; public bool Approach; public bool AddAll; public bool RemoveAll; public int ManualDecal; public int Divider; }
     public partial class EdgeStyleTool:ToolBaseSystem
     {
         PrefabBase prefab;
@@ -35,6 +35,8 @@ namespace RoadStyleIntoKorea
         bool actionGuideAutoMode;
         bool actionGuideMode;
         bool actionUTurnMode;
+        internal bool IsDiagnosticMode=>(prefab as EdgeToolPrefab)?.Diagnostic==true;
+        bool actionDiagnosticMode;
         bool actionCrosswalkMode,actionPavingMode,actionCenterMode,actionSideRoadMode;
         Geometry.Arc hoverArc;
         Entity hovered;bool ownHighlight;
@@ -71,11 +73,15 @@ namespace RoadStyleIntoKorea
             var property=typeof(Game.Input.InputManager).GetProperty("toolActionCollection",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
             var collection=property?.GetValue(Game.Input.InputManager.instance) as Game.Input.UIInputActionCollection;
             if(collection==null){return null;}
-            foreach(var alias in collection.m_InputActions)if(alias.aliasName==name)return alias.GetState(GetType().Name,(source,action,mask,transform)=>new Game.Input.DisplayNameOverride(source,action,IsSideRoadMode?(name=="Upgrade Net Edge"?"RSIK Add side road":"RSIK Remove side road"):IsUTurnMode?(name=="Upgrade Net Edge"?"RSIK Add U-turn zone":"RSIK Remove U-turn zone"):IsCenterMode?(name=="Upgrade Net Edge"?"RSIK Apply center":"RSIK Reset center"):IsPavingMode?ToolText.PavingAction(name=="Upgrade Net Edge"):ToolText.Action(CrosswalkMode,name=="Upgrade Net Edge"),alias.displayPriority,Game.Input.InputManager.DeviceType.None,transform));
+            foreach(var alias in collection.m_InputActions)if(alias.aliasName==name)return alias.GetState(GetType().Name,(source,action,mask,transform)=>new Game.Input.DisplayNameOverride(source,action,IsSideRoadMode?(name=="Upgrade Net Edge"?"RSIK Add side road":"RSIK Remove side road"):IsUTurnMode?(name=="Upgrade Net Edge"?"RSIK Add U-turn zone":"RSIK Remove U-turn zone"):IsDiagnosticMode?"RSIK Capture network":IsCenterMode?(name=="Upgrade Net Edge"?"RSIK Apply center":"RSIK Reset center"):IsPavingMode?ToolText.PavingAction(name=="Upgrade Net Edge"):ToolText.Action(CrosswalkMode,name=="Upgrade Net Edge"),alias.displayPriority,Game.Input.InputManager.DeviceType.None,transform));
             return null;
         }
-        internal void CycleSelection(){var system=World.GetExistingSystemManaged<StyleSystem>();if(system==null)return;if(IsRedPavingMode)system.CycleRedPaving();else if(IsColorGuideMode)system.CycleColorGuideBrush();else if(IsDrawLineMode)system.CycleLineBrush();else if(IsCrossingDistanceMode)return;else if(IsSideRoadMode)system.AdjustSideRoadWidth(1,true);else if(DividerGroup>0)system.CycleDivider(DividerGroup);else if(IsGutterMode)system.CycleGutterBrush();else if(ManualDecalKind==8)system.CycleHump();else if((ManualDecalKind==5||ManualDecalKind==6)&&!system.SignSearchFocused)system.CycleRoadSign(ManualDecalKind);else if(ManualDecalKind==2)system.CycleManualArrow();else if(ManualDecalKind>0||IsRemovePaintMode||IsCurbMode||IsGuideMode||IsGuideAutoMode||IsUTurnMode||IsApproachMode||IsLocalStylesMode||IsSideRoadMode){}else if(IsCenterMode)system.CycleCenterBrush();else if(IsPavingMode)system.CyclePavingBrush();else if(CrosswalkMode)system.CycleCrosswalkBrush();else system.CycleEdgeBrush();}
-        void RefreshActions(){actionGuideAutoMode=IsGuideAutoMode;actionGuideMode=IsGuideMode;actionUTurnMode=IsUTurnMode;actionCenterMode=IsCenterMode;actionCrosswalkMode=CrosswalkMode;actionPavingMode=IsPavingMode;actionSideRoadMode=IsSideRoadMode;applyActionOverride=NativeAction("Upgrade Net Edge");secondaryApplyActionOverride=NativeAction("Downgrade Net Edge");applyAction.shouldBeEnabled=true;secondaryApplyAction.shouldBeEnabled=true;cancelAction.shouldBeEnabled=false;}
+        internal void CycleSelection(bool reverse=false){
+         int count=IsDrawLineMode?DrawnLinePolicy.LineCount:IsColorGuideMode?DrawnLinePolicy.ColorCount:IsDiagnosticMode?3:IsPavingMode?PavingPolicy.StyleCount:IsSideRoadMode?10:ManualDecalKind==2?StyleSystem.ManualArrowSymbols.Length:ManualDecalKind==5?13:ManualDecalKind==6?RoadSignPolicy.Text.Length:DividerGroup==1?3:DividerGroup==2?5:IsRedPavingMode||IsGutterMode||ManualDecalKind==8?2:4;
+         for(int i=0;i<(reverse?count-1:1);i++)CycleSelectionForward();
+        }
+        void CycleSelectionForward(){var system=World.GetExistingSystemManaged<StyleSystem>();if(system==null)return;if(IsRedPavingMode)system.CycleRedPaving();else if(IsColorGuideMode)system.CycleColorGuideBrush();else if(IsDrawLineMode)system.CycleLineBrush();else if(IsCrossingDistanceMode)return;else if(IsSideRoadMode)system.AdjustSideRoadWidth(1,true);else if(DividerGroup>0)system.CycleDivider(DividerGroup);else if(IsGutterMode)system.CycleGutterBrush();else if(ManualDecalKind==8)system.CycleHump();else if((ManualDecalKind==5||ManualDecalKind==6)&&!system.SignSearchFocused)system.CycleRoadSign(ManualDecalKind);else if(ManualDecalKind==2)system.CycleManualArrow();else if(ManualDecalKind>0||IsRemovePaintMode||IsCurbMode||IsGuideMode||IsGuideAutoMode||IsUTurnMode||IsApproachMode||IsLocalStylesMode||IsSideRoadMode){}else if(IsDiagnosticMode)system.CycleCaptureScope();else if(IsCenterMode)system.CycleCenterBrush();else if(IsPavingMode)system.CyclePavingBrush();else if(CrosswalkMode)system.CycleCrosswalkBrush();else system.CycleEdgeBrush();}
+        void RefreshActions(){actionDiagnosticMode=IsDiagnosticMode;actionGuideAutoMode=IsGuideAutoMode;actionGuideMode=IsGuideMode;actionUTurnMode=IsUTurnMode;actionCenterMode=IsCenterMode;actionCrosswalkMode=CrosswalkMode;actionPavingMode=IsPavingMode;actionSideRoadMode=IsSideRoadMode;applyActionOverride=NativeAction("Upgrade Net Edge");secondaryApplyActionOverride=NativeAction("Downgrade Net Edge");applyAction.shouldBeEnabled=true;secondaryApplyAction.shouldBeEnabled=true;cancelAction.shouldBeEnabled=false;}
         protected override void OnStartRunning(){base.OnStartRunning();RefreshActions();}
         protected override JobHandle OnUpdate(JobHandle deps)
         {
@@ -85,10 +91,10 @@ namespace RoadStyleIntoKorea
             }
             deps.Complete();var system=World.GetExistingSystemManaged<StyleSystem>();if(system!=null)system.ToolResetHandled=false;
             if(system!=null&&IsPavingMode)system.PavingHint="RSIK.Paving.NoTarget";
-            if(actionGuideAutoMode!=IsGuideAutoMode||actionGuideMode!=IsGuideMode||actionUTurnMode!=IsUTurnMode||actionCenterMode!=IsCenterMode||actionCrosswalkMode!=CrosswalkMode||actionPavingMode!=IsPavingMode||actionSideRoadMode!=IsSideRoadMode)RefreshActions();
+            if(actionDiagnosticMode!=IsDiagnosticMode||actionGuideAutoMode!=IsGuideAutoMode||actionGuideMode!=IsGuideMode||actionUTurnMode!=IsUTurnMode||actionCenterMode!=IsCenterMode||actionCrosswalkMode!=CrosswalkMode||actionPavingMode!=IsPavingMode||actionSideRoadMode!=IsSideRoadMode)RefreshActions();
             if(system!=null&&(applyAction.WasPressedThisFrame()||secondaryApplyAction.WasPressedThisFrame()))system.PrioritizeUserEdit();
             var keyboard=UnityEngine.InputSystem.Keyboard.current;
-            if(system!=null&&Application.isFocused&&!Game.Input.InputManager.instance.hasInputFieldFocus&&keyboard!=null&&keyboard.rKey.wasPressedThisFrame&&(keyboard.leftShiftKey.isPressed||keyboard.rightShiftKey.isPressed)){CycleSelection();}
+            if(system!=null&&Application.isFocused&&!Game.Input.InputManager.instance.hasInputFieldFocus&&keyboard!=null&&(keyboard.rKey.wasPressedThisFrame||keyboard.tKey.wasPressedThisFrame)&&(keyboard.leftShiftKey.isPressed||keyboard.rightShiftKey.isPressed)){CycleSelection(keyboard.tKey.wasPressedThisFrame);}
             if(system!=null&&IsSideRoadMode&&Application.isFocused&&!Game.Input.InputManager.instance.hasInputFieldFocus&&keyboard!=null){
              if(keyboard.numpadPlusKey.wasPressedThisFrame||keyboard.equalsKey.wasPressedThisFrame)system.AdjustSideRoadWidth(1);
              if(keyboard.numpadMinusKey.wasPressedThisFrame||keyboard.minusKey.wasPressedThisFrame)system.AdjustSideRoadWidth(-1);
@@ -128,6 +134,16 @@ namespace RoadStyleIntoKorea
             if(IsGuideMode||IsGuideAutoMode){
                 Hover(Entity.Null);var target=hit.m_HitEntity;if(!system.IsRoad(target)&&!EntityManager.HasComponent<Game.Net.Node>(target))target=owner;
                 var guideOverlay=World.GetOrCreateSystemManaged<Game.Rendering.OverlayRenderSystem>();var guideBuffer=guideOverlay.GetBuffer(out var job);job.Complete();if(IsGuideAutoMode)system.GuideAutoTool(target,hit.m_HitPosition,guideBuffer,applyAction.WasPressedThisFrame(),secondaryApplyAction.WasPressedThisFrame());else system.GuideTool(target,hit.m_HitPosition,guideBuffer,applyAction.WasPressedThisFrame(),secondaryApplyAction.WasPressedThisFrame());guideOverlay.AddBufferWriter(default);if(!system.ToolResetHandled)ExitOnReset();return deps;}
+            if(IsDiagnosticMode)
+            {
+                if(secondaryApplyAction.WasPressedThisFrame()){ExitOnReset();return deps;}
+                Entity target=hit.m_HitEntity;
+                if(!system.IsRoad(target)&&!EntityManager.HasComponent<Game.Net.Node>(target))target=owner;
+                if(!system.IsRoad(target)&&!EntityManager.HasComponent<Game.Net.Node>(target)){Hover(Entity.Null);ExitOnReset();return deps;}
+                Hover(target);
+                if(applyAction.WasPressedThisFrame())system.CaptureNetwork(target,hit.m_HitPosition);
+                return deps;
+            }
             var edge=hit.m_HitEntity;if(!system.IsRoad(edge))edge=owner;
             if(CrosswalkMode&&keyboard!=null&&(keyboard.leftCtrlKey.isPressed||keyboard.rightCtrlKey.isPressed)){
                 var input=Game.Input.InputManager.instance;
@@ -246,11 +262,11 @@ namespace RoadStyleIntoKorea
             string location=typeof(Mod).Assembly.Location;
             if(Game.SceneFlow.GameManager.instance.modManager.TryGetExecutableAsset(typeof(Mod).Assembly,out var asset))location=asset.path;
             Game.SceneFlow.GameManager.instance.userInterface.view.uiSystem.AddHostLocation("rsik",System.IO.Path.GetDirectoryName(location),false);
-            foreach(var name in new[]{"RedPaving","ColorGuide","DrawLine","CrossingDistance","RoadEdge","Center","Crosswalk","Paving","Curb","Gutter","SideRoad","SpeedHump","Tactile","CyclePath","UTurn","Guide","GuideAuto","Approach","ManualStop","ManualArrow","ManualUTurn","ManualDiamond","ManualSpeed","ManualText","MergeDivider","BusDivider","AddAll","RemoveAll","RemovePaint"}){
+            foreach(var name in new[]{"RedPaving","ColorGuide","DrawLine","CrossingDistance","RoadEdge","Center","Crosswalk","Paving","Curb","Gutter","SideRoad","SpeedHump","Tactile","CyclePath","UTurn","Guide","GuideAuto","Approach","ManualStop","ManualArrow","ManualUTurn","ManualDiamond","ManualSpeed","ManualText","MergeDivider","BusDivider","AddAll","RemoveAll","RemovePaint","Diagnostic"}){
                 if(Tools.ContainsKey(name))continue;
                 var p=ScriptableObject.CreateInstance<EdgeToolPrefab>();p.name="RSIK"+name+"Tool";
                 p.RedPaving=name=="RedPaving";p.ColorGuide=name=="ColorGuide";p.DrawLine=name=="DrawLine";p.CrossingDistance=name=="CrossingDistance";p.Divider=name=="MergeDivider"?1:name=="BusDivider"?2:0;
-                p.ManualDecal=name=="Tactile"?9:name=="CyclePath"?10:name=="SpeedHump"?8:name=="ManualStop"?1:name=="ManualArrow"?2:name=="ManualUTurn"?3:name=="ManualDiamond"?4:name=="ManualSpeed"?5:name=="ManualText"?6:0; p.AddAll=name=="AddAll";p.RemoveAll=name=="RemoveAll";p.RemovePaint=name=="RemovePaint";p.Approach=name=="Approach";p.GuideAuto=name=="GuideAuto";p.Guide=name=="Guide";p.Center=name=="Center";p.Crosswalk=name=="Crosswalk";p.Paving=name=="Paving";p.Curb=name=="Curb";p.Gutter=name=="Gutter";p.SideRoad=name=="SideRoad";p.UTurn=name=="UTurn";
+                p.ManualDecal=name=="Tactile"?9:name=="CyclePath"?10:name=="SpeedHump"?8:name=="ManualStop"?1:name=="ManualArrow"?2:name=="ManualUTurn"?3:name=="ManualDiamond"?4:name=="ManualSpeed"?5:name=="ManualText"?6:0; p.AddAll=name=="AddAll";p.RemoveAll=name=="RemoveAll";p.RemovePaint=name=="RemovePaint";p.Approach=name=="Approach";p.GuideAuto=name=="GuideAuto";p.Guide=name=="Guide";p.Center=name=="Center";p.Crosswalk=name=="Crosswalk";p.Paving=name=="Paving";p.Curb=name=="Curb";p.Gutter=name=="Gutter";p.SideRoad=name=="SideRoad";p.UTurn=name=="UTurn";p.Diagnostic=name=="Diagnostic";
                 var ui=p.AddComponent<UIObject>();ui.m_Icon="coui://rsik/"+(name=="Center"?"CenterLine":name)+".svg";
                 // No maintenance group: tools are activated from our GameTopRight menu.
                 if(ps.AddPrefab(p))Tools.Add(name,p);else UnityEngine.Object.Destroy(p);

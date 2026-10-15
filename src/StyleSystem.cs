@@ -172,6 +172,7 @@ UpdateWithTrace();
                     if(!(TickCurbs()||TickManual()||TickApproaches()))break;
             }else if(loadBatchActive&&!localFrame&&!restoreRequested&&S.Enabled)
                 for(int step=1;step<4&&approachWork!=null&&frameWork.Elapsed.TotalMilliseconds<LoadBudgetPolicy.FrameBudget(UnityEngine.Time.unscaledDeltaTime);step++)TickApproaches();
+            CaptureNextOwner();
             UpdateTransportAppearance();
             if(S.Enabled&&!restoring&&!restoreRequested)RetryNativePaving();
             if(restoreRequested||(!restoring&&(active||records.Count>0||curbRecords.Count>0||manualRecords.Count>0||guideRecords.Count>0||approachRecords.Count>0||approachStopRecords.Count>0||nativePavingBindings.Count>0||queue.Count>0)&&!S.Enabled))
@@ -595,7 +596,7 @@ UpdateWithTrace();
                     }
                     if(!outer)continue;
                     if(math.dot(Geometry.Tangent(c,0.5f),forward)<0)c=Geometry.Reverse(c);
-                    candidates.Add(Geometry.Offset(c,(isLeft?1:-1)*EdgeTaperPolicy.OutsideOffset(width,EdgePaintHalfWidth(style),S.EdgeLaneGap)));
+                    candidates.Add(NetUtils.OffsetCurveLeftSmooth(c,new float2((isLeft?1:-1)*EdgeTaperPolicy.OutsideOffset(width,EdgePaintHalfWidth(style),S.EdgeLaneGap))));
                 }
                 foreach(var paint in candidates)
                 {
@@ -748,6 +749,7 @@ UpdateWithTrace();
             nodeSurfaceCandidates.Clear();nodeSurfaceStamps.Clear();nodeSurfaceRevision=-1;ClearDriveways();
             RestoreWalkHeights();removedPaint.Clear();paintAudit.Clear();nextPaintAudit=0;localStyleCommands.Clear();ClearCurbs();ClearManual();ClearApproaches();ClearGuides();CancelLoadRestore();restoreRequested=false;laneRefreshStamps.Clear();ownerShapes.Clear();nativeCrossingRequests.Clear();nativeCrossingWaiting.Clear();
             CancelDefaultReplacement();dragStyleCommands.Clear();newRoadStyles.Clear();targetedActive=false;bulkRoads.Clear();crossOnlyPending.Clear();centerOnlyPending.Clear();RestoreTransportMaterials();transportScanned=false;transportSettingsSeen=false;ClearNewRoadStyles();renderRepair.Clear();renderRepairPending.Clear();
+            captureOwners.Clear();
             sidewalkGutters.Clear();paintRegistration.Clear();paintRegistrationPending.Clear();
             InvalidateToolPreview();ClearLinePlans();toolTarget=Entity.Null;RestoreFlow();topologyDirty.Clear();topologyUrgent=false;dirtySince=-1;
             crossingPlans.Clear();crossingTrafficPlans.Clear();crossingSizes.Clear();

@@ -149,6 +149,7 @@ namespace RoadStyleIntoKorea {public partial class StyleSystem {
   if(!LineOwner(owner)||!EntityManager.HasBuffer<DrawnLineChoice>(owner))return;
   if(!manualRecords.TryGetValue(owner,out var record))manualRecords[owner]=record=new Record();
   var choices=ChoiceBuffer<DrawnLineChoice>(owner);System.Array.Sort(choices,(a,b)=>DrawnLinePolicy.IsColor(a.Style).CompareTo(DrawnLinePolicy.IsColor(b.Style)));
+  HideDrawnLineOriginals(owner,record,choices);
   List<ColorObstacle> obstacles=null;SidewalkFootprint redSurface=null;bool redSurfaceRead=false;
   foreach(var choice in choices){
    if(RedPavingPolicy.IsRed(choice.Style)){try{if(!redSurfaceRead){redSurface=RedRoadSurface(owner);redSurfaceRead=true;}BuildRedPaving(owner,record,choice,redSurface);}catch(System.Exception ){}continue;}

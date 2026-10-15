@@ -41,9 +41,9 @@ namespace RoadStyleIntoKorea
             // diagonal even when the two road centerlines continue straight.
             var roadInto=Geometry.Tangent(CurveOf(roads[0]),aStart?0:1)*(aStart?-1:1);
             var roadAway=Geometry.Tangent(CurveOf(roads[1]),bStart?0:1)*(bStart?1:-1);
-            if(math.dot(roadInto,roadAway)<.85f)return;
+            // Native node lanes already encode the bend; no road-angle rejection here.
             var origin=EntityManager.GetComponentData<Node>(node).m_Position;
-            var ribbons=EdgeRoadRibbons(node);var sidewalks=EdgeSidewalks(node);
+            var ribbons=new List<RoadRibbon>(EdgeRoadRibbons(node));foreach(var road in roads)ribbons.AddRange(EdgeRoadRibbons(road));var sidewalks=EdgeSidewalks(node);
             var tapers=new EdgeTaperPolicy(Geometry.Line(origin-roadInto*50,origin+roadInto*50));
             bool bay=false;
             foreach(var road in roads)foreach(var lane in Lanes(road))bay|=assets.Name(Prefab(lane)).IndexOf("Car Bay",System.StringComparison.OrdinalIgnoreCase)>=0;
@@ -54,6 +54,9 @@ namespace RoadStyleIntoKorea
             var aLanes=Lanes(roads[0]);var bLanes=Lanes(roads[1]);
             var aPaths=new List<EdgeBoundary>();var bPaths=new List<EdgeBoundary>();
             Edges(roads[0],record,aLanes,Drives(aLanes),aPaths);Edges(roads[1],record,bLanes,Drives(bLanes),bPaths);
+            // Meet rendered endpoints, not untrimmed lane endpoints one metre beyond them.
+            aPaths=VisibleJoinBoundaries(roads[0],aPaths,aLanes);
+            bPaths=VisibleJoinBoundaries(roads[1],bPaths,bLanes);
             foreach(bool left in new[]{true,false})
             {
                 var first=NearestBoundary(aPaths,left,aStart,origin);
@@ -64,16 +67,51 @@ namespace RoadStyleIntoKorea
                 var away=Geometry.Tangent(second.Curve,bStart?0:1)*(bStart?1:-1);
                 // Fit the seam, then keep the road and sidewalk clearance checks.
                 // Native curb masks cut the unsafe subranges after connection fitting.
-                if(math.dot(into,away)<(first.Style==second.Style?.85f:.97f)){continue;} // leave sharp node corners unpainted
-                if(!EdgeJoinPolicy.TryCurve(p,into,q,away,out var join)){continue;}
-                var arc=new Geometry.Arc(join);
-                if(first.Style==second.Style)PaintJoin(node,record,first.Style,join,ribbons,sidewalks,tapers,inspect);
-                else
-                {
-                    PaintJoin(node,record,first.Style,arc.Slice(0,arc.Length*.5f),ribbons,sidewalks,tapers,inspect);
-                    PaintJoin(node,record,second.Style,arc.Slice(arc.Length*.5f,arc.Length),ribbons,sidewalks,tapers,inspect);
+                List<Bezier4x3> joins;
+                if(NativeEdgeJoin(node,roads[0],roads[1],p,into,q,away,out var native))joins=EdgeJoinPolicy.NativeParts(native,p,into,q,away);
+                else if(EdgeJoinPolicy.TryCurve(p,into,q,away,out var fallback))joins=new List<Bezier4x3>{fallback};
+                else continue;
+                float total=0;foreach(var part in joins)total+=new Geometry.Arc(part).Length;
+                float distance=0;
+                foreach(var join in joins){
+                    var arc=new Geometry.Arc(join);float split=total*.5f-distance;
+                    if(first.Style==second.Style||split>=arc.Length)PaintJoin(node,record,first.Style,join,ribbons,sidewalks,tapers,inspect,seam:true);
+                    else if(split<=0)PaintJoin(node,record,second.Style,join,ribbons,sidewalks,tapers,inspect,seam:true);
+                    else {
+                        PaintJoin(node,record,first.Style,arc.Slice(0,split),ribbons,sidewalks,tapers,inspect,seam:true);
+                        PaintJoin(node,record,second.Style,arc.Slice(split,arc.Length),ribbons,sidewalks,tapers,inspect,seam:true);
+                    }
+                    distance+=arc.Length;
                 }
             }
+        }
+        // Like SecondaryLaneSystem, derive markings from the game's connected node lane.
+        bool NativeEdgeJoin(Entity node,Entity firstRoad,Entity secondRoad,float3 start,float3 into,float3 end,float3 away,out Bezier4x3 result)
+        {
+            result=default;float best=float.MaxValue;
+            foreach(var lane in Lanes(node))
+            {
+                if(!EntityManager.HasComponent<CarLane>(lane)||EntityManager.HasComponent<MasterLane>(lane)||!EntityManager.HasComponent<Lane>(lane))continue;
+                var flags=EntityManager.GetComponentData<CarLane>(lane).m_Flags;
+                if((flags&(CarLaneFlags.UTurnLeft|CarLaneFlags.UTurnRight|CarLaneFlags.SideConnection|CarLaneFlags.Forbidden))!=0)continue;
+                var link=EntityManager.GetComponentData<Lane>(lane);var curve=CurveOf(lane);
+                int a=link.m_StartNode.GetOwnerIndex(),b=link.m_EndNode.GetOwnerIndex();
+                if(a==secondRoad.Index&&b==firstRoad.Index)curve=Geometry.Reverse(curve);
+                else if(a!=firstRoad.Index||b!=secondRoad.Index)continue;
+                if(!EdgeJoinPolicy.NativeOffset(curve,start,into,end,away,out var candidate,out float score)||score>=best)continue;
+                best=score;result=candidate;
+            }
+            return best<float.MaxValue;
+        }
+        List<EdgeBoundary> VisibleJoinBoundaries(Entity road,List<EdgeBoundary> candidates,List<Entity> lanes){
+            var result=new List<EdgeBoundary>();var context=new EdgeClearanceContext{Owner=road,Ribbons=EdgeRoadRibbons(road)};
+            var crossings=Crossings(road,lanes);
+            foreach(var candidate in candidates){
+                if(candidate.Style==EdgeStyle.None||candidate.Style==EdgeStyle.Original)continue;
+                foreach(var part in EdgePaintParts(road,candidate.Style,candidate.Curve,crossings,context))
+                    result.Add(new EdgeBoundary{Curve=part,Left=candidate.Left,Style=candidate.Style});
+            }
+            return result;
         }
         EdgeStyle JunctionEdgeStyle(Entity road,float3 point){
             var arc=new Geometry.Arc(CurveOf(road));float t=arc.Nearest(point);
@@ -104,11 +142,11 @@ namespace RoadStyleIntoKorea
                 }
             }
         }
-        void PaintJoin(Entity owner,Record record,EdgeStyle style,Bezier4x3 curve,List<RoadRibbon> ribbons=null,SidewalkFootprint sidewalks=null,EdgeTaperPolicy tapers=null,bool inspect=false)
+        void PaintJoin(Entity owner,Record record,EdgeStyle style,Bezier4x3 curve,List<RoadRibbon> ribbons=null,SidewalkFootprint sidewalks=null,EdgeTaperPolicy tapers=null,bool inspect=false,bool seam=false)
         {
             foreach(var untapered in Geometry.ClearSlices(curve,p=>tapers==null||tapers.Clear(p)))
             foreach(var roadPart in RoadOnlyEdge(owner,style,untapered,ribbons,sidewalks,unionSurface:true))
-            foreach(var clear in BoundaryPaint(owner,roadPart,S.PaintClearance))
+            foreach(var clear in seam?ClearPaint(roadPart,NearbyCrossings(owner),S.PaintClearance):BoundaryPaint(owner,roadPart,S.PaintClearance))
             {
                 if(inspect)continue;
                 int before=record.Paint.Count;

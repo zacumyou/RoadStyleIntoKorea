@@ -22,7 +22,7 @@
 - **차선과 횡단보도:** 전용 도구를 통해 한국식 차선·횡단보도·유도선을 적용하고, 횡단보도 규격과 목표 거리를 조절함.
 - **노면 표지와 적색 포장:** 자동 생성과 수동 배치를 통해 정지선·화살표·속도 숫자·한글 문구를 추가하고, 차로를 따라 연속·반복 적색 포장을 적용함.
 - **보도와 도로 시설:** 보도 편집 도구를 통해 보도블록·경계석·배수로·점자블록·자전거도로 표시·방지턱·샛길 진입부를 꾸밈.
-- **구간별 편집과 관리:** 구간 선택을 통해 스타일을 추가·제거하고, 새 도로에는 기본 스타일을 자동 적용함. 메뉴 검색과 패널 배치 변경을 지원함.
+- **구간별 편집과 관리:** 구간 선택을 통해 스타일을 추가·제거하고, 옵션을 통해 새 도로의 기본 스타일 자동 적용을 켜고 끔. 중앙분리대가 여러 개인 도로의 중앙선을 개별 편집함. 메뉴 검색과 패널 배치 변경을 지원함.
 
 ## 시작하기
 
@@ -31,7 +31,7 @@
 3. 원하는 도구를 선택하고 도로 위에서 미리보기를 확인합니다.
 4. 화면에 표시되는 도구별 조작 안내에 따라 적용합니다.
 
-스타일 전환을 지원하는 도구는 **Shift + R**로 다음 스타일을 선택합니다. **모두 추가·모두 제거·데칼 자동 생성**은 도로 위를 드래그해 여러 구간을 선택할 수 있습니다. 횡단보도 거리 도구는 클릭으로 목표 거리를 1m 늘리고, **Shift + 클릭**으로 1m 줄입니다.
+스타일 전환을 지원하는 도구는 **Shift + R**로 다음 스타일, **Shift + T**로 이전 스타일을 선택합니다. **모두 추가·모두 제거·데칼 자동 생성**은 도로 위를 드래그해 여러 구간을 선택할 수 있습니다. 횡단보도 거리 도구는 클릭으로 목표 거리를 1m 늘리고, **Shift + 클릭**으로 1m 줄입니다.
 
 우클릭의 기능은 도구에 따라 삭제·복원·취소·종료로 달라집니다. 선택한 도구의 안내를 확인해 주세요.
 
@@ -87,7 +87,7 @@ After loading a city, open **Settings → ROAD STYLE INTO KOREA → Check requir
 - **Lane markings and crosswalks:** Use dedicated tools to apply Korean-style lane markings, crosswalks, and guidance lines, and adjust crosswalk size and target distance.
 - **Road decals and red pavement:** Use automatic generation or manual placement to add stop lines, arrows, speed numbers, and Korean text, and apply continuous or repeating red pavement along lanes.
 - **Sidewalks and roadside details:** Use editing tools to add sidewalk paving, curbs, gutters, tactile paving, cycle strip markings, speed humps, and side road entrances.
-- **Section editing and management:** Select road sections to add or remove styles, and automatically apply defaults to newly built roads. Search tools and customize the panel layout.
+- **Section editing and management:** Select road sections to add or remove styles, toggle automatic styling of newly built roads, and edit individual center lines on roads with multiple medians. Search tools and customize the panel layout.
 
 ## Getting started
 
@@ -96,7 +96,7 @@ After loading a city, open **Settings → ROAD STYLE INTO KOREA → Check requir
 3. Select a tool and hover over a road to preview the result.
 4. Follow the on-screen instructions for the selected tool to apply it.
 
-For tools with multiple styles, press **Shift + R** to select the next style. With **Add all, Remove all, and Auto decals**, drag over roads to select multiple sections. In the crosswalk distance tool, click to increase the target distance by 1 m, or **Shift + click** to decrease it by 1 m.
+For tools with multiple styles, press **Shift + R** to select the next style and **Shift + T** to select the previous style. With **Add all, Remove all, and Auto decals**, drag over roads to select multiple sections. In the crosswalk distance tool, click to increase the target distance by 1 m, or **Shift + click** to decrease it by 1 m.
 
 Depending on the tool, right-click deletes, restores, cancels, or exits. Check the selected tool's instructions.
 
@@ -126,6 +126,10 @@ Korean and English UI are supported.
 ## Reporting issues
 
 Please include screenshots, the affected road, the tool you were using, any other road-related mods, and steps to reproduce the issue. If it only occurs on a particular road, include its name and layout as well.
+
+문제 확인을 위해 **도로 진단** 도구로 해당 구간을 기록할 수 있습니다.
+
+Use the **Road diagnostics** tool to capture an affected road for troubleshooting.
 
 ## Links
 

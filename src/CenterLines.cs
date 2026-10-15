@@ -20,6 +20,24 @@ namespace RoadStyleIntoKorea
                 if((p.m_SectionFlags&NetSectionFlags.Median)!=0&&(p.m_SectionFlags&(NetSectionFlags.Underground|NetSectionFlags.Hidden|NetSectionFlags.Overhead))==0&&(p.m_PieceFlags&NetPieceFlags.BlockTraffic)!=0&&p.m_Size.x>.05f)return true;
             return false;
         }
+        bool SingleMedian(Entity edge,out float position){
+            position=0;if(!EntityManager.HasComponent<Composition>(edge))return false;
+            var cp=EntityManager.GetComponentData<Composition>(edge).m_Edge;if(!EntityManager.HasBuffer<NetCompositionPiece>(cp))return false;
+            var sections=new HashSet<int>();float min=float.MaxValue,max=float.MinValue;
+            foreach(var piece in EntityManager.GetBuffer<NetCompositionPiece>(cp,true)){
+                if((piece.m_SectionFlags&NetSectionFlags.Median)==0||(piece.m_SectionFlags&(NetSectionFlags.Hidden|NetSectionFlags.Underground|NetSectionFlags.Overhead))!=0||(piece.m_PieceFlags&NetPieceFlags.BlockTraffic)==0||piece.m_Size.x<=.05f)continue;
+                sections.Add(piece.m_SectionIndex);min=math.min(min,piece.m_Offset.x-piece.m_Size.x*.5f);max=math.max(max,piece.m_Offset.x+piece.m_Size.x*.5f);
+            }
+            position=(min+max)*.5f;return sections.Count==1;
+        }
+        Dictionary<Entity,float> MedianDrivePositions(Entity edge,List<Entity> lanes){
+            var result=new Dictionary<Entity,float>();
+            foreach(var lane in lanes){
+                if(!EntityManager.HasComponent<CarLane>(lane)||EntityManager.HasComponent<MasterLane>(lane)||EntityManager.HasComponent<ParkingLane>(lane)||(EntityManager.GetComponentData<CarLane>(lane).m_Flags&CarLaneFlags.SideConnection)!=0||!MotorLanePrefab(Prefab(lane)))continue;
+                if(CompositionPosition(edge,Geometry.Position(CurveOf(lane),.5f),out float x))result[lane]=x;
+            }
+            return result;
+        }
         List<CenterPath> CenterPaths(Entity edge,List<Entity> lanes,EdgeStyle style)
         {
             var result=new List<CenterPath>();bool divided=CenterDivided(edge);var center=new Geometry.Arc(CurveOf(edge));
@@ -48,11 +66,15 @@ namespace RoadStyleIntoKorea
                 }
                 return result;
             }
+            bool singleMedian=SingleMedian(edge,out float medianPosition);
+            var medianDrives=singleMedian?MedianDrivePositions(edge,lanes):null;
             foreach(var lane in lanes)
             {
                 if(!EntityManager.HasComponent<CarLane>(lane)||EntityManager.HasComponent<MasterLane>(lane)||EntityManager.HasComponent<ParkingLane>(lane))continue;
                 var flags=EntityManager.GetComponentData<CarLane>(lane).m_Flags;
-                if((flags&CarLaneFlags.LeftLimit)==0||(flags&CarLaneFlags.SideConnection)!=0)continue;
+                if((flags&CarLaneFlags.SideConnection)!=0||!MotorLanePrefab(Prefab(lane)))continue;
+                if(singleMedian){if(!medianDrives.TryGetValue(lane,out float lateral)||!CenterLinePolicy.FirstFromMedian(lateral,medianPosition,medianDrives.Values))continue;}
+                else if((flags&CarLaneFlags.LeftLimit)==0)continue;
                 var c=CurveOf(lane);var mid=Geometry.Position(c,.5f);float t=center.Nearest(mid);
                 bool left=math.dot(mid-Geometry.Position(center.Curve,t),Geometry.Left(Geometry.Tangent(center.Curve,t)))>=0;
                 var original=CenterLinePolicy.MedianSide(c,Width(lane),CenterLinePolicy.HalfWidth((int)style));
